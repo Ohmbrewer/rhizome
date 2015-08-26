@@ -19,6 +19,7 @@ const int Ohmbrewer::Pump::setSpeed(const int speed) {
  */
 Ohmbrewer::Pump::Pump(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
     _speed = 0;
+    _type = "pump";
 }
 
 /**
@@ -26,6 +27,7 @@ Ohmbrewer::Pump::Pump(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
  */
 Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _speed = 0;
+    _type = "pump";
 }
 
 /**
@@ -33,6 +35,7 @@ Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime, bool state, char* current
  */
 Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime, bool state, char* currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _speed = speed;
+    _type = "pump";
 }
 
 /**
