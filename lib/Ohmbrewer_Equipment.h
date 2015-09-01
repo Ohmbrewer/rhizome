@@ -66,6 +66,7 @@ namespace Ohmbrewer {
             /**
              * Constructors
              */
+            Equipment();
             Equipment(int id, int* pins);
             Equipment(int id, int* pins, int stopTime, bool state, char* currentTask);
             Equipment(const Equipment& clonee);

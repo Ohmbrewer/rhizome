@@ -32,14 +32,14 @@ const int Ohmbrewer::Thermostat::setTargetTemp(const int targetTemp) {
 /**
  * The heating element
  */
-HeatingElement Ohmbrewer::Thermostat::getElement() const {
+Ohmbrewer::HeatingElement* Ohmbrewer::Thermostat::getElement() const {
     return _heatingElm;
 }
 
 /**
  * The temperature sensor
  */
-TemperatureSensor Ohmbrewer::Thermostat::getSensor() const {
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
     return _tempSensor;
 }
 
@@ -48,6 +48,9 @@ TemperatureSensor Ohmbrewer::Thermostat::getSensor() const {
  */
 Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
+    int fakePins[2] = {1,2};
+    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
+    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
 }
 
 /**
@@ -56,6 +59,9 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, 
 Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
                                   bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
+    int fakePins[2] = {1,2};
+    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
+    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
 }
 
 /**
@@ -65,13 +71,16 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
                                   bool state, char* currentTask,
                                   const int targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
+    int fakePins[2] = {1,2};
+    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
+    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = targetTemp;
 }
 
 /**
  * Copy Constructor
  */
-Ohmbrewer::Thermostat::Thermostat(const Thermostat& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
@@ -81,7 +90,8 @@ Ohmbrewer::Thermostat::Thermostat(const Thermostat& clonee) : Ohmbrewer::Equipme
  * Destructor
  */
 Ohmbrewer::Thermostat::~Thermostat() {
-    // Nothing to do here...
+    delete _heatingElm;
+    delete _tempSensor;
 }
 
 /**
@@ -96,7 +106,8 @@ Ohmbrewer::Thermostat::~Thermostat() {
  */
 char** Ohmbrewer::Thermostat::parseArgs(const char* argsStr) {
     // TODO: Implement Thermostat::parseArgs
-    return -1;
+    char* placeholder[] = {"fixme"};
+    return placeholder;
 }
 
 /**
@@ -104,8 +115,8 @@ char** Ohmbrewer::Thermostat::parseArgs(const char* argsStr) {
  * This turns *EVERYTHING* on, so watch out. You may want to turn the element and sensor on individually instead.
  */
 const int Ohmbrewer::Thermostat::setState(const bool state) {
-    getElement().setState(state);
-    getSensor().setState(state);
+    getElement()->setState(state);
+    getSensor()->setState(state);
     return 0;
 }
 
@@ -113,7 +124,7 @@ const int Ohmbrewer::Thermostat::setState(const bool state) {
  * The Equipment state. True => On, False => Off
  */
 bool Ohmbrewer::Thermostat::getState() const {
-    return (getElement().getState() || getSensor().getState());
+    return (getElement()->getState() || getSensor()->getState());
 }
 
 /**

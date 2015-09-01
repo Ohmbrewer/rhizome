@@ -12,6 +12,7 @@ int Ohmbrewer::HeatingElement::getVoltage() const {
  */
 const int Ohmbrewer::HeatingElement::setVoltage(const int voltage) {
     _voltage = voltage;
+    return 0;
 }
 
 /**
@@ -64,6 +65,8 @@ Ohmbrewer::HeatingElement::~HeatingElement() {
  */
 char** Ohmbrewer::HeatingElement::parseArgs(const char* argsStr) {
     // TODO: Implement HeatingElement::parseArgs
+    char* placeholder[] = {"fixme"};
+    return placeholder;
 }
 
 /**
@@ -71,6 +74,7 @@ char** Ohmbrewer::HeatingElement::parseArgs(const char* argsStr) {
  */
 const int Ohmbrewer::HeatingElement::setState(const bool state) {
     _state = state;
+    return 0;
 }
 
 /**
@@ -100,6 +104,7 @@ bool Ohmbrewer::HeatingElement::isOff() const {
  */
 int Ohmbrewer::HeatingElement::doWork() {
     // TODO: Implement HeatingElement::doWork
+    return -1;
 }
 
 /**
@@ -108,6 +113,7 @@ int Ohmbrewer::HeatingElement::doWork() {
  */
 int Ohmbrewer::HeatingElement::doDisplay() {
     // TODO: Implement HeatingElement::doDisplay
+    return -1;
 }
 
 /**
@@ -116,6 +122,7 @@ int Ohmbrewer::HeatingElement::doDisplay() {
  */
 int Ohmbrewer::HeatingElement::doUpdate() {
     // TODO: Implement HeatingElement::doUpdate
+    return -1;
 }
 
 /**

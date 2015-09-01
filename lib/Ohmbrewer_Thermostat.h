@@ -40,12 +40,12 @@ namespace Ohmbrewer {
             /**
              * The heating element
              */
-            HeatingElement getElement() const;
+            HeatingElement* getElement() const;
 
             /**
              * The temperature sensor
              */
-            TemperatureSensor getSensor() const;
+            TemperatureSensor* getSensor() const;
             
             
             /**
@@ -98,11 +98,11 @@ namespace Ohmbrewer {
             /**
              * The thermostat's heating element
              */
-            HeatingElement _heatingElm;
+            HeatingElement* _heatingElm;
             /**
              * The thermostat's temperature sensor
              */
-            TemperatureSensor _tempSensor;
+            TemperatureSensor* _tempSensor;
             /**
              * The desired operating temperature
              */

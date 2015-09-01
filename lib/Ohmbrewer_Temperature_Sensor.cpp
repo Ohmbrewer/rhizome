@@ -33,6 +33,7 @@ int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
  */
 const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) {
     _lastReadTime = lastReadTime;
+    return 0;
 }
 
 /**
@@ -80,6 +81,8 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  */
 char** Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
     // TODO: Implement TemperatureSensor::parseArgs
+    char* placeholder[] = {"fixme"};
+    return placeholder;
 }
 
 /**
@@ -87,6 +90,7 @@ char** Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
  */
 const int Ohmbrewer::TemperatureSensor::setState(const bool state) {
     _state = state;
+    return 0;
 }
 
 /**
@@ -116,6 +120,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     // TODO: Implement TemperatureSensor::doWork
+    return -1;
 }
 
 /**
@@ -124,6 +129,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
  */
 int Ohmbrewer::TemperatureSensor::doDisplay() {
     // TODO: Implement TemperatureSensor::doDisplay
+    return -1;
 }
 
 /**
@@ -132,6 +138,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay() {
  */
 int Ohmbrewer::TemperatureSensor::doUpdate() {
     // TODO: Implement TemperatureSensor::doUpdate
+    return -1;
 }
 
 /**

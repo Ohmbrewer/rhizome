@@ -12,6 +12,7 @@ int Ohmbrewer::Pump::getSpeed() const {
  */
 const int Ohmbrewer::Pump::setSpeed(const int speed) {
     _speed = speed;
+    return 0;
 }
 
 /**
@@ -64,6 +65,8 @@ Ohmbrewer::Pump::~Pump() {
  */
 char** Ohmbrewer::Pump::parseArgs(const char* argsStr) {
     // TODO: Implement Pump::parseArgs
+    char* placeholder[] = {"fixme"};
+    return placeholder;
 }
 
 /**
@@ -71,6 +74,7 @@ char** Ohmbrewer::Pump::parseArgs(const char* argsStr) {
  */
 const int Ohmbrewer::Pump::setState(const bool state) {
     _state = state;
+    return 0;
 }
 
 /**
@@ -100,6 +104,7 @@ bool Ohmbrewer::Pump::isOff() const {
  */
 int Ohmbrewer::Pump::doWork() {
     // TODO: Implement Pump::doWork
+    return -1;
 }
 
 /**
@@ -108,6 +113,7 @@ int Ohmbrewer::Pump::doWork() {
  */
 int Ohmbrewer::Pump::doDisplay() {
     // TODO: Implement Pump::doDisplay
+    return -1;
 }
 
 /**
@@ -116,6 +122,7 @@ int Ohmbrewer::Pump::doDisplay() {
  */
 int Ohmbrewer::Pump::doUpdate() {
     // TODO: Implement Pump::doUpdate
+    return -1;
 }
 
 /**

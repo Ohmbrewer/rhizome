@@ -3,6 +3,17 @@
 /**
  * Constructor
  */
+Ohmbrewer::Equipment::Equipment() {
+    this->_id = 0;
+    this->_pins = NULL;
+    this->_stopTime = 0;
+    this->_state = false;
+    this->_currentTask = "";
+}
+
+/**
+ * Constructor
+ */
 Ohmbrewer::Equipment::Equipment(int id, int* pins) {
     this->_id = id;
     this->_pins = pins;
