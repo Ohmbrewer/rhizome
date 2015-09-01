@@ -1,4 +1,4 @@
-#include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Thermostat.h"
 
 /**
  * The desired target temperature. Defaults to Celsius
@@ -80,7 +80,7 @@ Ohmbrewer::Thermostat::Thermostat(const Thermostat& clonee) : Ohmbrewer::Equipme
 /**
  * Destructor
  */
-virtual Ohmbrewer::Thermostat::~Thermostat() {
+Ohmbrewer::Thermostat::~Thermostat() {
     // Nothing to do here...
 }
 
@@ -104,8 +104,8 @@ char** Ohmbrewer::Thermostat::parseArgs(const char* argsStr) {
  * This turns *EVERYTHING* on, so watch out. You may want to turn the element and sensor on individually instead.
  */
 const int Ohmbrewer::Thermostat::setState(const bool state) {
-    getElement()->setState(state);
-    getSensor()->setState(state);
+    getElement().setState(state);
+    getSensor().setState(state);
     return 0;
 }
 
@@ -113,7 +113,7 @@ const int Ohmbrewer::Thermostat::setState(const bool state) {
  * The Equipment state. True => On, False => Off
  */
 bool Ohmbrewer::Thermostat::getState() const {
-    return getElement()->getState() || getSensor()->getState();
+    return (getElement().getState() || getSensor().getState());
 }
 
 /**
@@ -164,6 +164,6 @@ int Ohmbrewer::Thermostat::doUpdate() {
 int* Ohmbrewer::Thermostat::whichPins() const {
     // TODO: Implement Thermostat::whichPins
     //return {&_pins, &getElement(), &getSensor()};
-    return {6,6,6};
+    return NULL;
 }
 

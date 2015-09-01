@@ -10,7 +10,11 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Pump.h
     ../lib/Ohmbrewer_Pump.cpp
     ../lib/Ohmbrewer_Temperature_Sensor.h
-    ../lib/Ohmbrewer_Temperature_Sensor.cpp)
+    ../lib/Ohmbrewer_Temperature_Sensor.cpp
+    ../lib/Ohmbrewer_Thermostat.h
+    ../lib/Ohmbrewer_Thermostat.cpp
+    ../lib/Ohmbrewer_Temperature.h
+    ../lib/Ohmbrewer_Temperature.cpp)
 
 if(DEVICE_TYPE)
     if(DEVICE_TYPE STREQUAL "photon")
