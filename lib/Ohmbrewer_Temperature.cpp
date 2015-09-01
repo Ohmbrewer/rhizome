@@ -3,6 +3,7 @@
 
 /**
  * The temperature in Fahrenheit
+ * @returns The temperature in Fahrenheit
  */
 double Ohmbrewer::Temperature::f() const {
     return (c() * 1.8) + 32;
@@ -10,6 +11,7 @@ double Ohmbrewer::Temperature::f() const {
 
 /**
  * The temperature in Celsius
+ * @returns The temperature in Celsius
  */
 double Ohmbrewer::Temperature::c() const {
     return get();
@@ -17,9 +19,28 @@ double Ohmbrewer::Temperature::c() const {
 
 /**
  * The temperature in Celsius
+ * @returns The temperature in Celsius
  */
 double Ohmbrewer::Temperature::get() const {
     return _targetTemp;
+}
+
+/**
+ * Fills a provided C-string buffer with the temperature, formatted for display.
+ * Note that this expects your buffer to be sufficiently large!
+ * @param buffer Buffer to fill with the formatted temperature in Celsius
+ */
+void Ohmbrewer::Temperature::toStrC(char* buffer, unsigned int width, unsigned precision) const {
+    sprintf(buffer, "%*.*f", width, precision, c());
+}
+
+/**
+ * Fills a provided C-string buffer with the temperature, formatted for display.
+ * Note that this expects your buffer to be sufficiently large!
+ * @param buffer Buffer to fill with the formatted temperature in Fahrenheit
+ */
+void Ohmbrewer::Temperature::toStrF(char* buffer, unsigned int width, unsigned precision) const {
+    sprintf(buffer, "%*.*f", width, precision, f());
 }
 
 /**
@@ -57,6 +78,10 @@ Ohmbrewer::Temperature::Temperature(const double temp) {
     _targetTemp = temp;
 }
 
+/**
+ * Copy Constructor.
+ * @param copy The Temperature to copy
+ */
 Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
     _targetTemp = copy.c();
 }

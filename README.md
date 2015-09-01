@@ -10,3 +10,4 @@ file. Simply add a ```build``` directory to the project directory and navigate t
 then flash to your Core/Photon using ```particle flash DEVICEID firmware.bin```
 
 Note that if you do this, you'll need to have CMake. If you're using CLion, CMake should be bundled within the IDE directory somewhere.
+
