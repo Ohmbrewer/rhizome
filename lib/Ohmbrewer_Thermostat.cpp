@@ -56,6 +56,17 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, 
 /**
  * Constructor
  */
+Ohmbrewer::Thermostat::Thermostat(int id, int* pins, const double targetTemp) : Ohmbrewer::Equipment(id, pins) {
+    // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
+    int fakePins[2] = {1,2};
+    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
+    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+    _targetTemp = targetTemp;
+}
+
+/**
+ * Constructor
+ */
 Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
                                   bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
@@ -69,7 +80,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
  */
 Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
                                   bool state, char* currentTask,
-                                  const int targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                                  const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
     int fakePins[2] = {1,2};
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right

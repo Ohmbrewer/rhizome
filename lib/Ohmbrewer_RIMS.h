@@ -3,69 +3,53 @@
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
-#ifndef OHMBREWER_RHIZOME_THERMOSTAT_H
-#define OHMBREWER_RHIZOME_THERMOSTAT_H
-    
-#include "Ohmbrewer_Equipment.h"
-#include "Ohmbrewer_Heating_Element.h"
+#ifndef OHMBREWER_RHIZOME_RIMS_H
+#define OHMBREWER_RHIZOME_RIMS_H
+
+#include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Pump.h"
 #include "application.h"
 
 namespace Ohmbrewer {
 
-    class Thermostat : public Equipment {
+    class RIMS : public Equipment {
       
         public:
             
             /**
-             * The desired target temperature. Defaults to Celsius
+             * The Tube thermostat
              */
-            double getTargetTemp() const;
-            
-            /**
-             * The last temperature read by the sensor in Fahrenheit
-             */
-            double getTargetTempF() const;
-            
-            /**
-             * The last temperature read by the sensor in Celsius
-             */
-            double getTargetTempC() const;
+            Thermostat* getTube() const;
 
             /**
-             * Sets the target temperature
+             * The temperature sensor located in the tun
              */
-            const int setTargetTemp(const int targetTemp);
-            
-            /**
-             * The heating element
-             */
-            HeatingElement* getElement() const;
+            TemperatureSensor* getTunSensor() const;
 
             /**
-             * The temperature sensor
+             * The recirculation pump between the tun and the tube
              */
-            TemperatureSensor* getSensor() const;
+            Pump* getRecirculator() const;
             
             
             /**
              * Constructors
              */
-            Thermostat(int id, int* pins);
-            Thermostat(int id, int* pins, const double targetTemp);
-            Thermostat(int id, int* pins, int stopTime, bool state, char* currentTask);
-            Thermostat(int id, int* pins, int stopTime, bool state, char* currentTask, const double targetTemp);
-            Thermostat(const Thermostat& clonee);
+            RIMS(int id, int* pins);
+            RIMS(int id, int* pins, int stopTime, bool state, char* currentTask);
+            RIMS(int id, int* pins, int stopTime, bool state, char* currentTask, const int targetTemp);
+            RIMS(const RIMS& clonee);
             
             /**
              * Destructor
              */
-            virtual ~Thermostat();
+            virtual ~RIMS();
             
             /**
              * Overloaded << operator.
              */
-            // friend std::ostream& operator<<( std::ostream& os, Thermostat const& thermostat);
+            // friend std::ostream& operator<<( std::ostream& os, RIMS const& rims);
             
             /**
              * Specifies the interface for arguments sent to this Equipment's associated function. 
@@ -97,17 +81,17 @@ namespace Ohmbrewer {
 
         protected:
             /**
-             * The thermostat's heating element
+             * The tube thermostat
              */
-            HeatingElement* _heatingElm;
+            Thermostat* _tube;
             /**
-             * The thermostat's temperature sensor
+             * The temperature sensor in the tun
              */
-            TemperatureSensor* _tempSensor;
+            TemperatureSensor* _tunSensor;
             /**
-             * The desired operating temperature
+             * The recirculation pump between the tun and the tube
              */
-            double _targetTemp;
+            Pump* _recirc;
 
         private:
             /**

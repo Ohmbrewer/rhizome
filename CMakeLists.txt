@@ -14,7 +14,9 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Thermostat.h
     ../lib/Ohmbrewer_Thermostat.cpp
     ../lib/Ohmbrewer_Temperature.h
-    ../lib/Ohmbrewer_Temperature.cpp)
+    ../lib/Ohmbrewer_Temperature.cpp
+    ../lib/Ohmbrewer_RIMS.h
+    ../lib/Ohmbrewer_RIMS.cpp)
 
 if(DEVICE_TYPE)
     if(DEVICE_TYPE STREQUAL "photon")
