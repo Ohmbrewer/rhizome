@@ -72,22 +72,7 @@ namespace Ohmbrewer {
              * Most likely will be called during update().
              */
             static char** parseArgs(const char* argsStr);
-    
-        protected:
-            /**
-             * The thermostat's heating element
-             */
-            HeatingElement _heatingElm;
-            /**
-             * The thermostat's temperature sensor
-             */
-            TemperatureSensor _tempSensor;
-            /**
-             * The desired operating temperature
-             */
-            double _targetTemp;
-        
-        private:
+
             /**
              * Sets the Equipment state. True => On, False => Off
              */
@@ -107,7 +92,23 @@ namespace Ohmbrewer {
              * True if the Equipment state is Off.
              */
             bool isOff() const;
-        
+
+
+        protected:
+            /**
+             * The thermostat's heating element
+             */
+            HeatingElement _heatingElm;
+            /**
+             * The thermostat's temperature sensor
+             */
+            TemperatureSensor _tempSensor;
+            /**
+             * The desired operating temperature
+             */
+            double _targetTemp;
+
+        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().

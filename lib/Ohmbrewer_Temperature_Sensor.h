@@ -64,18 +64,7 @@ namespace Ohmbrewer {
              * Most likely will be called during update().
              */
             static char** parseArgs(const char* argsStr);
-    
-        protected:
-            /**
-             * Last temperature read by the sensor
-             */
-            int _lastReading;
-            /**
-             * Last time the temperature was read by the sensor
-             */
-            int _lastReadTime;
-        
-        private:
+
             /**
              * Sets the Equipment state. True => On, False => Off
              */
@@ -95,7 +84,18 @@ namespace Ohmbrewer {
              * True if the Equipment state is Off.
              */
             bool isOff() const;
-        
+
+        protected:
+            /**
+             * Last temperature read by the sensor
+             */
+            int _lastReading;
+            /**
+             * Last time the temperature was read by the sensor
+             */
+            int _lastReadTime;
+
+        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().

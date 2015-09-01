@@ -50,14 +50,7 @@ namespace Ohmbrewer {
              * Most likely will be called during update().
              */
             static char** parseArgs(const char* argsStr);
-    
-        protected:
-            /**
-             * Pump speed
-             */
-            int         _speed;
-        
-        private:
+
             /*
              * Virtual Functions! All of these need to be defined in child classes! 
              */
@@ -81,7 +74,14 @@ namespace Ohmbrewer {
              * True if the Equipment state is Off.
              */
             bool isOff() const;
-        
+
+        protected:
+            /**
+             * Pump speed
+             */
+            int         _speed;
+
+        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().

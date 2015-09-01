@@ -50,14 +50,7 @@ namespace Ohmbrewer {
              * Most likely will be called during update().
              */
             static char** parseArgs(const char* argsStr);
-    
-        protected:
-            /**
-             * Voltage to provide the heating element
-             */
-            int  _voltage;
-        
-        private:
+
             /**
              * Sets the Equipment state. True => On, False => Off
              */
@@ -77,7 +70,14 @@ namespace Ohmbrewer {
              * True if the Equipment state is Off.
              */
             bool isOff() const;
-        
+
+        protected:
+            /**
+             * Voltage to provide the heating element
+             */
+            int  _voltage;
+
+        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().

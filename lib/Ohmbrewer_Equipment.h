@@ -86,40 +86,7 @@ namespace Ohmbrewer {
              * Most likely will be called during update().
              */
             static char** parseArgs(const char* argsStr);
-    
-        protected:
-            /**
-             * Equipment ID
-             */
-            int         _id;
-            
-            /**
-             * Equipment Type
-             */
-            const char* _type;
-            
-            /**
-             * Designated Stop Time
-             */
-            int         _stopTime;
-            
-            /**
-             * State (True => On, False => Off)
-             */
-            bool        _state;
-            
-            /**
-             * Which of the Rhizome's pins are occupied by the
-             * Equipment, forming a logical Sprout.
-             */
-            int*        _pins;
-            
-            /**
-             * The Task the Equipment is currently processing.
-             */
-            char*       _currentTask;
-        
-        private:
+
             /*
              * Virtual Functions! All of these need to be defined in child classes! 
              */
@@ -143,7 +110,40 @@ namespace Ohmbrewer {
              * True if the Equipment state is Off.
              */
             virtual bool isOff() const;
-        
+
+        protected:
+            /**
+             * Equipment ID
+             */
+            int         _id;
+
+            /**
+             * Equipment Type
+             */
+            const char* _type;
+
+            /**
+             * Designated Stop Time
+             */
+            int         _stopTime;
+
+            /**
+             * State (True => On, False => Off)
+             */
+            bool        _state;
+
+            /**
+             * Which of the Rhizome's pins are occupied by the
+             * Equipment, forming a logical Sprout.
+             */
+            int*        _pins;
+
+            /**
+             * The Task the Equipment is currently processing.
+             */
+            char*       _currentTask;
+
+        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().
