@@ -1,5 +1,5 @@
 /**
- * This library provides the Equipment base class the Rhizome PID/equipment controller.
+ * This library provides the Thermostat class the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
@@ -9,6 +9,7 @@
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Temperature.h"
 #include "application.h"
 
 namespace Ohmbrewer {
@@ -20,22 +21,12 @@ namespace Ohmbrewer {
             /**
              * The desired target temperature. Defaults to Celsius
              */
-            double getTargetTemp() const;
-            
-            /**
-             * The last temperature read by the sensor in Fahrenheit
-             */
-            double getTargetTempF() const;
-            
-            /**
-             * The last temperature read by the sensor in Celsius
-             */
-            double getTargetTempC() const;
+            Temperature* getTargetTemp() const;
 
             /**
              * Sets the target temperature
              */
-            const int setTargetTemp(const int targetTemp);
+            const int setTargetTemp(const double targetTemp);
             
             /**
              * The heating element
@@ -107,7 +98,7 @@ namespace Ohmbrewer {
             /**
              * The desired operating temperature
              */
-            double _targetTemp;
+            Temperature* _targetTemp;
 
         private:
             /**

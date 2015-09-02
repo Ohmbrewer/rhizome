@@ -3,21 +3,7 @@
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
  */
-double Ohmbrewer::TemperatureSensor::getTemp() const {
-    return _lastReading;
-}
-
-/**
- * The last temperature read by the sensor in Fahrenheit
- */
-double Ohmbrewer::TemperatureSensor::toFahrenheit() const {
-    return (_lastReading * 1.8) + 32;
-}
-
-/**
- * The last temperature read by the sensor in Celsius
- */
-double Ohmbrewer::TemperatureSensor::toCelsius() const {
+Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
     return _lastReading;
 }
 
@@ -40,7 +26,7 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
  * Constructor
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
-    _lastReading = 0;
+    _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
 }
@@ -49,7 +35,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::
  * Constructor
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    _lastReading = 0;
+    _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
 }
@@ -66,7 +52,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
  * Destructor
  */
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
-    // Nothing to do here...
+    delete _lastReading;
 }
 
 /**

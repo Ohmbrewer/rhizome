@@ -9,6 +9,7 @@
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Pump.h"
+#include "Ohmbrewer_Temperature.h"
 #include "application.h"
 
 namespace Ohmbrewer {
@@ -38,7 +39,7 @@ namespace Ohmbrewer {
              */
             RIMS(int id, int* pins);
             RIMS(int id, int* pins, int stopTime, bool state, char* currentTask);
-            RIMS(int id, int* pins, int stopTime, bool state, char* currentTask, const int targetTemp);
+            RIMS(int id, int* pins, int stopTime, bool state, char* currentTask, const double targetTemp);
             RIMS(const RIMS& clonee);
             
             /**

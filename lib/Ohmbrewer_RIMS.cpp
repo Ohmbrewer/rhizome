@@ -43,7 +43,7 @@ Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
 }
 
 Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
-                      bool state, char* currentTask, const int targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                      bool state, char* currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
     int fakePins[2] = {1,2};
     _tube = new Thermostat(1, fakePins, targetTemp);

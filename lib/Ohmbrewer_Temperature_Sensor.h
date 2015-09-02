@@ -1,5 +1,5 @@
 /**
- * This library provides the Equipment base class the Rhizome PID/equipment controller.
+ * This library provides the Temperature Sensor class the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
@@ -7,6 +7,7 @@
 #define OHMBREWER_RHIZOME_TEMPERATURE_SENSOR_H
     
 #include "Ohmbrewer_Equipment.h"
+#include "Ohmbrewer_Temperature.h"
 #include "application.h"
 
 namespace Ohmbrewer {
@@ -18,17 +19,7 @@ namespace Ohmbrewer {
             /**
              * The last temperature read by the sensor. Currently returns in Celsius.
              */
-            double getTemp() const;
-            
-            /**
-             * The last temperature read by the sensor in Fahrenheit
-             */
-            double toFahrenheit() const;
-            
-            /**
-             * The last temperature read by the sensor in Celsius
-             */
-            double toCelsius() const;
+            Temperature* getTemp() const;
             
             /**
              * The last time the temperature was read by the sensor
@@ -89,7 +80,7 @@ namespace Ohmbrewer {
             /**
              * Last temperature read by the sensor
              */
-            int _lastReading;
+            Temperature* _lastReading;
             /**
              * Last time the temperature was read by the sensor
              */

@@ -3,29 +3,15 @@
 /**
  * The desired target temperature. Defaults to Celsius
  */
-double Ohmbrewer::Thermostat::getTargetTemp() const {
-    return getTargetTempC();
-}
-
-/**
- * The last temperature read by the sensor in Fahrenheit
- */
-double Ohmbrewer::Thermostat::getTargetTempF() const {
-    return (getTargetTempC() * 1.8) + 32;
-}
-
-/**
- * The last temperature read by the sensor in Celsius
- */
-double Ohmbrewer::Thermostat::getTargetTempC() const {
+Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
     return _targetTemp;
 }
 
 /**
  * Sets the target temperature
  */
-const int Ohmbrewer::Thermostat::setTargetTemp(const int targetTemp) {
-    _targetTemp = targetTemp;
+const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
+    _targetTemp->set(targetTemp); //targetTemp;
     return 0;
 }
 
@@ -51,6 +37,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, 
     int fakePins[2] = {1,2};
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+    _targetTemp = new Temperature(0);
 }
 
 /**
@@ -61,7 +48,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, const double targetTemp) : 
     int fakePins[2] = {1,2};
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
-    _targetTemp = targetTemp;
+    _targetTemp = new Temperature(targetTemp);
 }
 
 /**
@@ -73,6 +60,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
     int fakePins[2] = {1,2};
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+    _targetTemp = new Temperature(0);
 }
 
 /**
@@ -85,7 +73,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
     int fakePins[2] = {1,2};
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
-    _targetTemp = targetTemp;
+    _targetTemp = new Temperature(targetTemp);
 }
 
 /**
@@ -103,6 +91,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
 Ohmbrewer::Thermostat::~Thermostat() {
     delete _heatingElm;
     delete _tempSensor;
+    delete _targetTemp;
 }
 
 /**
