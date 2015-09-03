@@ -79,11 +79,8 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * @param argsStr The arguments supplied as an update to the Rhizome.
  * @returns A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
-    // TODO: Implement TemperatureSensor::parseArgs
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const String argsStr) {
+    return Equipment::parseArgs(argsStr);
 }
 
 /**

@@ -129,7 +129,7 @@ namespace Ohmbrewer {
              * @param argsStr The arguments supplied as an update to the Rhizome.
              * @returns A map representing the key/value pairs for the update
              */
-            static args_map_t parseArgs(const char* argsStr);
+            static args_map_t parseArgs(const String argsStr);
 
             /*
              * Virtual Functions! All of these need to be defined in child classes! 

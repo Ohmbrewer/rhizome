@@ -136,7 +136,7 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * @param argsStr The arguments supplied as an update to the Rhizome.
  * @returns A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Thermostat::parseArgs(const char* argsStr) {
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::Thermostat::parseArgs(const String argsStr) {
     // TODO: Implement Thermostat::parseArgs
     args_map_t placeholder;
     placeholder[String("fixme")] = String("nonononononono");

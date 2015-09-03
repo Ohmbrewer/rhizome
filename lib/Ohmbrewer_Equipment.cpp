@@ -182,9 +182,26 @@ Ohmbrewer::Equipment::~Equipment() {
  * @param argsStr The arguments supplied as an update to the Rhizome.
  * @returns A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Equipment::parseArgs(const char* argsStr) {
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::Equipment::parseArgs(const String argsStr) {
+    args_map_t result;
+    char* params = new char[argsStr.length() + 1];
+    strcpy(params, argsStr.c_str());
+
+    // Parse the parameters
+    String id          = String(strtok(params, ","));
+    String currentTask = String(strtok(params, ","));
+    String state       = String(strtok(NULL, ","));
+    String stopTime    = String(strtok(NULL, ","));
+
+    // Save them to the map
+    result[String("id")] = id;
+    result[String("current_task")] = currentTask;
+    result[String("state")] = state;
+    result[String("stopTime")] = stopTime;
+
+    // Clear out that dynamically allocated buffer
+    delete params;
+
+    return result;
 }
 
