@@ -16,9 +16,12 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Temperature.h
     ../lib/Ohmbrewer_Temperature.cpp
     ../lib/Ohmbrewer_RIMS.h
-    ../lib/Ohmbrewer_RIMS.cpp)
+    ../lib/Ohmbrewer_RIMS.cpp
+    ../lib/Ohmbrewer_Publisher.h
+    ../lib/Ohmbrewer_Publisher.cpp)
 
 if(DEVICE_TYPE)
+    # You can specify which device to compile for, if desired...
     if(DEVICE_TYPE STREQUAL "photon")
         execute_process(COMMAND particle compile photon ${SOURCE_FILES})
     elseif(DEVICE_TYPE STREQUAL "core")

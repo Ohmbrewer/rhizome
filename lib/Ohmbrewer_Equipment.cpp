@@ -4,33 +4,33 @@
  * Constructor
  */
 Ohmbrewer::Equipment::Equipment() {
-    this->_id = 0;
-    this->_pins = NULL;
-    this->_stopTime = 0;
-    this->_state = false;
-    this->_currentTask = "";
+    _id = 0;
+    _pins = NULL;
+    _stopTime = 0;
+    _state = false;
+    _currentTask = "";
 }
 
 /**
  * Constructor
  */
 Ohmbrewer::Equipment::Equipment(int id, int* pins) {
-    this->_id = id;
-    this->_pins = pins;
-    this->_stopTime = 0;
-    this->_state = false;
-    this->_currentTask = "";
+    _id = id;
+    _pins = pins;
+    _stopTime = 0;
+    _state = false;
+    _currentTask = "";
 }
 
 /**
  * Constructor
  */
 Ohmbrewer::Equipment::Equipment(int id, int* pins, int stopTime, bool state, char* currentTask) {
-    this->_id = id;
-    this->_pins = pins;
-    this->_stopTime = stopTime;
-    this->_state = state;
-    this->_currentTask = currentTask;
+    _id = id;
+    _pins = pins;
+    _stopTime = stopTime;
+    _state = state;
+    _currentTask = currentTask;
 }
 
 /**
@@ -48,21 +48,21 @@ Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
  * The Equipment ID
  */
 int Ohmbrewer::Equipment::getID() const {
-    return this->_id;
+    return _id;
 }
 
 /**
  * The Equipment Type
  */
 const char* Ohmbrewer::Equipment::getType() const {
-    return this->_type;
+    return _type;
 }
 
 /**
  * The time at which the Equipment will stop operating.
  */
 int Ohmbrewer::Equipment::getStopTime() const {
-    return this->_stopTime;
+    return _stopTime;
 }
 
 /**
@@ -71,7 +71,7 @@ int Ohmbrewer::Equipment::getStopTime() const {
 const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
     unsigned long start = millis();
     
-    this->_stopTime = stopTime;
+    _stopTime = stopTime;
     
     return start - millis();
 }
@@ -80,7 +80,7 @@ const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
  * The Task the Equipment is currently working on.
  */
 char* Ohmbrewer::Equipment::getCurrentTask() const {
-    return this->_currentTask;
+    return _currentTask;
 }
 
 /**
@@ -89,7 +89,7 @@ char* Ohmbrewer::Equipment::getCurrentTask() const {
 const int Ohmbrewer::Equipment::setCurrentTask(char* currentTask) {
     unsigned long start = millis();
     
-    this->_currentTask = currentTask;
+    _currentTask = currentTask;
     
     return start - millis();
 }
