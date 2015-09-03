@@ -2,6 +2,7 @@
 
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
+ * @returns The last temperature reading
  */
 Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
     return _lastReading;
@@ -9,6 +10,7 @@ Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
 
 /**
  * The last time the temperature was read by the sensor
+ * @returns The last temperature reading time
  */
 int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
     return _lastReadTime;
@@ -16,6 +18,7 @@ int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
 
 /**
  * Sets the last time the temperature was read by the sensor
+ * @param lastReadTime The last temperature reading time
  */
 const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) {
     _lastReadTime = lastReadTime;
@@ -24,6 +27,8 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
     _lastReading = new Temperature(0);
@@ -33,6 +38,11 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _lastReading = new Temperature(0);
@@ -42,10 +52,12 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins, int stopTime,
 
 /**
  * Copy Constructor
+ * @param clonee The Equipment object to copy
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
+    _type = "temp";
 }
 
 /**
@@ -64,6 +76,8 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * Specifies the interface for arguments sent to this Equipment's associated function. 
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
+ * @param argsStr The arguments supplied as an update to the Rhizome.
+ * @returns A map representing the key/value pairs for the update
  */
 Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
     // TODO: Implement TemperatureSensor::parseArgs
@@ -74,14 +88,20 @@ Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const c
 
 /**
  * Sets the Equipment state. True => On, False => Off
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::TemperatureSensor::setState(const bool state) {
+    unsigned long start = millis();
+
     _state = state;
-    return 0;
+
+    return start - millis();
 }
 
 /**
  * The Equipment state. True => On, False => Off
+ * @returns True => On, False => Off
  */
 bool Ohmbrewer::TemperatureSensor::getState() const {
     return _state;
@@ -89,6 +109,7 @@ bool Ohmbrewer::TemperatureSensor::getState() const {
 
 /**
  * True if the Equipment state is On.
+ * @returns Whether the Equipment is turned ON
  */
 bool Ohmbrewer::TemperatureSensor::isOn() const {
     return _state;
@@ -96,6 +117,7 @@ bool Ohmbrewer::TemperatureSensor::isOn() const {
 
 /**
  * True if the Equipment state is Off.
+ * @returns Whether the Equipment is turned OFF
  */
 bool Ohmbrewer::TemperatureSensor::isOff() const {
     return !_state;
@@ -104,6 +126,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
 /**
  * Performs the Equipment's current task. Expect to use this during loop().
  * This function is called by work().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     // TODO: Implement TemperatureSensor::doWork
@@ -113,6 +136,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
 /**
  * Draws information to the Rhizome's display.
  * This function is called by display().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doDisplay() {
     // TODO: Implement TemperatureSensor::doDisplay
@@ -122,6 +146,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay() {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doUpdate() {
     // TODO: Implement TemperatureSensor::doUpdate
@@ -131,6 +156,7 @@ int Ohmbrewer::TemperatureSensor::doUpdate() {
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
+ * @returns The list of physical pins that the Equipment is connected to.
  */
 int* Ohmbrewer::TemperatureSensor::whichPins() const {
     return _pins;

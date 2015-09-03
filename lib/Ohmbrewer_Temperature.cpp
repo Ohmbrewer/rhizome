@@ -3,6 +3,7 @@
 
 /**
  * The temperature in Fahrenheit
+ * @returns The temperature in Fahrenheit
  */
 double Ohmbrewer::Temperature::f() const {
     return (c() * 1.8) + 32;
@@ -10,6 +11,7 @@ double Ohmbrewer::Temperature::f() const {
 
 /**
  * The temperature in Celsius
+ * @returns The temperature in Celsius
  */
 double Ohmbrewer::Temperature::c() const {
     return get();
@@ -17,6 +19,7 @@ double Ohmbrewer::Temperature::c() const {
 
 /**
  * The temperature in Celsius
+ * @returns The temperature in Celsius
  */
 double Ohmbrewer::Temperature::get() const {
     return _targetTemp;
@@ -57,6 +60,10 @@ Ohmbrewer::Temperature::Temperature(const double temp) {
     _targetTemp = temp;
 }
 
+/**
+ * Copy Constructor.
+ * @param copy The Temperature to copy
+ */
 Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
     _targetTemp = copy.c();
 }

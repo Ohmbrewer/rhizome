@@ -21,53 +21,66 @@ namespace Ohmbrewer {
              */
             typedef std::map <String, String> args_map_t;
 
+
             /**
              * The Equipment ID
+             * @returns The Sprout ID to use for this piece of Equipment
              */
             int getID() const;
             
             /**
              * The Equipment Type
+             * @returns The Equipment type name
              */
             const char* getType() const;
-            
+
             /**
              * The time at which the Equipment will stop operating.
+             * @returns The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              */
             int getStopTime() const;
-            
+
             /**
              * Sets the time at which the Equipment will stop operating.
+             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+             * @returns The time taken to run the method
              */
             const int setStopTime(const int stopTime);
-            
+
             /**
              * The Task the Equipment is currently working on.
+             * @returns The unique identifier of the task that the Equipment believes it should be processing
              */
             char* getCurrentTask() const;
-            
+
             /**
              * Sets the Task the Equipment is currently working on.
+             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             * @returns The time taken to run the method
              */
             const int setCurrentTask(char* currentTask);
-            
+
             /**
              * The Particle event stream to publish Equipment status updates to.
+             * @returns The Particle event stream the Equipment expects to publish to.
              */
             String getStream();
-            
+
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
+             * @returns The time taken to run the method
              */
             const int work();
-            
+
             /**
              * Draws information to the Rhizome's display.
+             * @returns The time taken to run the method
              */
             const int display();
-            
+
             /**
              * Publishes updates to Ohmbrewer, etc.
+             * @returns The time taken to run the method
              */
             const int update();
             
@@ -75,8 +88,28 @@ namespace Ohmbrewer {
              * Constructors
              */
             Equipment();
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Equipment
+             * @param pins The list of physical pins this Equipment is attached to
+             */
             Equipment(int id, int* pins);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Equipment
+             * @param pins The list of physical pins this Equipment is attached to
+             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             */
             Equipment(int id, int* pins, int stopTime, bool state, char* currentTask);
+
+            /**
+             * Copy Constructor
+             * @param clonee The Equipment object to copy
+             */
             Equipment(const Equipment& clonee);
             
             /**
@@ -88,11 +121,13 @@ namespace Ohmbrewer {
              * Overloaded << operator.
              */
             // friend std::ostream& operator<<( std::ostream& os, Equipment const& equipment);
-            
+
             /**
-             * Specifies the interface for arguments sent to this Equipment's associated function. 
+             * Specifies the interface for arguments sent to this Equipment's associated function.
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().
+             * @param argsStr The arguments supplied as an update to the Rhizome.
+             * @returns A map representing the key/value pairs for the update
              */
             static args_map_t parseArgs(const char* argsStr);
 

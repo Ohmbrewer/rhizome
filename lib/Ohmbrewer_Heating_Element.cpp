@@ -1,7 +1,8 @@
 #include "Ohmbrewer_Heating_Element.h"
 
 /**
- * The voltage at which the Heating Element runs..
+ * The voltage at which the Heating Element runs.
+ * @returns The current voltage setting
  */
 int Ohmbrewer::HeatingElement::getVoltage() const {
     return _voltage;
@@ -9,14 +10,20 @@ int Ohmbrewer::HeatingElement::getVoltage() const {
 
 /**
  * Sets the voltage at which the Heating Element runs.
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::HeatingElement::setVoltage(const int voltage) {
+    unsigned long start = millis();
+
     _voltage = voltage;
-    return 0;
+
+    return start - millis();
 }
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
     _voltage = 0;
@@ -25,25 +32,40 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins) : Ohmbrewer::Equipm
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
+                                          bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _voltage = 0;
     _type = "heat";
 }
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @param voltage The current voltage setting
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime, bool state, char* currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
+Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
+                                          bool state, char* currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _voltage = voltage;
     _type = "heat";
 }
 
 /**
  * Copy Constructor
+ * @param clonee The Equipment object to copy
  */
 Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
     _voltage = clonee.getVoltage();
+    _type = "heat";
 }
 
 /**
@@ -62,6 +84,8 @@ Ohmbrewer::HeatingElement::~HeatingElement() {
  * Specifies the interface for arguments sent to this Equipment's associated function. 
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
+ * @param argsStr The arguments supplied as an update to the Rhizome.
+ * @returns A map representing the key/value pairs for the update
  */
 Ohmbrewer::Equipment::args_map_t Ohmbrewer::HeatingElement::parseArgs(const char* argsStr) {
     // TODO: Implement HeatingElement::parseArgs
@@ -72,14 +96,20 @@ Ohmbrewer::Equipment::args_map_t Ohmbrewer::HeatingElement::parseArgs(const char
 
 /**
  * Sets the Equipment state. True => On, False => Off
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::HeatingElement::setState(const bool state) {
+    unsigned long start = millis();
+
     _state = state;
-    return 0;
+
+    return start - millis();
 }
 
 /**
- * The Equipment state. True => On, False => Off
+ * The Equipment state.
+ * @returns True => On, False => Off
  */
 bool Ohmbrewer::HeatingElement::getState() const {
     return _state;
@@ -87,6 +117,7 @@ bool Ohmbrewer::HeatingElement::getState() const {
 
 /**
  * True if the Equipment state is On.
+ * @returns Whether the Equipment is turned ON
  */
 bool Ohmbrewer::HeatingElement::isOn() const {
     return _state;
@@ -94,6 +125,7 @@ bool Ohmbrewer::HeatingElement::isOn() const {
 
 /**
  * True if the Equipment state is Off.
+ * @returns Whether the Equipment is turned OFF
  */
 bool Ohmbrewer::HeatingElement::isOff() const {
     return !_state;
@@ -102,6 +134,7 @@ bool Ohmbrewer::HeatingElement::isOff() const {
 /**
  * Performs the Equipment's current task. Expect to use this during loop().
  * This function is called by work().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::HeatingElement::doWork() {
     // TODO: Implement HeatingElement::doWork
@@ -111,6 +144,7 @@ int Ohmbrewer::HeatingElement::doWork() {
 /**
  * Draws information to the Rhizome's display.
  * This function is called by display().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::HeatingElement::doDisplay() {
     // TODO: Implement HeatingElement::doDisplay
@@ -120,6 +154,7 @@ int Ohmbrewer::HeatingElement::doDisplay() {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @returns The time taken to run the method
  */
 int Ohmbrewer::HeatingElement::doUpdate() {
     // TODO: Implement HeatingElement::doUpdate
@@ -129,6 +164,7 @@ int Ohmbrewer::HeatingElement::doUpdate() {
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
+ * @returns The list of physical pins that the Equipment is connected to.
  */
 int* Ohmbrewer::HeatingElement::whichPins() const {
     return _pins;

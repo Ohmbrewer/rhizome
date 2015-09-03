@@ -1,19 +1,21 @@
 #include "Ohmbrewer_Publisher.h"
 
 /**
- * The JSON representation of the provided keys and values
- * @returns String JSON string of the map provided to the Publisher instance
+ * The JSON representation of the provided keys and values.
+ * Expects all values to be Strings, so if you need nested objects or arrays
+ * you'll have to do the conversion yourself.
+ * @returns JSON string of the map provided to the Publisher instance
  */
 String Ohmbrewer::Publisher::toJSON() const {
     String returnVal = String("{");
 
-    for(publish_map_t::const_iterator itr = _todo.begin(); itr != _todo.end(); ++itr) {
+    for(publish_map_t::const_iterator itr = _data.begin(); itr != _data.end(); ++itr) {
         returnVal.concat(" \"");
         returnVal.concat(itr->first);
         returnVal.concat("\": \"");
         returnVal.concat(itr->second);
         returnVal.concat("\"");
-        if(itr->first != _todo.rbegin()->first) {
+        if(itr->first != _data.rbegin()->first) {
             returnVal.concat(",");
         }
     }
@@ -36,10 +38,12 @@ int Ohmbrewer::Publisher::publish() const {
 
 /**
  * Constructor
+ * @param stream The Particle cloud event stream to publish to
+ * @param data A map of data to publish as a JSON.
  */
-Ohmbrewer::Publisher::Publisher(const String stream, const publish_map_t &todo) {
+Ohmbrewer::Publisher::Publisher(const String stream, const publish_map_t &data) {
     _stream = stream;
-    _todo = todo;
+    _data = data;
 }
 
 /**

@@ -79,6 +79,7 @@ int Ohmbrewer::Equipment::getStopTime() const {
 /**
  * Sets the time at which the Equipment will stop operating.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
     unsigned long start = millis();
@@ -99,6 +100,7 @@ char* Ohmbrewer::Equipment::getCurrentTask() const {
 /**
  * Sets the Task the Equipment is currently working on.
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::setCurrentTask(char* currentTask) {
     unsigned long start = millis();
@@ -122,6 +124,7 @@ String Ohmbrewer::Equipment::getStream() {
 
 /**
  * Performs the Equipment's current task. Expect to use this during loop().
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::work() {
     return this->doWork();
@@ -129,6 +132,7 @@ const int Ohmbrewer::Equipment::work() {
 
 /**
  * Draws information to the Rhizome's display.
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::display() {
     return this->doDisplay();
@@ -136,6 +140,7 @@ const int Ohmbrewer::Equipment::display() {
 
 /**
  * Publishes updates to Ohmbrewer, etc.
+ * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::update() {
     return this->doUpdate();
