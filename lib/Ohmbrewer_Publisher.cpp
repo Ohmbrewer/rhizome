@@ -2,6 +2,7 @@
 
 /**
  * The JSON representation of the provided keys and values
+ * @returns String JSON string of the map provided to the Publisher instance
  */
 String Ohmbrewer::Publisher::toJSON() const {
     String returnVal = String("{");
@@ -23,7 +24,7 @@ String Ohmbrewer::Publisher::toJSON() const {
 
 /**
  * Where we actually publish the provided information
- * @returns Time taken to do the publishing
+ * @returns int Time taken to do the publishing
  */
 int Ohmbrewer::Publisher::publish() const {
     unsigned long start = millis();

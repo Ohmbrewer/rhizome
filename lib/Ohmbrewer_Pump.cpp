@@ -63,9 +63,10 @@ Ohmbrewer::Pump::~Pump() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  */
-char** Ohmbrewer::Pump::parseArgs(const char* argsStr) {
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::Pump::parseArgs(const char* argsStr) {
     // TODO: Implement Pump::parseArgs
-    char* placeholder[] = {"fixme"};
+    args_map_t placeholder;
+    placeholder[String("fixme")] = String("nonononononono");
     return placeholder;
 }
 

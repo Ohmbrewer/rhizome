@@ -65,9 +65,10 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  */
-char** Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const char* argsStr) {
     // TODO: Implement TemperatureSensor::parseArgs
-    char* placeholder[] = {"fixme"};
+    args_map_t placeholder;
+    placeholder[String("fixme")] = String("nonononononono");
     return placeholder;
 }
 

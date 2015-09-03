@@ -79,9 +79,10 @@ Ohmbrewer::RIMS::~RIMS() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  */
-char** Ohmbrewer::RIMS::parseArgs(const char* argsStr) {
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::RIMS::parseArgs(const char* argsStr) {
     // TODO: Implement RIMS::parseArgs
-    char* placeholder[] = {"fixme"};
+    args_map_t placeholder;
+    placeholder[String("fixme")] = String("nonononononono");
     return placeholder;
 }
 

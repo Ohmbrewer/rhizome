@@ -7,12 +7,20 @@
 #define OHMBREWER_RHIZOME_EQUIPMENT_H
     
 #include "application.h"
+#include <map>
 
 namespace Ohmbrewer {
 
     class Equipment {
       
         public:
+
+            /**
+             * A map of arguments provided via a Particle cloud function call,
+             * mapped to the appropriate Equipment members.
+             */
+            typedef std::map <String, String> args_map_t;
+
             /**
              * The Equipment ID
              */
@@ -86,7 +94,7 @@ namespace Ohmbrewer {
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().
              */
-            static char** parseArgs(const char* argsStr);
+            static args_map_t parseArgs(const char* argsStr);
 
             /*
              * Virtual Functions! All of these need to be defined in child classes! 

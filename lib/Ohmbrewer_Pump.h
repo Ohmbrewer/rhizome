@@ -49,7 +49,7 @@ namespace Ohmbrewer {
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().
              */
-            static char** parseArgs(const char* argsStr);
+            static args_map_t parseArgs(const char* argsStr);
 
             /*
              * Virtual Functions! All of these need to be defined in child classes! 

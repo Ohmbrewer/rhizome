@@ -13,6 +13,8 @@ Ohmbrewer::Equipment::Equipment() {
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Equipment::Equipment(int id, int* pins) {
     _id = id;
@@ -24,6 +26,11 @@ Ohmbrewer::Equipment::Equipment(int id, int* pins) {
 
 /**
  * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::Equipment::Equipment(int id, int* pins, int stopTime, bool state, char* currentTask) {
     _id = id;
@@ -35,6 +42,7 @@ Ohmbrewer::Equipment::Equipment(int id, int* pins, int stopTime, bool state, cha
 
 /**
  * Copy Constructor
+ * @param clonee The Equipment object to copy
  */
 Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
     _id = clonee.getID();
@@ -46,6 +54,7 @@ Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
 
 /**
  * The Equipment ID
+ * @returns The Sprout ID to use for this piece of Equipment
  */
 int Ohmbrewer::Equipment::getID() const {
     return _id;
@@ -53,6 +62,7 @@ int Ohmbrewer::Equipment::getID() const {
 
 /**
  * The Equipment Type
+ * @returns The Equipment type name
  */
 const char* Ohmbrewer::Equipment::getType() const {
     return _type;
@@ -60,6 +70,7 @@ const char* Ohmbrewer::Equipment::getType() const {
 
 /**
  * The time at which the Equipment will stop operating.
+ * @returns The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  */
 int Ohmbrewer::Equipment::getStopTime() const {
     return _stopTime;
@@ -67,6 +78,7 @@ int Ohmbrewer::Equipment::getStopTime() const {
 
 /**
  * Sets the time at which the Equipment will stop operating.
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  */
 const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
     unsigned long start = millis();
@@ -78,6 +90,7 @@ const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
 
 /**
  * The Task the Equipment is currently working on.
+ * @returns The unique identifier of the task that the Equipment believes it should be processing
  */
 char* Ohmbrewer::Equipment::getCurrentTask() const {
     return _currentTask;
@@ -85,6 +98,7 @@ char* Ohmbrewer::Equipment::getCurrentTask() const {
 
 /**
  * Sets the Task the Equipment is currently working on.
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 const int Ohmbrewer::Equipment::setCurrentTask(char* currentTask) {
     unsigned long start = millis();
@@ -96,6 +110,7 @@ const int Ohmbrewer::Equipment::setCurrentTask(char* currentTask) {
 
 /**
  * The Particle event stream to publish Equipment status updates to.
+ * @returns The Particle event stream the Equipment expects to publish to.
  */
 String Ohmbrewer::Equipment::getStream() {
     String stream = String("/");
@@ -159,9 +174,12 @@ Ohmbrewer::Equipment::~Equipment() {
  * Specifies the interface for arguments sent to this Equipment's associated function. 
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
+ * @param argsStr The arguments supplied as an update to the Rhizome.
+ * @returns A map representing the key/value pairs for the update
  */
-char** Ohmbrewer::Equipment::parseArgs(const char* argsStr) {
-    char* placeholder[] = {"fixme"};
+Ohmbrewer::Equipment::args_map_t Ohmbrewer::Equipment::parseArgs(const char* argsStr) {
+    args_map_t placeholder;
+    placeholder[String("fixme")] = String("nonononononono");
     return placeholder;
 }
 
