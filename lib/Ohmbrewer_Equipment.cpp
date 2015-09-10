@@ -7,7 +7,6 @@ Ohmbrewer::Equipment::Equipment() {
     _id = 0;
     _stopTime = 0;
     _state = false;
-    _currentTask = "";
     _pins = new std::list<int>;
 }
 
@@ -21,7 +20,6 @@ Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins) {
     _pins = pins;
     _stopTime = 0;
     _state = false;
-    _currentTask = "";
 }
 
 /**
@@ -32,12 +30,11 @@ Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins) {
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask) {
+Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins, int stopTime, bool state, String currentTask) {
     _id = id;
     _pins = pins;
     _stopTime = stopTime;
     _state = state;
-    _currentTask = currentTask;
 }
 
 /**
@@ -93,7 +90,7 @@ const int Ohmbrewer::Equipment::setStopTime(const int stopTime) {
  * The Task the Equipment is currently working on.
  * @returns The unique identifier of the task that the Equipment believes it should be processing
  */
-char* Ohmbrewer::Equipment::getCurrentTask() const {
+String Ohmbrewer::Equipment::getCurrentTask() const {
     return _currentTask;
 }
 
@@ -102,7 +99,7 @@ char* Ohmbrewer::Equipment::getCurrentTask() const {
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::Equipment::setCurrentTask(char* currentTask) {
+const int Ohmbrewer::Equipment::setCurrentTask(String currentTask) {
     unsigned long start = millis();
     
     _currentTask = currentTask;

@@ -15,22 +15,22 @@
 /*  Global Vars                                                              */
 /* ========================================================================= */
 
+/**
+ * Each Sprout is a logical collection of physical pins/relays that are connected
+ * to a single piece of Equipment.
+ */
 std::list< Ohmbrewer::Equipment* > sprouts;
 
-// index is related to Digital pin number, 0 to 0, 1 to 1...etc. 0 and 1 are the temp pins.
-int relays[6] = {0,0,0,0,0,0};
+/**
+ * This is simply a map of which pins are currently accounted for. We'll want to
+ * update it within the Sprout management functions.
+ */
+int inUse[6] = {0,0,0,0,0,0};
 
-//temp variable definitions
-int sensor_dig = D1;
-int sensor_analog = D0;
-char temperatureInfo[64];
-float fahrenheit = 156;
-float celsius = 68.8889;
-double f;
-double target_temp_1 = 100; //0;
-double target_temp_2 = 0;
-
-// Set the screen object
+/**
+ * The touchscreen object. Handles the display for the Rhizome.
+ * TODO: Swap out the default Adafruit_ILI9341 class for the touchscreen with a subclass that includes our display routines.
+ */
 Adafruit_ILI9341 tft = Adafruit_ILI9341(D6, D7, A6);
 
 /* ========================================================================= */
@@ -50,17 +50,22 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(D6, D7, A6);
  * Does any preliminary setup work before the Rhizome starts the operation loop.
  */
 void setup() {
-    // Add our initial Equipment
+    String fakeTask = "fake";
+
+    // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
+    // We'll also set some temperatures and relay values explicitly when we probably wouldn't.
     sprouts.push_back(new Ohmbrewer::TemperatureSensor( 1, new std::list<int>(1,0) ));
+    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
+
     sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
-    sprouts.push_back(new Ohmbrewer::Pump( 1, new std::list<int>(1,2) ));
+    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(1337);
+
+    sprouts.push_back(new Ohmbrewer::Pump( 1, new std::list<int>(1,2), 0, true, fakeTask ));
     sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,3) ));
     sprouts.push_back(new Ohmbrewer::HeatingElement( 1, new std::list<int>(1,4) ));
-    sprouts.push_back(new Ohmbrewer::HeatingElement( 2, new std::list<int>(1,5) ));
+    sprouts.push_back(new Ohmbrewer::HeatingElement( 2, new std::list<int>(1,5), 0, true, fakeTask ));
 
     initScreen();
-    Spark.variable("temp", temperatureInfo, STRING);
-    Spark.variable("f", &f, DOUBLE);
 }
 
 /**
@@ -148,7 +153,7 @@ unsigned long refreshDisplay() {
     displayHeader();
 
     // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(). We won't be calling it like this explicitly.
-    displayTemps(((Ohmbrewer::TemperatureSensor*)sprouts.front())->getTemp()->c(), target_temp_1);
+    displayTemps(((Ohmbrewer::TemperatureSensor*)sprouts.front())->getTemp()->c(), 100.00);
 
     displayRelays();
 
@@ -164,34 +169,51 @@ unsigned long refreshDisplay() {
  */
 unsigned long displayRelays() {
     unsigned long start = micros();
-    char relay_id[2];
+    unsigned int count = 0;
 
     tft.println("====== Relays ======");
-    for(int x=2; x<6; x++){
-
-        // Print a fancy identifier
-        tft.print(" [");
-        tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-
-        sprintf(relay_id,"%d", x-1);
-        tft.print(relay_id);
-
-        tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
-        tft.print("]:");
-
-        // Print the conditional status
-        if (relays[x]){
-            tft.setTextColor(ILI9341_YELLOW, ILI9341_BLACK);
-            tft.println(" ON ");
-
-        } else {
-            tft.setTextColor(ILI9341_RED, ILI9341_BLACK);
-            tft.println(" OFF");
+    for (std::list<Ohmbrewer::Equipment*>::iterator itr = sprouts.begin(); itr != sprouts.end(); itr++) {
+        if (count > 1) {
+            // We'll ignore the TemperatureSensors here.
+            displayRelay(count, (*itr)->getState());
         }
-
-        // Always reset to green
-        tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
+        count++;
     }
+
+    return micros() - start;
+}
+
+/**
+ * Prints the status information for a given relay onto the touchscreen
+ * @param x The relay to display, 0-based
+ * @param state The state of the relay
+ * @returns Time it took to run the function
+ */
+unsigned long displayRelay(int x, bool state) {
+    unsigned long start = micros();
+    char relay_id[2];
+
+    // Print a fancy identifier
+    tft.print(" [");
+    tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
+
+    sprintf(relay_id,"%d", x-1);
+    tft.print(relay_id);
+
+    tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
+    tft.print("]:");
+
+    if (state){
+        tft.setTextColor(ILI9341_YELLOW, ILI9341_BLACK);
+        tft.println(" ON ");
+
+    } else {
+        tft.setTextColor(ILI9341_RED, ILI9341_BLACK);
+        tft.println(" OFF");
+    }
+
+    // Always reset to green
+    tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
 
     return micros() - start;
 }
@@ -202,11 +224,11 @@ unsigned long displayRelays() {
  */
 unsigned long displayTemps(double current, double target) {
     unsigned long start = micros();
-    char probe_1 [24];
-    char target_1 [24];
+    char probeStr [24];
+    char targetStr [24];
 
-    sprintf(probe_1, "%2.2f", current);
-    sprintf(target_1, "%2.2f", target);
+    sprintf(probeStr, "%2.2f", current);
+    sprintf(targetStr, "%2.2f", target);
 
     tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
     tft.setTextSize(2);
@@ -217,20 +239,20 @@ unsigned long displayTemps(double current, double target) {
 
     // Print out the current temp
     tft.print(" Current: ");
-    if(celsius > target_temp_1) {
+    if(current > target) {
         tft.setTextColor(ILI9341_RED, ILI9341_BLACK);
-    } else if(celsius < target_temp_1) {
+    } else if(current < target) {
         tft.setTextColor(ILI9341_BLUE, ILI9341_BLACK);
     } else {
         tft.setTextColor(ILI9341_YELLOW, ILI9341_BLACK);
     }
-    tft.println(probe_1);
+    tft.println(probeStr);
 
     // Print out the target temp
     tft.setTextColor(ILI9341_GREEN);
     tft.print(" Target:  ");
     tft.setTextColor(ILI9341_YELLOW, ILI9341_BLACK);
-    tft.println(target_1);
+    tft.println(targetStr);
 
     // Reset to green
     tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);

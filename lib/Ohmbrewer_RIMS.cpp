@@ -47,7 +47,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
-                      bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                      bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
     std::list<int>* fakePins = new std::list<int>(1,-1);
     _tube = new Thermostat(1, fakePins);
@@ -66,7 +66,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
  * @param targetTemp The new target temperature in Celsius
  */
 Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
-                      bool state, char* currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                      bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
     std::list<int>* fakePins = new std::list<int>(1,-1);
     _tube = new Thermostat(1, fakePins, targetTemp);

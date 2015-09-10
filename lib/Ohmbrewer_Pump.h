@@ -48,7 +48,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Pump(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask);
+            Pump(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
@@ -59,7 +59,7 @@ namespace Ohmbrewer {
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @param speed The new pump speed
              */
-            Pump(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask, int speed);
+            Pump(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, int speed);
 
             /**
              * Copy Constructor

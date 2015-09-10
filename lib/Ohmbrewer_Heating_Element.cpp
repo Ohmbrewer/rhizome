@@ -39,7 +39,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
-                                          bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                                          bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _voltage = 0;
     _type = "heat";
 }
@@ -54,7 +54,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  * @param voltage The current voltage setting
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
-                                          bool state, char* currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
+                                          bool state, String currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _voltage = voltage;
     _type = "heat";
 }

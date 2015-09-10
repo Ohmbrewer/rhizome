@@ -75,7 +75,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
-                                  bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                                  bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
     std::list<int>* fakePins = new std::list<int>(1,-1);
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
@@ -94,7 +94,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
  * @param targetTemp The new target temperature in Celsius
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
-                                  bool state, char* currentTask,
+                                  bool state, String currentTask,
                                   const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
     std::list<int>* fakePins = new std::list<int>(1,-1);

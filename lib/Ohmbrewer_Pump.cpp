@@ -36,7 +36,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
-                      bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                      bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _speed = 0;
     _type = "pump";
 }
@@ -51,7 +51,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  * @param speed The new pump speed
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
-                      bool state, char* currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
+                      bool state, String currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _speed = speed;
     _type = "pump";
 }

@@ -55,7 +55,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask);
+            TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor

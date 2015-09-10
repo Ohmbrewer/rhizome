@@ -56,14 +56,14 @@ namespace Ohmbrewer {
              * The Task the Equipment is currently working on.
              * @returns The unique identifier of the task that the Equipment believes it should be processing
              */
-            char* getCurrentTask() const;
+            String getCurrentTask() const;
 
             /**
              * Sets the Task the Equipment is currently working on.
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @returns The time taken to run the method
              */
-            const int setCurrentTask(char* currentTask);
+            const int setCurrentTask(String currentTask);
 
             /**
              * The Particle event stream to publish Equipment status updates to.
@@ -109,7 +109,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Equipment(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask);
+            Equipment(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -190,7 +190,7 @@ namespace Ohmbrewer {
             /**
              * The Task the Equipment is currently processing.
              */
-            char*          _currentTask;
+            String          _currentTask;
 
         private:
             /**
