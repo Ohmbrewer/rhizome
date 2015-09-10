@@ -5,9 +5,12 @@
 
 #ifndef OHMBREWER_RHIZOME_EQUIPMENT_H
 #define OHMBREWER_RHIZOME_EQUIPMENT_H
-    
-#include "application.h"
+
+#undef min
+#undef max
+#undef swap
 #include <map>
+#include "application.h"
 
 namespace Ohmbrewer {
 

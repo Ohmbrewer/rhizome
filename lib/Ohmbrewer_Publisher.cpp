@@ -31,7 +31,7 @@ String Ohmbrewer::Publisher::toJSON() const {
 int Ohmbrewer::Publisher::publish() const {
     unsigned long start = millis();
 
-    Particle.publish(_stream, this->toJSON(), 30, PRIVATE);
+    Spark.publish(_stream, this->toJSON(), 30, PRIVATE);
 
     return start - millis();
 }

@@ -18,7 +18,13 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_RIMS.h
     ../lib/Ohmbrewer_RIMS.cpp
     ../lib/Ohmbrewer_Publisher.h
-    ../lib/Ohmbrewer_Publisher.cpp)
+    ../lib/Ohmbrewer_Publisher.cpp
+    ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.h
+    ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.cpp
+    ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.h
+    ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.cpp
+    ../../Adafruit_mfGFX_IDE/firmware/fonts.h
+    ../../Adafruit_mfGFX_IDE/firmware/fonts.cpp)
 
 if(DEVICE_TYPE)
     # You can specify which device to compile for, if desired...

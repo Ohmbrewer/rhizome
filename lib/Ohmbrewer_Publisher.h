@@ -6,6 +6,9 @@
 #ifndef OHMBREWER_PUBLISHER_H
 #define OHMBREWER_PUBLISHER_H
 
+#undef min
+#undef max
+#undef swap
 #include <map>
 #include "application.h"
 
