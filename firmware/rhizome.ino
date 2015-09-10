@@ -1,10 +1,21 @@
 #include "Adafruit_ILI9341.h"
+#include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Pump.h"
+#include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Publisher.h"
+
+// Kludge to allow us to use std::map - for now we have to undefine these macros.
+#undef min
+#undef max
+#undef swap
+#include <list>
 
 /* ========================================================================= */
 /*  Global Vars                                                              */
 /* ========================================================================= */
+
+std::list< Ohmbrewer::Equipment* > sprouts;
 
 // index is related to Digital pin number, 0 to 0, 1 to 1...etc. 0 and 1 are the temp pins.
 int relays[6] = {0,0,0,0,0,0};
@@ -39,6 +50,14 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(D6, D7, A6);
  * Does any preliminary setup work before the Rhizome starts the operation loop.
  */
 void setup() {
+    // Add our initial Equipment
+    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 1, new std::list<int>(1,0) ));
+    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
+    sprouts.push_back(new Ohmbrewer::Pump( 1, new std::list<int>(1,2) ));
+    sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,3) ));
+    sprouts.push_back(new Ohmbrewer::HeatingElement( 1, new std::list<int>(1,4) ));
+    sprouts.push_back(new Ohmbrewer::HeatingElement( 2, new std::list<int>(1,5) ));
+
     initScreen();
     Spark.variable("temp", temperatureInfo, STRING);
     Spark.variable("f", &f, DOUBLE);
@@ -127,7 +146,10 @@ unsigned long refreshDisplay() {
     unsigned long start = micros();
 
     displayHeader();
-    displayTemps();
+
+    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(). We won't be calling it like this explicitly.
+    displayTemps(((Ohmbrewer::TemperatureSensor*)sprouts.front())->getTemp()->c(), target_temp_1);
+
     displayRelays();
 
     // 500 seems like a good refresh delay
@@ -178,13 +200,13 @@ unsigned long displayRelays() {
  * Prints the temperature information for our sensors onto the touchscreen
  * @returns Time it took to run the function
  */
-unsigned long displayTemps() {
+unsigned long displayTemps(double current, double target) {
     unsigned long start = micros();
     char probe_1 [24];
     char target_1 [24];
 
-    sprintf(probe_1,"%2.2f",celsius);
-    sprintf(target_1,"%2.2f",target_temp_1);
+    sprintf(probe_1, "%2.2f", current);
+    sprintf(target_1, "%2.2f", target);
 
     tft.setTextColor(ILI9341_GREEN, ILI9341_BLACK);
     tft.setTextSize(2);

@@ -25,7 +25,7 @@ const int Ohmbrewer::HeatingElement::setVoltage(const int voltage) {
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _voltage = 0;
     _type = "heat";
 }
@@ -38,7 +38,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins) : Ohmbrewer::Equipm
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _voltage = 0;
     _type = "heat";
@@ -53,7 +53,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param voltage The current voltage setting
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, char* currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _voltage = voltage;
     _type = "heat";
@@ -63,7 +63,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, int* pins, int stopTime,
  * Copy Constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment(clonee) {
     _voltage = clonee.getVoltage();
     _type = "heat";
 }
@@ -184,7 +184,7 @@ int Ohmbrewer::HeatingElement::doUpdate() {
  * Equipment, forming a logical Sprout.
  * @returns The list of physical pins that the Equipment is connected to.
  */
-int* Ohmbrewer::HeatingElement::whichPins() const {
+std::list<int>* Ohmbrewer::HeatingElement::whichPins() const {
     return _pins;
 }
 

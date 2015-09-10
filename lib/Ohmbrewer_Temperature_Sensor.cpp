@@ -30,7 +30,7 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
@@ -44,7 +44,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins) : Ohmbrewer::
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
@@ -54,7 +54,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int* pins, int stopTime,
  * Copy Constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
     _type = "temp";
@@ -155,7 +155,7 @@ int Ohmbrewer::TemperatureSensor::doUpdate() {
  * Equipment, forming a logical Sprout.
  * @returns The list of physical pins that the Equipment is connected to.
  */
-int* Ohmbrewer::TemperatureSensor::whichPins() const {
+std::list<int>* Ohmbrewer::TemperatureSensor::whichPins() const {
     return _pins;
 }
 

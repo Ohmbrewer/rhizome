@@ -6,10 +6,12 @@
 #ifndef OHMBREWER_RHIZOME_EQUIPMENT_H
 #define OHMBREWER_RHIZOME_EQUIPMENT_H
 
+// Kludge to allow us to use std::map and std::list - for now we have to undefine these macros.
 #undef min
 #undef max
 #undef swap
 #include <map>
+#include <list>
 #include "application.h"
 
 namespace Ohmbrewer {
@@ -97,7 +99,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
              */
-            Equipment(int id, int* pins);
+            Equipment(int id, std::list<int>* pins);
 
             /**
              * Constructor
@@ -107,7 +109,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Equipment(int id, int* pins, int stopTime, bool state, char* currentTask);
+            Equipment(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask);
 
             /**
              * Copy Constructor
@@ -141,79 +143,79 @@ namespace Ohmbrewer {
             /**
              * Sets the Equipment state. True => On, False => Off
              */
-            virtual const int setState(const bool);
+            virtual const int setState(const bool) = 0;
         
             /**
              * The Equipment state. True => On, False => Off
              */
-            virtual bool getState() const;
+            virtual bool getState() const = 0;
             
             /**
              * True if the Equipment state is On.
              */
-            virtual bool isOn() const;
+            virtual bool isOn() const = 0;
             
             /**
              * True if the Equipment state is Off.
              */
-            virtual bool isOff() const;
+            virtual bool isOff() const = 0;
 
         protected:
             /**
              * Equipment ID
              */
-            int         _id;
+            int            _id;
 
             /**
              * Equipment Type
              */
-            const char* _type;
+            const char*    _type;
 
             /**
              * Designated Stop Time
              */
-            int         _stopTime;
+            int            _stopTime;
 
             /**
              * State (True => On, False => Off)
              */
-            bool        _state;
+            bool           _state;
 
             /**
              * Which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
              */
-            int*        _pins;
+            std::list<int>* _pins;
 
             /**
              * The Task the Equipment is currently processing.
              */
-            char*       _currentTask;
+            char*          _currentTask;
 
         private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().
              */
-            virtual int doWork();
+            virtual int doWork() = 0;
             
             /**
              * Draws information to the Rhizome's display.
              * This function is called by display().
              */
-            virtual int doDisplay();
+            virtual int doDisplay() = 0;
             
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
              */
-            virtual int doUpdate();
+            virtual int doUpdate() = 0;
             
             /**
              * Reports which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
              */
-            virtual int* whichPins() const;
+            virtual std::list<int>* whichPins() const = 0;
     };
 };
 

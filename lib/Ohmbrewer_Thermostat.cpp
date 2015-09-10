@@ -42,9 +42,9 @@ Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
@@ -57,9 +57,9 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins) : Ohmbrewer::Equipment(id, 
  * @param pins The list of physical pins this Equipment is attached to
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int* pins, const double targetTemp) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double targetTemp) : Ohmbrewer::Equipment(id, pins) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
@@ -74,10 +74,10 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, const double targetTemp) : 
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
                                   bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
@@ -93,11 +93,11 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
                                   bool state, char* currentTask,
                                   const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
@@ -108,7 +108,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int* pins, int stopTime,
  * Copy Constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrewer::Equipment(clonee) {
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
@@ -217,9 +217,9 @@ int Ohmbrewer::Thermostat::doUpdate() {
  * Equipment, forming a logical Sprout.
  * @returns The list of physical pins that the Equipment is connected to.
  */
-int* Ohmbrewer::Thermostat::whichPins() const {
+std::list<int>* Ohmbrewer::Thermostat::whichPins() const {
     // TODO: Implement Thermostat::whichPins
     //return {&_pins, &getElement(), &getSensor()};
-    return NULL;
+    return _pins;
 }
 

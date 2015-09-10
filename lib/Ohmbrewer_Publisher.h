@@ -6,6 +6,7 @@
 #ifndef OHMBREWER_PUBLISHER_H
 #define OHMBREWER_PUBLISHER_H
 
+// Kludge to allow us to use std::map - for now we have to undefine these macros.
 #undef min
 #undef max
 #undef swap

@@ -5,7 +5,12 @@
 
 #ifndef OHMBREWER_RHIZOME_TEMPERATURE_SENSOR_H
 #define OHMBREWER_RHIZOME_TEMPERATURE_SENSOR_H
-    
+
+// Kludge to allow us to use std::list - for now we have to undefine these macros.
+#undef min
+#undef max
+#undef swap
+#include <list>
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
@@ -40,7 +45,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
              */
-            TemperatureSensor(int id, int* pins);
+            TemperatureSensor(int id, std::list<int>* pins);
 
             /**
              * Constructor
@@ -50,7 +55,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            TemperatureSensor(int id, int* pins, int stopTime, bool state, char* currentTask);
+            TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask);
 
             /**
              * Copy Constructor
@@ -139,7 +144,7 @@ namespace Ohmbrewer {
              * Equipment, forming a logical Sprout.
              * @returns The list of physical pins that the Equipment is connected to.
              */
-            int* whichPins() const;
+            std::list<int>* whichPins() const;
     };
 };
 

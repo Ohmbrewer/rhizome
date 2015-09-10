@@ -22,7 +22,7 @@ const int Ohmbrewer::Pump::setSpeed(const int speed) {
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::Pump::Pump(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _speed = 0;
     _type = "pump";
 }
@@ -35,7 +35,7 @@ Ohmbrewer::Pump::Pump(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime,
+Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _speed = 0;
     _type = "pump";
@@ -50,7 +50,7 @@ Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime,
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param speed The new pump speed
  */
-Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime,
+Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, char* currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _speed = speed;
     _type = "pump";
@@ -60,7 +60,7 @@ Ohmbrewer::Pump::Pump(int id, int* pins, int stopTime,
  * Copy Constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Equipment(clonee) {
     _speed = clonee.getSpeed();
     _type = "pump";
 }
@@ -186,7 +186,7 @@ int Ohmbrewer::Pump::doUpdate() {
  * Equipment, forming a logical Sprout.
  * @returns The list of physical pins that the Equipment is connected to.
  */
-int* Ohmbrewer::Pump::whichPins() const {
+std::list<int>* Ohmbrewer::Pump::whichPins() const {
     return _pins;
 }
 

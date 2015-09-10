@@ -5,10 +5,10 @@
  */
 Ohmbrewer::Equipment::Equipment() {
     _id = 0;
-    _pins = NULL;
     _stopTime = 0;
     _state = false;
     _currentTask = "";
+    _pins = new std::list<int>;
 }
 
 /**
@@ -16,7 +16,7 @@ Ohmbrewer::Equipment::Equipment() {
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::Equipment::Equipment(int id, int* pins) {
+Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins) {
     _id = id;
     _pins = pins;
     _stopTime = 0;
@@ -32,7 +32,7 @@ Ohmbrewer::Equipment::Equipment(int id, int* pins) {
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Equipment::Equipment(int id, int* pins, int stopTime, bool state, char* currentTask) {
+Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins, int stopTime, bool state, char* currentTask) {
     _id = id;
     _pins = pins;
     _stopTime = stopTime;
@@ -150,7 +150,7 @@ const int Ohmbrewer::Equipment::update() {
  * Destructor
  */
 Ohmbrewer::Equipment::~Equipment() {
-    // Nothing to do here.
+    delete _pins;
 }
 
 /**

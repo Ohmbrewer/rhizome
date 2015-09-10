@@ -29,9 +29,9 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::RIMS::RIMS(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
@@ -46,10 +46,10 @@ Ohmbrewer::RIMS::RIMS(int id, int* pins) : Ohmbrewer::Equipment(id, pins) {
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
                       bool state, char* currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
@@ -65,10 +65,10 @@ Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
                       bool state, char* currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     // TODO: Figure out how to properly set the components of the RIMS the constructors
-    int fakePins[2] = {1,2};
+    std::list<int>* fakePins = new std::list<int>(1,-1);
     _tube = new Thermostat(1, fakePins, targetTemp);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
@@ -79,7 +79,7 @@ Ohmbrewer::RIMS::RIMS(int id, int* pins, int stopTime,
  * Copy constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment((Equipment)clonee) {
+Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
     _tube = clonee.getTube();
     _tunSensor = clonee.getTunSensor();
     _recirc = clonee.getRecirculator();
@@ -189,9 +189,9 @@ int Ohmbrewer::RIMS::doUpdate() {
  * Equipment, forming a logical Sprout.
  * @returns The list of physical pins that the Equipment is connected to.
  */
-int* Ohmbrewer::RIMS::whichPins() const {
+std::list<int>* Ohmbrewer::RIMS::whichPins() const {
     // TODO: Implement RIMS::whichPins
     //return {&_pins, &getTube()->whichPins(), &getTunSensor()->whichPins(), &getRecirculator()->whichPins()};
-    return NULL;
+    return _pins;
 }
 
