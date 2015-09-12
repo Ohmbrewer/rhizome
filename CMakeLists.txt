@@ -24,7 +24,9 @@ set(SOURCE_FILES
     ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.h
     ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.cpp
     ../../Adafruit_mfGFX_IDE/firmware/fonts.h
-    ../../Adafruit_mfGFX_IDE/firmware/fonts.cpp)
+    ../../Adafruit_mfGFX_IDE/firmware/fonts.cpp
+    ../lib/Ohmbrewer_Screen.h
+    ../lib/Ohmbrewer_Screen.cpp)
 
 if(DEVICE_TYPE)
     # You can specify which device to compile for, if desired...
