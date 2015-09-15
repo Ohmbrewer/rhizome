@@ -1,5 +1,5 @@
 /**
- * This library provides the Equipment base class the Rhizome PID/equipment controller.
+ * This library provides the Heating Element class for the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
@@ -11,12 +11,12 @@
 #undef max
 #undef swap
 #include <list>
-#include "Ohmbrewer_Equipment.h"
+#include "Ohmbrewer_Relay.h"
 #include "application.h"
 
 namespace Ohmbrewer {
 
-    class HeatingElement : public Equipment {
+    class HeatingElement : public Relay {
       
         public:
 
@@ -53,40 +53,6 @@ namespace Ohmbrewer {
              */
             // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
-            /**
-             * Specifies the interface for arguments sent to this Equipment's associated function.
-             * Parses the supplied string into an array of strings for setting the Equipment's values.
-             * Most likely will be called during update().
-             * @param argsStr The arguments supplied as an update to the Rhizome.
-             * @returns A map representing the key/value pairs for the update
-             */
-            static args_map_t parseArgs(const String argsStr);
-
-            /**
-             * Sets the Equipment state. True => On, False => Off
-             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
-             * @returns The time taken to run the method
-             */
-            const int setState(const bool);
-
-            /**
-             * The Equipment state.
-             * @returns True => On, False => Off
-             */
-            bool getState() const;
-
-            /**
-             * True if the Equipment state is On.
-             * @returns Whether the Equipment is turned ON
-             */
-            bool isOn() const;
-
-            /**
-             * True if the Equipment state is Off.
-             * @returns Whether the Equipment is turned OFF
-             */
-            bool isOff() const;
-
         private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
@@ -109,12 +75,6 @@ namespace Ohmbrewer {
              */
             int doUpdate();
 
-            /**
-             * Reports which of the Rhizome's pins are occupied by the
-             * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the Equipment is connected to.
-             */
-            std::list<int>* whichPins() const;
     };
 };
 

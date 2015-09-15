@@ -5,7 +5,7 @@
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
     _type = "heat";
 }
 
@@ -18,7 +18,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
-                                          bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+                                          bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
     _type = "heat";
 }
 
@@ -26,7 +26,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  * Copy Constructor
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment(clonee) {
+Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
     _type = "heat";
 }
@@ -42,73 +42,6 @@ Ohmbrewer::HeatingElement::~HeatingElement() {
  * Overloaded << operator.
  */
 // friend std::ostream& operator<<( std::ostream& os, HeatingElement const& HeatingElement);
-
-/**
- * Specifies the interface for arguments sent to this Equipment's associated function. 
- * Parses the supplied string into an array of strings for setting the Equipment's values.
- * Most likely will be called during update().
- * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
- */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::HeatingElement::parseArgs(const String argsStr) {
-    args_map_t result;
-    char* params = new char[argsStr.length() + 1];
-    strcpy(params, argsStr.c_str());
-
-    // Parse the parameters
-    String id          = String(strtok(params, ","));
-    String currentTask = String(strtok(params, ","));
-    String state       = String(strtok(NULL, ","));
-    String stopTime    = String(strtok(NULL, ","));
-
-    // Save them to the map
-    result[String("id")] = id;
-    result[String("current_task")] = currentTask;
-    result[String("state")] = state;
-    result[String("stopTime")] = stopTime;
-
-    // Clear out that dynamically allocated buffer
-    delete params;
-
-    return result;
-}
-
-/**
- * Sets the Equipment state. True => On, False => Off
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @returns The time taken to run the method
- */
-const int Ohmbrewer::HeatingElement::setState(const bool state) {
-    unsigned long start = millis();
-
-    _state = state;
-
-    return start - millis();
-}
-
-/**
- * The Equipment state.
- * @returns True => On, False => Off
- */
-bool Ohmbrewer::HeatingElement::getState() const {
-    return _state;
-}
-
-/**
- * True if the Equipment state is On.
- * @returns Whether the Equipment is turned ON
- */
-bool Ohmbrewer::HeatingElement::isOn() const {
-    return _state;
-}
-
-/**
- * True if the Equipment state is Off.
- * @returns Whether the Equipment is turned OFF
- */
-bool Ohmbrewer::HeatingElement::isOff() const {
-    return !_state;
-}
 
 /**
  * Performs the Equipment's current task. Expect to use this during loop().
@@ -138,14 +71,5 @@ int Ohmbrewer::HeatingElement::doDisplay() {
 int Ohmbrewer::HeatingElement::doUpdate() {
     // TODO: Implement HeatingElement::doUpdate
     return -1;
-}
-
-/**
- * Reports which of the Rhizome's pins are occupied by the
- * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the Equipment is connected to.
- */
-std::list<int>* Ohmbrewer::HeatingElement::whichPins() const {
-    return _pins;
 }
 

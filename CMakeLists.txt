@@ -5,6 +5,8 @@ set(SOURCE_FILES
     ../firmware/rhizome.ino
     ../lib/Ohmbrewer_Equipment.h
     ../lib/Ohmbrewer_Equipment.cpp
+    ../lib/Ohmbrewer_Relay.h
+    ../lib/Ohmbrewer_Relay.cpp
     ../lib/Ohmbrewer_Heating_Element.h
     ../lib/Ohmbrewer_Heating_Element.cpp
     ../lib/Ohmbrewer_Pump.h

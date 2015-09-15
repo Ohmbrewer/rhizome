@@ -32,6 +32,8 @@ int inUse[6] = {0,0,0,0,0,0};
  */
 Ohmbrewer::Screen tft = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
 
+unsigned long lastUpdate = millis();
+
 /* ========================================================================= */
 /*  Main Functions                                                           */
 /* ========================================================================= */
@@ -61,5 +63,10 @@ void setup() {
  * The meat of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
+    if((millis() - lastUpdate) > 10000) {
+        // Toggle the last relay every 10 seconds
+        sprouts.back()->setState(sprouts.back()->isOff());
+        lastUpdate = millis();
+    }
     tft.refreshDisplay();
 }
