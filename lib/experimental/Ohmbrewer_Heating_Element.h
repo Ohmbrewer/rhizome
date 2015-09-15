@@ -1,10 +1,14 @@
+/*
+ * FIXME: Convert this to VariableHeatingElement
+ */
+
 /**
  * This library provides the Equipment base class the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
-#ifndef OHMBREWER_RHIZOME_PUMP_H
-#define OHMBREWER_RHIZOME_PUMP_H
+#ifndef OHMBREWER_RHIZOME_HEATING_ELM_H
+#define OHMBREWER_RHIZOME_HEATING_ELM_H
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
 #undef min
@@ -16,16 +20,28 @@
 
 namespace Ohmbrewer {
 
-    class Pump : public Equipment {
+    class HeatingElement : public Equipment {
       
         public:
+
+            /**
+             * The voltage at which the Heating Element runs.
+             * @returns The current voltage setting
+             */
+            int getVoltage() const;
+
+            /**
+             * Sets the voltage at which the Heating Element runs.
+             * @returns The time taken to run the method
+             */
+            const int setVoltage(const int speed);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
              */
-            Pump(int id, std::list<int>* pins);
+            HeatingElement(int id, std::list<int>* pins);
 
             /**
              * Constructor
@@ -35,18 +51,29 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Pump(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            HeatingElement(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Equipment
+             * @param pins The list of physical pins this Equipment is attached to
+             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             * @param voltage The current voltage setting
+             */
+            HeatingElement(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, int voltage);
 
             /**
              * Copy Constructor
              * @param clonee The Equipment object to copy
              */
-            Pump(const Pump& clonee);
+            HeatingElement(const HeatingElement& clonee);
             
             /**
              * Destructor
              */
-            virtual ~Pump();
+            virtual ~HeatingElement();
             
             /**
              * Overloaded << operator.
@@ -70,7 +97,7 @@ namespace Ohmbrewer {
             const int setState(const bool);
 
             /**
-             * The Equipment state. True => On, False => Off
+             * The Equipment state.
              * @returns True => On, False => Off
              */
             bool getState() const;
@@ -86,6 +113,12 @@ namespace Ohmbrewer {
              * @returns Whether the Equipment is turned OFF
              */
             bool isOff() const;
+
+        protected:
+            /**
+             * Voltage to provide the heating element
+             */
+            int  _voltage;
 
         private:
             /**

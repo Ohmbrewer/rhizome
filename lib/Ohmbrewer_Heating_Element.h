@@ -21,18 +21,6 @@ namespace Ohmbrewer {
         public:
 
             /**
-             * The voltage at which the Heating Element runs.
-             * @returns The current voltage setting
-             */
-            int getVoltage() const;
-
-            /**
-             * Sets the voltage at which the Heating Element runs.
-             * @returns The time taken to run the method
-             */
-            const int setVoltage(const int speed);
-
-            /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
@@ -48,17 +36,6 @@ namespace Ohmbrewer {
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
             HeatingElement(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
-             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
-             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
-             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
-             * @param voltage The current voltage setting
-             */
-            HeatingElement(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, int voltage);
 
             /**
              * Copy Constructor
@@ -109,12 +86,6 @@ namespace Ohmbrewer {
              * @returns Whether the Equipment is turned OFF
              */
             bool isOff() const;
-
-        protected:
-            /**
-             * Voltage to provide the heating element
-             */
-            int  _voltage;
 
         private:
             /**

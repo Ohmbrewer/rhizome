@@ -1,29 +1,11 @@
 #include "Ohmbrewer_Pump.h"
 
 /**
- * The speed at which the Pump runs.
- * @returns The current Pump speed
- */
-int Ohmbrewer::Pump::getSpeed() const {
-    return _speed;
-}
-
-/**
- * Sets the speed at which the Pump runs.
- * @param speed The new pump speed
- */
-const int Ohmbrewer::Pump::setSpeed(const int speed) {
-    _speed = speed;
-    return 0;
-}
-
-/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
-    _speed = 0;
     _type = "pump";
 }
 
@@ -37,22 +19,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    _speed = 0;
-    _type = "pump";
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
- * @param speed The new pump speed
- */
-Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
-                      bool state, String currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
-    _speed = speed;
     _type = "pump";
 }
 
@@ -61,7 +27,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Equipment(clonee) {
-    _speed = clonee.getSpeed();
+    // This has probably already been set, but maybe clonee is a more complicated child class...
     _type = "pump";
 }
 
@@ -94,19 +60,12 @@ Ohmbrewer::Equipment::args_map_t Ohmbrewer::Pump::parseArgs(const String argsStr
     String currentTask = String(strtok(params, ","));
     String state       = String(strtok(NULL, ","));
     String stopTime    = String(strtok(NULL, ","));
-    String speed       = "";
-
-    // Parse the optional parameters
-    if(stopTime != NULL && stopTime.toInt() > 0) {
-        speed = "" + String(strtok(NULL, ","));
-    }
 
     // Save them to the map
     result[String("id")] = id;
     result[String("current_task")] = currentTask;
     result[String("state")] = state;
     result[String("stopTime")] = stopTime;
-    result[String("speed")] = speed;
 
     // Clear out that dynamically allocated buffer
     delete params;

@@ -1,4 +1,27 @@
+/*
+ * FIXME: Convert this to VariableHeatingElement
+ */
 #include "Ohmbrewer_Heating_Element.h"
+
+/**
+ * The voltage at which the Heating Element runs.
+ * @returns The current voltage setting
+ */
+int Ohmbrewer::HeatingElement::getVoltage() const {
+    return _voltage;
+}
+
+/**
+ * Sets the voltage at which the Heating Element runs.
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::HeatingElement::setVoltage(const int voltage) {
+    unsigned long start = millis();
+
+    _voltage = voltage;
+
+    return start - millis();
+}
 
 /**
  * Constructor
@@ -6,6 +29,7 @@
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
+    _voltage = 0;
     _type = "heat";
 }
 
@@ -19,6 +43,22 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+    _voltage = 0;
+    _type = "heat";
+}
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param pins The list of physical pins this Equipment is attached to
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @param voltage The current voltage setting
+ */
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
+                                          bool state, String currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
+    _voltage = voltage;
     _type = "heat";
 }
 
@@ -27,7 +67,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment(clonee) {
-    // This has probably already been set, but maybe clonee is a more complicated child class...
+    _voltage = clonee.getVoltage();
     _type = "heat";
 }
 
@@ -60,12 +100,14 @@ Ohmbrewer::Equipment::args_map_t Ohmbrewer::HeatingElement::parseArgs(const Stri
     String currentTask = String(strtok(params, ","));
     String state       = String(strtok(NULL, ","));
     String stopTime    = String(strtok(NULL, ","));
+    String voltage     = String(strtok(NULL, ","));
 
     // Save them to the map
     result[String("id")] = id;
     result[String("current_task")] = currentTask;
     result[String("state")] = state;
     result[String("stopTime")] = stopTime;
+    result[String("voltage")] = voltage;
 
     // Clear out that dynamically allocated buffer
     delete params;
