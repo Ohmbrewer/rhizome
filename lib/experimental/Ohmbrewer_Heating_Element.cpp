@@ -167,7 +167,7 @@ int Ohmbrewer::HeatingElement::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::HeatingElement::doDisplay() {
+int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
     // TODO: Implement HeatingElement::doDisplay
     return -1;
 }

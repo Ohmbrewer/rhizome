@@ -1,4 +1,7 @@
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Equipment.h"
+#include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Relay.h"
 
 /**
  * Constructor
@@ -79,7 +82,7 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(). We won't be calling it like this explicitly.
+    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(Ohmbrewer::Screen *screen). We won't be calling it like this explicitly.
     displayTemps(((Ohmbrewer::TemperatureSensor*)_sprouts->front())->getTemp()->c(), 100.00);
 
     displayRelays();
@@ -102,7 +105,8 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (count > 1) {
             // We'll ignore the TemperatureSensors here.
-            displayRelay(count, (*itr)->getState());
+            //displayRelay(count, (*itr)->getState());
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
         }
         count++;
     }
@@ -110,40 +114,40 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     return micros() - start;
 }
 
-/**
- * Prints the status information for a given relay onto the touchscreen
- * @param x The relay to display, 0-based
- * @param state The state of the relay
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Screen::displayRelay(int x, bool state) {
-    unsigned long start = micros();
-    char relay_id[2];
-
-    // Print a fancy identifier
-    print(" [");
-    setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
-
-    sprintf(relay_id,"%d", x-1);
-    print(relay_id);
-
-    resetTextColor();
-    print("]:");
-
-    // Print the state
-    if (state){
-        setTextColor(ILI9341_YELLOW, DEFAULT_BG_COLOR);
-        println(" ON ");
-
-    } else {
-        setTextColor(ILI9341_RED, DEFAULT_BG_COLOR);
-        println(" OFF");
-    }
-
-    resetTextColor();
-
-    return micros() - start;
-}
+///**
+// * Prints the status information for a given relay onto the touchscreen
+// * @param x The relay to display, 0-based
+// * @param state The state of the relay
+// * @returns Time it took to run the function
+// */
+//unsigned long Ohmbrewer::Screen::displayRelay(int x, bool state) {
+//    unsigned long start = micros();
+//    char relay_id[2];
+//
+//    // Print a fancy identifier
+//    print(" [");
+//    setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
+//
+//    sprintf(relay_id,"%d", x-1);
+//    print(relay_id);
+//
+//    resetTextColor();
+//    print("]:");
+//
+//    // Print the state
+//    if (state){
+//        setTextColor(ILI9341_YELLOW, DEFAULT_BG_COLOR);
+//        println(" ON ");
+//
+//    } else {
+//        setTextColor(ILI9341_RED, DEFAULT_BG_COLOR);
+//        println(" OFF");
+//    }
+//
+//    resetTextColor();
+//
+//    return micros() - start;
+//}
 
 /**
  * Prints the temperature information for our sensors onto the touchscreen.

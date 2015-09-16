@@ -7,11 +7,13 @@
 #undef swap
 #include <list>
 #include "Adafruit_ILI9341.h"
-#include "Ohmbrewer_Equipment.h"
-#include "Ohmbrewer_Temperature_Sensor.h"
+//#include "Ohmbrewer_Equipment.h"
+//#include "Ohmbrewer_Temperature_Sensor.h"
 #include "application.h"
 
 namespace Ohmbrewer {
+
+    class Equipment;
 
     // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
     class Screen : public Adafruit_ILI9341 {
@@ -26,6 +28,12 @@ namespace Ohmbrewer {
             static const int BUTTONTOP = 260;
             static const uint16_t DEFAULT_TEXT_COLOR = ILI9341_GREEN;
             static const uint16_t DEFAULT_BG_COLOR = ILI9341_BLACK;
+            static const uint16_t RED = ILI9341_RED;
+            static const uint16_t BLACK = ILI9341_BLACK;
+            static const uint16_t BLUE = ILI9341_BLUE;
+            static const uint16_t GREEN = ILI9341_GREEN;
+            static const uint16_t WHITE = ILI9341_WHITE;
+            static const uint16_t YELLOW = ILI9341_YELLOW;
 
             /**
              * Resets the foreground and background text colors to the defaults above.

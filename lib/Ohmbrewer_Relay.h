@@ -16,6 +16,9 @@
 
 namespace Ohmbrewer {
 
+    // Forward declaration
+    class Screen;
+
     class Relay : public Equipment {
       
         public:
@@ -87,7 +90,6 @@ namespace Ohmbrewer {
              */
             bool isOff() const;
 
-        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().
@@ -98,9 +100,10 @@ namespace Ohmbrewer {
             /**
              * Draws information to the Rhizome's display.
              * This function is called by display().
+             * @param screen The Rhizome's touchscreen
              * @returns The time taken to run the method
              */
-            int doDisplay();
+            int doDisplay(Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.

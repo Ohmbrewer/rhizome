@@ -137,6 +137,34 @@ namespace Ohmbrewer {
              */
             bool isOff() const;
 
+            /**
+             * Performs the Equipment's current task. Expect to use this during loop().
+             * This function is called by work().
+             * @returns The time taken to run the method
+             */
+            int doWork();
+
+            /**
+             * Draws information to the Rhizome's display.
+             * This function is called by display().
+             * @param screen The Rhizome's touchscreen
+             * @returns The time taken to run the method
+             */
+            int doDisplay(Screen *screen);
+
+            /**
+             * Publishes updates to Ohmbrewer, etc.
+             * This function is called by update().
+             * @returns The time taken to run the method
+             */
+            int doUpdate();
+
+            /**
+             * Reports which of the Rhizome's pins are occupied by the
+             * Equipment, forming a logical Sprout.
+             * @returns The list of physical pins that the Equipment is connected to.
+             */
+            std::list<int>* whichPins() const;
 
         protected:
             /**
@@ -152,34 +180,6 @@ namespace Ohmbrewer {
              */
             Temperature* _targetTemp;
 
-        private:
-            /**
-             * Performs the Equipment's current task. Expect to use this during loop().
-             * This function is called by work().
-             * @returns The time taken to run the method
-             */
-            int doWork();
-
-            /**
-             * Draws information to the Rhizome's display.
-             * This function is called by display().
-             * @returns The time taken to run the method
-             */
-            int doDisplay();
-
-            /**
-             * Publishes updates to Ohmbrewer, etc.
-             * This function is called by update().
-             * @returns The time taken to run the method
-             */
-            int doUpdate();
-
-            /**
-             * Reports which of the Rhizome's pins are occupied by the
-             * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the Equipment is connected to.
-             */
-            std::list<int>* whichPins() const;
     };
 };
 

@@ -170,7 +170,7 @@ int Ohmbrewer::Pump::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Pump::doDisplay() {
+int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
     // TODO: Implement Pump::doDisplay
     return -1;
 }

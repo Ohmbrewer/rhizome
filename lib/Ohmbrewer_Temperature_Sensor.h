@@ -107,17 +107,6 @@ namespace Ohmbrewer {
              */
             bool isOff() const;
 
-        protected:
-            /**
-             * Last temperature read by the sensor
-             */
-            Temperature* _lastReading;
-            /**
-             * Last time the temperature was read by the sensor
-             */
-            int _lastReadTime;
-
-        private:
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * This function is called by work().
@@ -128,9 +117,10 @@ namespace Ohmbrewer {
             /**
              * Draws information to the Rhizome's display.
              * This function is called by display().
+             * @param screen The Rhizome's touchscreen
              * @returns The time taken to run the method
              */
-            int doDisplay();
+            int doDisplay(Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.
@@ -145,6 +135,17 @@ namespace Ohmbrewer {
              * @returns The list of physical pins that the Equipment is connected to.
              */
             std::list<int>* whichPins() const;
+
+        protected:
+            /**
+             * Last temperature read by the sensor
+             */
+            Temperature* _lastReading;
+            /**
+             * Last time the temperature was read by the sensor
+             */
+            int _lastReadTime;
+
     };
 };
 

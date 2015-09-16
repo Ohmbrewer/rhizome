@@ -135,7 +135,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::TemperatureSensor::doDisplay() {
+int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     // TODO: Implement TemperatureSensor::doDisplay
     return -1;
 }

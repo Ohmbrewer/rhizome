@@ -1,4 +1,5 @@
 #include "Ohmbrewer_Relay.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * Constructor
@@ -125,9 +126,34 @@ int Ohmbrewer::Relay::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Relay::doDisplay() {
-    // TODO: Implement Relay::doDisplay
-    return -1;
+int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char relay_id[2];
+
+    Spark.publish("hmm...", "It's a Relay at least...", 30, PRIVATE);
+
+    // Print a fancy identifier
+    screen->print(" [");
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+
+    sprintf(relay_id,"%d", _id-1);
+    screen->print(relay_id);
+
+    screen->resetTextColor();
+    screen->print("]:");
+
+    // Print the state
+    if (_state){
+        screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+        screen->println(" ON ");
+    } else {
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->println(" OFF");
+    }
+
+    screen->resetTextColor();
+
+    return micros() - start;
 }
 
 /**

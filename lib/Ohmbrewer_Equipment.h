@@ -15,6 +15,8 @@
 #include "application.h"
 
 namespace Ohmbrewer {
+    // Forward declaration
+    class Screen;
 
     class Equipment {
       
@@ -79,9 +81,10 @@ namespace Ohmbrewer {
 
             /**
              * Draws information to the Rhizome's display.
+             * @param screen The Rhizome's touchscreen
              * @returns The time taken to run the method
              */
-            const int display();
+            const int display(Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.
@@ -160,6 +163,34 @@ namespace Ohmbrewer {
              */
             virtual bool isOff() const = 0;
 
+            /**
+             * Performs the Equipment's current task. Expect to use this during loop().
+             * This function is called by work().
+             * @returns The time taken to run the method
+             */
+            virtual int doWork() = 0;
+
+            /**
+             * Draws information to the Rhizome's display.
+             * This function is called by display().
+             * @param screen The Rhizome's touchscreen
+             * @returns The time taken to run the method
+             */
+            virtual int doDisplay(Screen *screen) = 0;
+
+            /**
+             * Publishes updates to Ohmbrewer, etc.
+             * This function is called by update().
+             * @returns The time taken to run the method
+             */
+            virtual int doUpdate() = 0;
+
+            /**
+             * Reports which of the Rhizome's pins are occupied by the
+             * Equipment, forming a logical Sprout.
+             */
+            virtual std::list<int>* whichPins() const = 0;
+
         protected:
             /**
              * Equipment ID
@@ -191,31 +222,6 @@ namespace Ohmbrewer {
              * The Task the Equipment is currently processing.
              */
             String          _currentTask;
-
-        private:
-            /**
-             * Performs the Equipment's current task. Expect to use this during loop().
-             * This function is called by work().
-             */
-            virtual int doWork() = 0;
-            
-            /**
-             * Draws information to the Rhizome's display.
-             * This function is called by display().
-             */
-            virtual int doDisplay() = 0;
-            
-            /**
-             * Publishes updates to Ohmbrewer, etc.
-             * This function is called by update().
-             */
-            virtual int doUpdate() = 0;
-            
-            /**
-             * Reports which of the Rhizome's pins are occupied by the
-             * Equipment, forming a logical Sprout.
-             */
-            virtual std::list<int>* whichPins() const = 0;
     };
 };
 

@@ -133,7 +133,7 @@ namespace Ohmbrewer {
              * This function is called by display().
              * @returns The time taken to run the method
              */
-            int doDisplay();
+            int doDisplay(Ohmbrewer::Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.
