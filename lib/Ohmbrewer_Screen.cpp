@@ -1,4 +1,9 @@
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Equipment.h"
+#include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Heating_Element.h"
+#include "Ohmbrewer_Pump.h"
+#include "Ohmbrewer_Relay.h"
 
 /**
  * Constructor
@@ -29,11 +34,27 @@ void Ohmbrewer::Screen::initScreen() {
  */
 unsigned long Ohmbrewer::Screen::displayHeader() {
     unsigned long start = micros();
+
+    // Add the title
     setCursor(0, 0);
     setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
     setTextSize(3);
     println("  OHMBREWER");
+
+    // Add a bottom margin
+    printMargin(2);
+
     return micros() - start;
+}
+
+/**
+ * Prints a small margin line (size 1).
+ * @param current The current text size to reset to.
+ */
+void Ohmbrewer::Screen::printMargin(const uint8_t current) {
+    setTextSize(1);
+    println("");
+    setTextSize(current);
 }
 
 /**
@@ -79,10 +100,13 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(). We won't be calling it like this explicitly.
+    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(Ohmbrewer::Screen *screen). We won't be calling it like this explicitly.
     displayTemps(((Ohmbrewer::TemperatureSensor*)_sprouts->front())->getTemp()->c(), 100.00);
 
-    displayRelays();
+//    displayRelays();
+    displayHeatingElements();
+    displayPumps();
+
 
     // 500 seems like a good refresh delay
     delay(500);
@@ -98,49 +122,58 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     unsigned long start = micros();
     unsigned int count = 0;
 
-    println("====== Relays ======");
+    resetTextSize();
+    print("====== Relays ======");
+    printMargin(2);
     for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (count > 1) {
+        // TODO: Fix this when we start using Thermostats and RIMS - needs to be more sophisticated
+        if (strcmp((*itr)->getType(), "temp") != 0) {
             // We'll ignore the TemperatureSensors here.
-            displayRelay(count, (*itr)->getState());
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
         }
         count++;
     }
+    printMargin(2);
 
     return micros() - start;
 }
 
 /**
- * Prints the status information for a given relay onto the touchscreen
- * @param x The relay to display, 0-based
- * @param state The state of the relay
+ * Prints the status information for our current Heating Elements onto the touchscreen
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Screen::displayRelay(int x, bool state) {
+unsigned long Ohmbrewer::Screen::displayHeatingElements() {
     unsigned long start = micros();
-    char relay_id[2];
 
-    // Print a fancy identifier
-    print(" [");
-    setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
-
-    sprintf(relay_id,"%d", x-1);
-    print(relay_id);
-
-    resetTextColor();
-    print("]:");
-
-    // Print the state
-    if (state){
-        setTextColor(ILI9341_YELLOW, DEFAULT_BG_COLOR);
-        println(" ON ");
-
-    } else {
-        setTextColor(ILI9341_RED, DEFAULT_BG_COLOR);
-        println(" OFF");
+    resetTextSize();
+    print("======= Heat =======");
+    printMargin(2);
+    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), "heat") == 0) {
+            ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
+        }
     }
+    printMargin(2);
 
-    resetTextColor();
+    return micros() - start;
+}
+
+/**
+ * Prints the status information for our current Pumps onto the touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::displayPumps() {
+    unsigned long start = micros();
+
+    resetTextSize();
+    print("======= Pumps ======");
+    printMargin(2);
+    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), "pump") == 0) {
+            ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
+        }
+    }
+    printMargin(2);
 
     return micros() - start;
 }
@@ -152,16 +185,16 @@ unsigned long Ohmbrewer::Screen::displayRelay(int x, bool state) {
 unsigned long Ohmbrewer::Screen::displayTemps(double current, double target) {
     unsigned long start = micros();
 
+    resetTextSize();
     resetTextColor();
-
-    // Add a top margin
-    setTextSize(2);
-    println("");
 
     // Print the section title
     print("= Temperature (");
     write(247); // Degree symbol
-    println("C) =");
+    print("C) =");
+
+    // Add a wee margin
+    printMargin(2);
 
     // Print out the current temp
     displayCurrentTemp(current,target);
@@ -169,8 +202,8 @@ unsigned long Ohmbrewer::Screen::displayTemps(double current, double target) {
     // Print out the target temp
     displayTargetTemp(target);
 
-    // Add a wee space
-    println("");
+    // Add another wee margin
+    printMargin(2);
 
     return micros() - start;
 }
@@ -190,7 +223,7 @@ unsigned long Ohmbrewer::Screen::displayCurrentTemp(double current, double targe
         color = ILI9341_RED;
     } else if(current < target) {
         // Too cold
-        color = ILI9341_BLUE;
+        color = ILI9341_CYAN;
     }
 
     displayTemp(current, "Current: ", color);
@@ -245,7 +278,7 @@ unsigned long Ohmbrewer::Screen::displayStatusUpdate(char *statusUpdate) {
 
     setTextColor(ILI9341_RED, DEFAULT_BG_COLOR);
     setCursor(LEFT, BUTTONTOP - 40);
-    setTextSize(2);
+    resetTextSize();
     println(statusUpdate);
 
     return micros() - start;

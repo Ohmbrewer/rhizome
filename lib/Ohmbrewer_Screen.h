@@ -7,31 +7,50 @@
 #undef swap
 #include <list>
 #include "Adafruit_ILI9341.h"
-#include "Ohmbrewer_Equipment.h"
-#include "Ohmbrewer_Temperature_Sensor.h"
+//#include "Ohmbrewer_Equipment.h"
+//#include "Ohmbrewer_Temperature_Sensor.h"
 #include "application.h"
 
 namespace Ohmbrewer {
+
+    class Equipment;
 
     // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
     class Screen : public Adafruit_ILI9341 {
 
         public:
 
-            static const int BUTTONSIZE = 60;
-            static const int LEFT = 0;
-            static const int RIGHT = 240;
-            static const int TOP = 0;
-            static const int BOTTOM = 320;
-            static const int BUTTONTOP = 260;
+            static const int      BUTTONSIZE = 60;
+            static const int      LEFT = 0;
+            static const int      RIGHT = 240;
+            static const int      TOP = 0;
+            static const int      BOTTOM = 320;
+            static const int      BUTTONTOP = 260;
+            static const uint8_t  DEFAULT_TEXT_SIZE = 2;
             static const uint16_t DEFAULT_TEXT_COLOR = ILI9341_GREEN;
             static const uint16_t DEFAULT_BG_COLOR = ILI9341_BLACK;
+            static const uint16_t RED = ILI9341_RED;
+            static const uint16_t BLACK = ILI9341_BLACK;
+            static const uint16_t BLUE = ILI9341_BLUE;
+            static const uint16_t GREEN = ILI9341_GREEN;
+            static const uint16_t WHITE = ILI9341_WHITE;
+            static const uint16_t YELLOW = ILI9341_YELLOW;
 
             /**
              * Resets the foreground and background text colors to the defaults above.
              */
             void resetTextColor() { setTextColor(DEFAULT_TEXT_COLOR, DEFAULT_BG_COLOR); }
 
+            /**
+             * Resets the foreground and background text colors to the defaults above.
+             */
+            void resetTextSize() { setTextSize(DEFAULT_TEXT_SIZE); }
+
+            /**
+             * Prints a small margin line (size 1).
+             * @param current The current text size to reset to.
+             */
+            void printMargin(const uint8_t current);
 
             /**
              * Initializes the display screen
@@ -60,6 +79,18 @@ namespace Ohmbrewer {
              * @returns Time it took to run the function
              */
             unsigned long displayRelays();
+
+            /**
+             * Prints the status information for our current Heating Elements onto the touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayHeatingElements();
+
+            /**
+             * Prints the status information for our current Pumps onto the touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayPumps();
 
             /**
              * Prints the status information for a given relay onto the touchscreen

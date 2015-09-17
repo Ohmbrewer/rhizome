@@ -1,4 +1,5 @@
 #include "Ohmbrewer_Equipment.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * Constructor
@@ -124,15 +125,16 @@ String Ohmbrewer::Equipment::getStream() {
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::work() {
-    return this->doWork();
+    return doWork();
 }
 
 /**
  * Draws information to the Rhizome's display.
+ * @param screen The Rhizome's touchscreen
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::Equipment::display() {
-    return this->doDisplay();
+const int Ohmbrewer::Equipment::display(Ohmbrewer::Screen *screen) {
+    return doDisplay(screen);
 }
 
 /**
@@ -140,7 +142,7 @@ const int Ohmbrewer::Equipment::display() {
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::update() {
-    return this->doUpdate();
+    return doUpdate();
 }
 
 /**

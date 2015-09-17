@@ -197,7 +197,7 @@ int Ohmbrewer::Thermostat::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doDisplay() {
+int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     // TODO: Implement Thermostat::doDisplay
     return -1;
 }

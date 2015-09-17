@@ -169,7 +169,7 @@ int Ohmbrewer::RIMS::doWork() {
  * This function is called by display().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doDisplay() {
+int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
     // TODO: Implement RIMS::doDisplay
     return -1;
 }
