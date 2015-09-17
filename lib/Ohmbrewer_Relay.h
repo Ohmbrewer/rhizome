@@ -20,7 +20,7 @@ namespace Ohmbrewer {
     class Screen;
 
     class Relay : public Equipment {
-      
+
         public:
 
             /**

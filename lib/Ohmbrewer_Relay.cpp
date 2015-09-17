@@ -130,13 +130,11 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char relay_id[2];
 
-    Spark.publish("hmm...", "It's a Relay at least...", 30, PRIVATE);
-
     // Print a fancy identifier
     screen->print(" [");
     screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
 
-    sprintf(relay_id,"%d", _id-1);
+    sprintf(relay_id,"%d", _id);
     screen->print(relay_id);
 
     screen->resetTextColor();

@@ -134,7 +134,6 @@ const int Ohmbrewer::Equipment::work() {
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::Equipment::display(Ohmbrewer::Screen *screen) {
-    Spark.publish("hmm...", "It's an Equipment at least...", 30, PRIVATE);
     return doDisplay(screen);
 }
 

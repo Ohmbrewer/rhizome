@@ -59,8 +59,7 @@ int Ohmbrewer::HeatingElement::doWork() {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
-    // TODO: Implement HeatingElement::doDisplay
-    return -1;
+    return Relay::doDisplay(screen);
 }
 
 /**

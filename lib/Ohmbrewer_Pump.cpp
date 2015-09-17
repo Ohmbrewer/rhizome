@@ -59,8 +59,7 @@ int Ohmbrewer::Pump::doWork() {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
-    // TODO: Implement Pump::doDisplay
-    return -1;
+    return Relay::doDisplay(screen);
 }
 
 /**

@@ -63,10 +63,29 @@ void setup() {
  * The meat of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
-//    if((millis() - lastUpdate) > 10000) {
-//        // Toggle the last relay every 10 seconds
-//        sprouts.back()->setState(sprouts.back()->isOff());
-//        lastUpdate = millis();
-//    }
+    if((millis() - lastUpdate) > 10000) {
+        // Toggle the last relay every 10 seconds
+//        std::list<Ohmbrewer::Equipment*>::iterator pump2 = getSprout("pump", 2);
+//        (*pump2)->setState((*pump2)->isOff()); // The last Pump
+        sprouts.back()->setState(sprouts.back()->isOff()); // The last HeatingElement
+        lastUpdate = millis();
+    }
     tft.refreshDisplay();
 }
+
+
+///**
+// * Prints the status information for our current relays onto the touchscreen
+// * @returns Time it took to run the function
+// */
+//std::list<Ohmbrewer::Equipment*>::iterator getSprout(const char* typeName, const int id) {
+//    std::list<Ohmbrewer::Equipment*>::iterator itr = sprouts.begin();
+//
+//    for (itr; itr != sprouts.end(); itr++) {
+//        if (((*itr)->getID() == id) && (strcmp((*itr)->getType(), typeName) == 0)) {
+//            return itr;
+//        }
+//    }
+//
+//    return itr;
+//}
