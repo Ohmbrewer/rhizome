@@ -2,14 +2,16 @@
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Pump.h"
 #include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Thermostat.h"
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
 #undef min
 #undef max
 #undef swap
-#include <list>
+#include <deque>
 
 /* ========================================================================= */
 /*  Global Vars                                                              */
@@ -19,7 +21,7 @@
  * Each Sprout is a logical collection of physical pins/relays that are connected
  * to a single piece of Equipment.
  */
-std::list< Ohmbrewer::Equipment* > sprouts;
+std::deque< Ohmbrewer::Equipment* > sprouts;
 
 /**
  * This is simply a map of which pins are currently accounted for. We'll want to
@@ -45,11 +47,15 @@ void setup() {
 
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
     // We'll also set some temperatures and relay values explicitly when we probably wouldn't.
-    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 1, new std::list<int>(1,0) ));
-    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
+//    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 1, new std::deque<int>(1,0) ));
+//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
+//
+//    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
+//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(1337);
 
-    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
-    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(1337);
+    sprouts.push_back(new Ohmbrewer::Thermostat( 1, new std::list<int>(1,0), 100 ));
+    ((Ohmbrewer::Thermostat*)sprouts.front())->getElement()->setState(true);
+
 
     sprouts.push_back(new Ohmbrewer::Pump( 1, new std::list<int>(1,2), 0, true, fakeTask ));
     sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,3) ));
@@ -65,9 +71,10 @@ void setup() {
 void loop() {
     if((millis() - lastUpdate) > 10000) {
         // Toggle the last relay every 10 seconds
-//        std::list<Ohmbrewer::Equipment*>::iterator pump2 = getSprout("pump", 2);
-//        (*pump2)->setState((*pump2)->isOff()); // The last Pump
         sprouts.back()->setState(sprouts.back()->isOff()); // The last HeatingElement
+        ((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
+                                               ->setState(!((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
+                                                                                                  ->getState()); // The Thermostat's HeatingElement
         lastUpdate = millis();
     }
     tft.refreshDisplay();
@@ -78,14 +85,14 @@ void loop() {
 // * Prints the status information for our current relays onto the touchscreen
 // * @returns Time it took to run the function
 // */
-//std::list<Ohmbrewer::Equipment*>::iterator getSprout(const char* typeName, const int id) {
-//    std::list<Ohmbrewer::Equipment*>::iterator itr = sprouts.begin();
+//Ohmbrewer::Equipment* getSprout(const char* typeName, const int id) {
+//    std::deque<Ohmbrewer::Equipment*>::iterator itr = sprouts.begin();
 //
 //    for (itr; itr != sprouts.end(); itr++) {
 //        if (((*itr)->getID() == id) && (strcmp((*itr)->getType(), typeName) == 0)) {
-//            return itr;
+//            return *itr;
 //        }
 //    }
 //
-//    return itr;
+//    return *itr;
 //}

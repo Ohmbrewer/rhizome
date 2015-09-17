@@ -153,6 +153,27 @@ namespace Ohmbrewer {
             int doDisplay(Screen *screen);
 
             /**
+             * Prints the temperature information for one sensor onto the touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayCurrentTemp(Screen *screen);
+
+            /**
+             * Prints the temperature information for one sensor onto the touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayTargetTemp(Screen *screen);
+
+            /**
+             * Prints the temperature information for our sensors onto the touchscreen.
+             * @param temp The temperature to display
+             * @param label The text label to print to the left of the temperature
+             * @param color The color of the temperature text
+             * @returns Time it took to run the function
+             */
+            unsigned long displayTemp(double temp, char* label, uint16_t color, Screen *screen);
+
+            /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
              * @returns The time taken to run the method
