@@ -1,4 +1,5 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
@@ -136,8 +137,29 @@ int Ohmbrewer::TemperatureSensor::doWork() {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
-    // TODO: Implement TemperatureSensor::doDisplay
-    return -1;
+    unsigned long start = micros();
+    char relay_id[2];
+    char tempStr [24];
+
+    sprintf(relay_id,"%d", _id);
+    sprintf(tempStr, "%2.2f", getTemp()->c());
+
+    // Print a fancy identifier
+    screen->print(" [");
+
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+    screen->print(relay_id);
+    screen->resetTextColor();
+
+    screen->print("]: ");
+
+    // Print the temperature
+    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+    screen->println(tempStr);
+
+    screen->resetTextColor();
+
+    return micros() - start;
 }
 
 /**

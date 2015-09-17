@@ -104,6 +104,12 @@ namespace Ohmbrewer {
              * Prints the temperature information for our sensors onto the touchscreen
              * @returns Time it took to run the function
              */
+            unsigned long displayTemps();
+
+            /**
+             * Prints the temperature information for our sensors onto the touchscreen
+             * @returns Time it took to run the function
+             */
             unsigned long displayTemps(double current, double target);
 
             /**
