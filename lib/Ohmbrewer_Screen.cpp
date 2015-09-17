@@ -100,13 +100,11 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    // FIXME: This sort of call will be moved into TemperatureSensor.doDisplay(Ohmbrewer::Screen *screen). We won't be calling it like this explicitly.
-    displayTemps(((Ohmbrewer::TemperatureSensor*)_sprouts->front())->getTemp()->c(), 100.00);
-
+    // Show the various data readouts
+    displayTemps();
 //    displayRelays();
     displayHeatingElements();
     displayPumps();
-
 
     // 500 seems like a good refresh delay
     delay(500);
@@ -126,9 +124,9 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     print("====== Relays ======");
     printMargin(2);
     for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        // TODO: Fix this when we start using Thermostats and RIMS - needs to be more sophisticated
-        if (strcmp((*itr)->getType(), "temp") != 0) {
-            // We'll ignore the TemperatureSensors here.
+        if (strcmp((*itr)->getType(), "temp") != 0 &&
+            strcmp((*itr)->getType(), "rims") != 0 &&
+            strcmp((*itr)->getType(), "therm") != 0) {
             ((Ohmbrewer::Relay*)(*itr))->display(this);
         }
         count++;
@@ -180,6 +178,32 @@ unsigned long Ohmbrewer::Screen::displayPumps() {
 
 /**
  * Prints the temperature information for our sensors onto the touchscreen.
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::displayTemps() {
+    unsigned long start = micros();
+
+    resetTextSize();
+    resetTextColor();
+
+    print("= Temperature (");
+    write(247); // Degree symbol
+    print("C) =");
+    printMargin(2);
+    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), "temp") == 0) {
+            ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
+        }
+    }
+    printMargin(2);
+
+    return micros() - start;
+}
+
+/* FIXME: Refactor this section into the Thermostat class. */
+
+/**
+ * Prints the temperature information for a Thermostat onto the touchscreen.
  * @returns Time it took to run the function
  */
 unsigned long Ohmbrewer::Screen::displayTemps(double current, double target) {
@@ -267,6 +291,8 @@ unsigned long Ohmbrewer::Screen::displayTemp(double temp, char* label, uint16_t 
 
     return micros() - start;
 }
+
+/* End Section to be refactored */
 
 /**
  * Prints out a status message in the two rows above the buttons.
