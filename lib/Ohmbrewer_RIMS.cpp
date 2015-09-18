@@ -1,4 +1,5 @@
 #include "Ohmbrewer_RIMS.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * The Tube thermostat
@@ -167,11 +168,105 @@ int Ohmbrewer::RIMS::doWork() {
 /**
  * Draws information to the Rhizome's display.
  * This function is called by display().
+ * @param screen The Rhizome's touchscreen
  * @returns The time taken to run the method
  */
 int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
-    // TODO: Implement RIMS::doDisplay
-    return -1;
+    unsigned long start = micros();
+
+    screen->resetTextSize();
+    screen->resetTextColor();
+
+    // Print the section title
+    screen->print("===== RIMS #");
+    screen->print(getID());
+    screen->print("  =====");
+
+    // Add a wee margin
+    screen->printMargin(2);
+
+    // Print out the current temp from the Tun
+    displayTunTemp(screen);
+
+    screen->printMargin(2);
+    screen->print("------  Tube  ------");
+    screen->printMargin(2);
+
+    // Print out the temperature from the Tube
+    getTube()->displayCurrentTemp(screen);
+
+    // Print out the target temp
+    getTube()->displayTargetTemp(screen);
+
+    // Print the pump status
+    displayRecircStatus(screen);
+
+    // Add another wee margin
+    screen->printMargin(2);
+
+    return micros() - start;
+}
+
+/**
+ * Prints the temperature information for our sensors onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char tempStr [24];
+    // If current == target, we'll default to yellow, 'cause we're golden...
+    uint16_t color = screen->YELLOW;
+
+    if(getTunSensor()->getTemp()->c() > getTube()->getTargetTemp()->c()) {
+        // Too hot
+        color = screen->RED;
+    } else if(getTunSensor()->getTemp()->c() < getTube()->getTargetTemp()->c()) {
+        // Too cold
+        color = screen->CYAN;
+    }
+
+    sprintf(tempStr, "%2.2f", getTunSensor()->getTemp()->c());
+
+    // Print the label
+    screen->resetTextColor();
+    screen->print(" Tun (");
+    screen->writeDegree();
+    screen->print("C): ");
+
+    // Print out the temp
+    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
+    screen->println(tempStr);
+
+    screen->resetTextColor();
+
+    return micros() - start;
+}
+
+/**
+ * Prints the recirculation pump status onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+
+    // Print the label
+    screen->resetTextColor();
+    screen->print(" R. Pump: "); // We want a little margin
+
+    // Print the state
+    if (getRecirculator()->getState()){
+        screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+        screen->println("ON ");
+    } else {
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->println("OFF");
+    }
+
+    screen->resetTextColor();
+
+    return micros() - start;
 }
 
 /**

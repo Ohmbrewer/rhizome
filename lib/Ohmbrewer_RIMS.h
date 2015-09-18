@@ -136,6 +136,20 @@ namespace Ohmbrewer {
             int doDisplay(Screen *screen);
 
             /**
+             * Prints the temperature information for our sensors onto the touchscreen.
+             * @param screen The Rhizome's touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayTunTemp(Screen *screen);
+
+            /**
+             * rints the recirculation pump status onto the touchscreen.
+             * @param screen The Rhizome's touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayRecircStatus(Screen *screen);
+
+            /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
              * @returns The time taken to run the method
