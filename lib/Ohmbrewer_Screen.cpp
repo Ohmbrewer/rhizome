@@ -4,6 +4,7 @@
 #include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Pump.h"
 #include "Ohmbrewer_Relay.h"
+#include "Ohmbrewer_Thermostat.h"
 
 /**
  * Constructor
@@ -11,7 +12,7 @@
 Ohmbrewer::Screen::Screen(uint8_t CS,
                           uint8_t RS,
                           uint8_t RST,
-                          std::list< Ohmbrewer::Equipment* >* sprouts) : Adafruit_ILI9341(CS, RS, RST) {
+                          std::deque< Ohmbrewer::Equipment* >* sprouts) : Adafruit_ILI9341(CS, RS, RST) {
     _sprouts = sprouts;
 }
 
@@ -101,7 +102,16 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
     displayHeader();
 
     // Show the various data readouts
-    displayTemps();
+    if(strcmp(_sprouts->front()->getType(), "therm") == 0) {
+        // FIXME: This ain't quite right...
+        // It relies on the thermostat being the first object in the Sprouts list,
+        // which may not necessarily be the case.
+//        _sprouts->front()->display(this);
+        displayThermostats();
+    } else {
+        displayTemps();
+    }
+
 //    displayRelays();
     displayHeatingElements();
     displayPumps();
@@ -120,10 +130,11 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     unsigned long start = micros();
     unsigned int count = 0;
 
-    resetTextSize();
+    resetTextSizeAndColor();
+
     print("====== Relays ======");
     printMargin(2);
-    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), "temp") != 0 &&
             strcmp((*itr)->getType(), "rims") != 0 &&
             strcmp((*itr)->getType(), "therm") != 0) {
@@ -143,10 +154,11 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
 unsigned long Ohmbrewer::Screen::displayHeatingElements() {
     unsigned long start = micros();
 
-    resetTextSize();
+    resetTextSizeAndColor();
+
     print("======= Heat =======");
     printMargin(2);
-    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), "heat") == 0) {
             ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
         }
@@ -163,12 +175,13 @@ unsigned long Ohmbrewer::Screen::displayHeatingElements() {
 unsigned long Ohmbrewer::Screen::displayPumps() {
     unsigned long start = micros();
 
-    resetTextSize();
+    resetTextSizeAndColor();
+
     print("======= Pumps ======");
     printMargin(2);
-    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), "pump") == 0) {
-            ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
+            ((Ohmbrewer::Pump*)(*itr))->display(this);
         }
     }
     printMargin(2);
@@ -183,16 +196,15 @@ unsigned long Ohmbrewer::Screen::displayPumps() {
 unsigned long Ohmbrewer::Screen::displayTemps() {
     unsigned long start = micros();
 
-    resetTextSize();
-    resetTextColor();
+    resetTextSizeAndColor();
 
     print("= Temperature (");
-    write(247); // Degree symbol
+    writeDegree(); // Degree symbol
     print("C) =");
     printMargin(2);
-    for (std::list<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), "temp") == 0) {
-            ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
+            ((Ohmbrewer::TemperatureSensor*)(*itr))->display(this);
         }
     }
     printMargin(2);
@@ -200,99 +212,25 @@ unsigned long Ohmbrewer::Screen::displayTemps() {
     return micros() - start;
 }
 
-/* FIXME: Refactor this section into the Thermostat class. */
-
 /**
- * Prints the temperature information for a Thermostat onto the touchscreen.
+ * Prints the thermostat information onto the touchscreen.
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Screen::displayTemps(double current, double target) {
+unsigned long Ohmbrewer::Screen::displayThermostats() {
     unsigned long start = micros();
 
-    resetTextSize();
-    resetTextColor();
+    resetTextSizeAndColor();
 
-    // Print the section title
-    print("= Temperature (");
-    write(247); // Degree symbol
-    print("C) =");
-
-    // Add a wee margin
     printMargin(2);
-
-    // Print out the current temp
-    displayCurrentTemp(current,target);
-
-    // Print out the target temp
-    displayTargetTemp(target);
-
-    // Add another wee margin
-    printMargin(2);
-
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Screen::displayCurrentTemp(double current, double target) {
-    unsigned long start = micros();
-
-    // If current == target, we'll default to yellow, 'cause we're golden...
-    uint16_t color = ILI9341_YELLOW;
-
-    if(current > target) {
-        // Too hot
-        color = ILI9341_RED;
-    } else if(current < target) {
-        // Too cold
-        color = ILI9341_CYAN;
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), "therm") == 0) {
+            ((Ohmbrewer::Thermostat*)(*itr))->display(this);
+        }
     }
-
-    displayTemp(current, "Current: ", color);
-    
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Screen::displayTargetTemp(double target) {
-    unsigned long start = micros();
-    displayTemp(target, "Target:  ", ILI9341_YELLOW);
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @param temp The temperature to display
- * @param label The text label to print to the left of the temperature
- * @param color The color of the temperature text
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Screen::displayTemp(double temp, char* label, uint16_t color) {
-    unsigned long start = micros();
-    char tempStr [24];
-
-    sprintf(tempStr, "%2.2f", temp);
-
-    // Print the label
-    resetTextColor();
-    print(" "); // We want a little margin
-    print(label);
-
-    // Print out the target temp
-    setTextColor(color, DEFAULT_BG_COLOR);
-    println(tempStr);
-
-    resetTextColor();
+    printMargin(2);
 
     return micros() - start;
 }
-
-/* End Section to be refactored */
 
 /**
  * Prints out a status message in the two rows above the buttons.

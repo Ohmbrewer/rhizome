@@ -5,10 +5,8 @@
 #undef min
 #undef max
 #undef swap
-#include <list>
+#include <deque>
 #include "Adafruit_ILI9341.h"
-//#include "Ohmbrewer_Equipment.h"
-//#include "Ohmbrewer_Temperature_Sensor.h"
 #include "application.h"
 
 namespace Ohmbrewer {
@@ -35,6 +33,7 @@ namespace Ohmbrewer {
             static const uint16_t GREEN = ILI9341_GREEN;
             static const uint16_t WHITE = ILI9341_WHITE;
             static const uint16_t YELLOW = ILI9341_YELLOW;
+            static const uint16_t CYAN = ILI9341_CYAN;
 
             /**
              * Resets the foreground and background text colors to the defaults above.
@@ -45,6 +44,21 @@ namespace Ohmbrewer {
              * Resets the foreground and background text colors to the defaults above.
              */
             void resetTextSize() { setTextSize(DEFAULT_TEXT_SIZE); }
+
+            /**
+             * Resets the foreground and background text colors to the defaults above.
+             */
+            void resetTextSizeAndColor() { resetTextSize(); resetTextColor(); }
+
+            /**
+             * Writes a degree symbol to the screen.
+             */
+            void writeDegree() { write(247); }
+
+            /**
+             * Writes a solid block symbol to the screen. Useful for erasing characters.
+             */
+            void writeBlock() { write(218); }
 
             /**
              * Prints a small margin line (size 1).
@@ -93,45 +107,16 @@ namespace Ohmbrewer {
             unsigned long displayPumps();
 
             /**
-             * Prints the status information for a given relay onto the touchscreen
-             * @param x The relay to display, 0-based
-             * @param state The state of the relay
-             * @returns Time it took to run the function
-             */
-            unsigned long displayRelay(int x, bool state);
-
-            /**
              * Prints the temperature information for our sensors onto the touchscreen
              * @returns Time it took to run the function
              */
             unsigned long displayTemps();
 
             /**
-             * Prints the temperature information for our sensors onto the touchscreen
+             * Prints the thermostat information onto the touchscreen.
              * @returns Time it took to run the function
              */
-            unsigned long displayTemps(double current, double target);
-
-            /**
-             * Prints the temperature information for one sensor onto the touchscreen
-             * @returns Time it took to run the function
-             */
-            unsigned long displayCurrentTemp(double current, double target);
-
-            /**
-             * Prints the temperature information for one sensor onto the touchscreen
-             * @returns Time it took to run the function
-             */
-            unsigned long displayTargetTemp(double target);
-
-            /**
-             * Prints the temperature information for our sensors onto the touchscreen.
-             * @param temp The temperature to display
-             * @param label The text label to print to the left of the temperature
-             * @param color The color of the temperature text
-             * @returns Time it took to run the function
-             */
-            unsigned long displayTemp(double temp, char* label, uint16_t color);
+            unsigned long displayThermostats();
 
             /**
              * Prints out a status message in the two rows above the buttons.
@@ -140,13 +125,13 @@ namespace Ohmbrewer {
              */
             unsigned long displayStatusUpdate(char *statusUpdate);
 
-            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::list< Ohmbrewer::Equipment* >* sprouts);
+            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts);
 
         private:
             /**
              * Pointer to the global Sprouts list
              */
-            std::list< Ohmbrewer::Equipment* >* _sprouts;
+            std::deque< Ohmbrewer::Equipment* >* _sprouts;
     };
 
 }
