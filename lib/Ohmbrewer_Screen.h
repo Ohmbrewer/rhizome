@@ -119,6 +119,12 @@ namespace Ohmbrewer {
             unsigned long displayThermostats();
 
             /**
+             * Prints the RIMS information onto the touchscreen.
+             * @returns Time it took to run the function
+             */
+            unsigned long displayRIMS();
+
+            /**
              * Prints out a status message in the two rows above the buttons.
              * @param char* statusUpdate The status message to display. 40 characters or less.
              * @returns Time it took to run the function

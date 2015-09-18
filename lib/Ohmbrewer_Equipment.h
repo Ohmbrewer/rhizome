@@ -152,6 +152,11 @@ namespace Ohmbrewer {
              * The Equipment state. True => On, False => Off
              */
             virtual bool getState() const = 0;
+
+            /**
+             * Toggles the Equipment state.
+             */
+            virtual void toggleState() { _state = !_state; };
             
             /**
              * True if the Equipment state is On.
