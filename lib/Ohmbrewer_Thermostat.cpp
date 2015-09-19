@@ -2,6 +2,15 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
+ * Adds the update function for the instance.
+ */
+void Ohmbrewer::Thermostat::addUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    Spark.function<Ohmbrewer::Thermostat>(updateFunction.c_str(), &Ohmbrewer::Thermostat::update, this);
+}
+
+/**
  * The desired target temperature. Defaults to Celsius
  * @returns The target temperature in Celsius
  */
@@ -50,6 +59,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equ
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
     _type = "therm";
+    addUpdateFunction();
 }
 
 /**
@@ -65,6 +75,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
     _type = "therm";
+    addUpdateFunction();
 }
 
 /**
@@ -83,6 +94,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
     _type = "therm";
+    addUpdateFunction();
 }
 
 /**
@@ -103,6 +115,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
     _type = "therm";
+    addUpdateFunction();
 }
 
 /**
@@ -114,6 +127,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
     _type = "therm";
+    addUpdateFunction();
 }
 
 /**
@@ -304,9 +318,10 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate() {
+int Ohmbrewer::Thermostat::doUpdate(String args) {
     // TODO: Implement Thermostat::doUpdate
     return -1;
 }

@@ -71,9 +71,16 @@ namespace Ohmbrewer {
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
+             * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            int doUpdate();
+            int doUpdate(String args);
+
+        private:
+            /**
+             * Adds the update function for the instance.
+             */
+            void addUpdateFunction();
 
     };
 };

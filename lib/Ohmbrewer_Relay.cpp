@@ -2,12 +2,24 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
+ * Adds the update function for the instance.
+ */
+void Ohmbrewer::Relay::addUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    Spark.function<Ohmbrewer::Relay>(updateFunction.c_str(), &Ohmbrewer::Relay::update, this);
+}
+
+/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _type = "relay";
+    // For now, we will not automatically add a Spark.function to Relays as
+    // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
+    // determine if a function for actual Relay types should be added, then we'll change that.
 }
 
 /**
@@ -21,6 +33,9 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id,
 Ohmbrewer::Relay::Relay(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _type = "relay";
+    // For now, we will not automatically add a Spark.function to Relays as
+    // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
+    // determine if a function for actual Relay types should be added, then we'll change that.
 }
 
 /**
@@ -30,6 +45,9 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* pins, int stopTime,
 Ohmbrewer::Relay::Relay(const Relay& clonee) : Ohmbrewer::Equipment(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
     _type = "relay";
+    // For now, we will not automatically add a Spark.function to Relays as
+    // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
+    // determine if a function for actual Relay types should be added, then we'll change that.
 }
 
 /**
@@ -157,9 +175,10 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Relay::doUpdate() {
+int Ohmbrewer::Relay::doUpdate(String args) {
     // TODO: Implement Relay::doUpdate
     return -1;
 }

@@ -177,7 +177,7 @@ int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
  * This function is called by update().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::HeatingElement::doUpdate() {
+int Ohmbrewer::HeatingElement::doUpdate(String args) {
     // TODO: Implement HeatingElement::doUpdate
     return -1;
 }

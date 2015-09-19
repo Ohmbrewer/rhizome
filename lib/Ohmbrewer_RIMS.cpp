@@ -26,6 +26,15 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
 }
 
 /**
+ * Adds the update function for the instance.
+ */
+void Ohmbrewer::RIMS::addUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    Spark.function<Ohmbrewer::RIMS>(updateFunction.c_str(), &Ohmbrewer::RIMS::update, this);
+}
+
+/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
@@ -37,6 +46,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
     _type = "rims";
+    addUpdateFunction();
 }
 
 /**
@@ -55,6 +65,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
     _type = "rims";
+    addUpdateFunction();
 }
 
 /**
@@ -74,10 +85,12 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
     _type = "rims";
+    addUpdateFunction();
 }
 
 /**
  * Copy constructor
+ * FIXME: Copy constructors should probably reset the pins and ID's, no?
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
@@ -85,6 +98,8 @@ Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clon
     _tunSensor = clonee.getTunSensor();
     _recirc = clonee.getRecirculator();
     _type = "rims";
+
+    addUpdateFunction();
 }
 
 /**
@@ -270,9 +285,10 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doUpdate() {
+int Ohmbrewer::RIMS::doUpdate(String args) {
     // TODO: Implement RIMS::doUpdate
     return -1;
 }

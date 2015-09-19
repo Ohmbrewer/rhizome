@@ -71,7 +71,15 @@ namespace Ohmbrewer {
              * The Particle event stream to publish Equipment status updates to.
              * @returns The Particle event stream the Equipment expects to publish to.
              */
-            String getStream();
+            String getStream() const;
+
+            /**
+             * The name of the Spark.function for updating this Sprout.
+             * Currently, looks like "type_#" where # is the Sprout's ID number.
+             * @param buffer Buffer to fill with the name
+             * @returns The name of the Spark.function for updating this Sprout
+             */
+            void getUpdateFunctionName(String* buffer) const;
 
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
@@ -88,9 +96,10 @@ namespace Ohmbrewer {
 
             /**
              * Publishes updates to Ohmbrewer, etc.
+             * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            const int update();
+            int update(String args);
             
             /**
              * Constructors
@@ -186,9 +195,10 @@ namespace Ohmbrewer {
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
+             * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            virtual int doUpdate() = 0;
+            virtual int doUpdate(String args) = 0;
 
             /**
              * Reports which of the Rhizome's pins are occupied by the

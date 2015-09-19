@@ -73,7 +73,7 @@ void setup() {
     ((Ohmbrewer::RIMS*)sprouts.front())->setState(true); // Turn everything on.
     ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(559);
 
-    sprouts.push_back(new Ohmbrewer::Pump( 1, new std::list<int>(1,5) ));
+    sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,5) ));
 
     screen.initScreen();
 }

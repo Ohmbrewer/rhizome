@@ -2,6 +2,15 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
+ * Adds the update function for the instance.
+ */
+void Ohmbrewer::TemperatureSensor::addUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    Spark.function<Ohmbrewer::TemperatureSensor>(updateFunction.c_str(), &Ohmbrewer::TemperatureSensor::update, this);
+}
+
+/**
  * The last temperature read by the sensor. Currently returns in Celsius.
  * @returns The last temperature reading
  */
@@ -35,6 +44,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : 
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
+    addUpdateFunction();
 }
 
 /**
@@ -49,6 +59,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, in
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     _type = "temp";
+    addUpdateFunction();
 }
 
 /**
@@ -59,6 +70,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
     _type = "temp";
+    addUpdateFunction();
 }
 
 /**
@@ -165,9 +177,10 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::TemperatureSensor::doUpdate() {
+int Ohmbrewer::TemperatureSensor::doUpdate(String args) {
     // TODO: Implement TemperatureSensor::doUpdate
     return -1;
 }
