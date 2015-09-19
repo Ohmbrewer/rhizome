@@ -201,9 +201,6 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
     // Print the pump status
     displayRecircStatus(screen);
 
-    // Add another wee margin
-    screen->printMargin(2);
-
     return micros() - start;
 }
 
@@ -258,12 +255,13 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
     // Print the state
     if (getRecirculator()->getState()){
         screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
-        screen->println("ON ");
+        screen->print("ON ");
     } else {
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->println("OFF");
+        screen->print("OFF");
     }
 
+    screen->printMargin(2);
     screen->resetTextColor();
 
     return micros() - start;
