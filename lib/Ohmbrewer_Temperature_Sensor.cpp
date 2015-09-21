@@ -43,7 +43,6 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-    _type = "temp";
     addUpdateFunction();
 }
 
@@ -58,7 +57,6 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : 
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-    _type = "temp";
     addUpdateFunction();
 }
 
@@ -69,7 +67,6 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, in
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
-    _type = "temp";
     addUpdateFunction();
 }
 

@@ -23,11 +23,15 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+             */
+            const static constexpr char* TYPE_NAME = "equipment";
+
+            /**
              * A map of arguments provided via a Particle cloud function call,
              * mapped to the appropriate Equipment members.
              */
             typedef std::map <String, String> args_map_t;
-
 
             /**
              * The Equipment ID
@@ -39,7 +43,7 @@ namespace Ohmbrewer {
              * The Equipment Type
              * @returns The Equipment type name
              */
-            const char* getType() const;
+            virtual const char* getType() const { return Equipment::TYPE_NAME; };
 
             /**
              * The time at which the Equipment will stop operating.
@@ -79,7 +83,7 @@ namespace Ohmbrewer {
              * @param buffer Buffer to fill with the name
              * @returns The name of the Spark.function for updating this Sprout
              */
-            void getUpdateFunctionName(String* buffer) const;
+            virtual void getUpdateFunctionName(String* buffer) const;
 
             /**
              * Performs the Equipment's current task. Expect to use this during loop().
@@ -211,11 +215,6 @@ namespace Ohmbrewer {
              * Equipment ID
              */
             int            _id;
-
-            /**
-             * Equipment Type
-             */
-            const char*    _type;
 
             /**
              * Designated Stop Time

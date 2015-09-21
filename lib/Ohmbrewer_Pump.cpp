@@ -15,7 +15,6 @@ void Ohmbrewer::Pump::addUpdateFunction() {
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
-    _type = "pump";
     addUpdateFunction();
 }
 
@@ -29,7 +28,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins)
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
-    _type = "pump";
     addUpdateFunction();
 }
 
@@ -39,7 +37,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    _type = "pump";
     addUpdateFunction();
 }
 

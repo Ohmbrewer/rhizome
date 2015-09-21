@@ -16,7 +16,6 @@ void Ohmbrewer::Relay::addUpdateFunction() {
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
-    _type = "relay";
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.
@@ -32,7 +31,6 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id,
  */
 Ohmbrewer::Relay::Relay(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    _type = "relay";
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.
@@ -43,8 +41,6 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* pins, int stopTime,
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::Relay::Relay(const Relay& clonee) : Ohmbrewer::Equipment(clonee) {
-    // This has probably already been set, but maybe clonee is a more complicated child class...
-    _type = "relay";
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.

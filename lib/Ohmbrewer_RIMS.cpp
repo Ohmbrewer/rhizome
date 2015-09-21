@@ -45,7 +45,6 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
     addUpdateFunction();
 }
 
@@ -64,7 +63,6 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
     addUpdateFunction();
 }
 
@@ -84,7 +82,6 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins, targetTemp);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
     addUpdateFunction();
 }
 
@@ -97,7 +94,6 @@ Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clon
     _tube = clonee.getTube();
     _tunSensor = clonee.getTunSensor();
     _recirc = clonee.getRecirculator();
-    _type = "rims";
 
     addUpdateFunction();
 }

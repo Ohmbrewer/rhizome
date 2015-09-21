@@ -59,14 +59,6 @@ int Ohmbrewer::Equipment::getID() const {
 }
 
 /**
- * The Equipment Type
- * @returns The Equipment type name
- */
-const char* Ohmbrewer::Equipment::getType() const {
-    return _type;
-}
-
-/**
  * The time at which the Equipment will stop operating.
  * @returns The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  */

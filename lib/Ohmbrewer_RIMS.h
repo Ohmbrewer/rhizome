@@ -24,6 +24,17 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+             */
+            const static constexpr char* TYPE_NAME = "rims";
+
+            /**
+             * The Equipment Type
+             * @returns The Equipment type name
+             */
+            virtual const char* getType() const { return RIMS::TYPE_NAME; };
+
+            /**
              * The Tube thermostat
              * @returns The Thermostat object representing the RIMS tube elements
              */

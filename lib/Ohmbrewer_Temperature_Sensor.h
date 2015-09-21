@@ -22,6 +22,17 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+             */
+            const static constexpr char* TYPE_NAME = "temp";
+
+            /**
+             * The Equipment Type
+             * @returns The Equipment type name
+             */
+            virtual const char* getType() const { return TemperatureSensor::TYPE_NAME; };
+
+            /**
              * The last temperature read by the sensor. Currently returns in Celsius.
              * @returns The last temperature reading
              */

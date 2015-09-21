@@ -28,7 +28,6 @@ const int Ohmbrewer::Pump::setSpeed(const int speed) {
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _speed = 0;
-    _type = "pump";
 }
 
 /**
@@ -42,7 +41,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _speed = 0;
-    _type = "pump";
 }
 
 /**
@@ -57,7 +55,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask, int speed) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _speed = speed;
-    _type = "pump";
 }
 
 /**
@@ -66,7 +63,6 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Equipment(clonee) {
     _speed = clonee.getSpeed();
-    _type = "pump";
 }
 
 /**

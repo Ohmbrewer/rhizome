@@ -104,9 +104,9 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     // Show the various data readouts
     // FIXME: This ain't quite right... These assume that Thermostats and RIMS would always be the first Sprouts entry.
-    if(strcmp(_sprouts->front()->getType(), "therm") == 0) {
+    if(strcmp(_sprouts->front()->getType(), Thermostat::TYPE_NAME) == 0) {
         displayThermostats();
-    } else if(strcmp(_sprouts->front()->getType(), "rims") == 0) {
+    } else if(strcmp(_sprouts->front()->getType(), RIMS::TYPE_NAME) == 0) {
         displayRIMS();
     } else {
         displayTemps();
@@ -133,9 +133,9 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
     resetTextSizeAndColor();
 
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "temp") != 0 &&
-            strcmp((*itr)->getType(), "rims") != 0 &&
-            strcmp((*itr)->getType(), "therm") != 0) {
+        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) != 0 &&
+            strcmp((*itr)->getType(), RIMS::TYPE_NAME) != 0 &&
+            strcmp((*itr)->getType(), Thermostat::TYPE_NAME) != 0) {
             if(!foundFirst) {
                 // Print the header
                 print("====== Relays ======");
@@ -161,7 +161,7 @@ unsigned long Ohmbrewer::Screen::displayHeatingElements() {
     resetTextSizeAndColor();
 
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "heat") == 0) {
+        if (strcmp((*itr)->getType(), HeatingElement::TYPE_NAME) == 0) {
             if(!foundFirst) {
                 // Print the header
                 print("======= Heat =======");
@@ -187,7 +187,7 @@ unsigned long Ohmbrewer::Screen::displayPumps() {
     resetTextSizeAndColor();
 
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "pump") == 0) {
+        if (strcmp((*itr)->getType(), Pump::TYPE_NAME) == 0) {
             if(!foundFirst) {
                 // Print the header
                 print("======= Pumps ======");
@@ -213,7 +213,7 @@ unsigned long Ohmbrewer::Screen::displayTemps() {
     resetTextSizeAndColor();
 
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "temp") == 0) {
+        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) == 0) {
             if(!foundFirst) {
                 // Print the header
                 print("= Temperature (");
@@ -241,7 +241,7 @@ unsigned long Ohmbrewer::Screen::displayThermostats() {
 
     printMargin(2);
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "therm") == 0) {
+        if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
             ((Ohmbrewer::Thermostat*)(*itr))->display(this);
         }
     }
@@ -261,7 +261,7 @@ unsigned long Ohmbrewer::Screen::displayRIMS() {
 
     printMargin(2);
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), "rims") == 0) {
+        if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
             ((Ohmbrewer::RIMS*)(*itr))->display(this);
         }
     }
