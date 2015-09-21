@@ -86,6 +86,12 @@ namespace Ohmbrewer {
             virtual void getUpdateFunctionName(String* buffer) const;
 
             /**
+             * Registers the function name for use with the Particle Cloud as the way to run update().
+             * @returns Any error code thrown during registration
+             */
+            int registerUpdateFunction();
+
+            /**
              * Performs the Equipment's current task. Expect to use this during loop().
              * @returns The time taken to run the method
              */

@@ -2,15 +2,6 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::Thermostat::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::Thermostat>(updateFunction.c_str(), &Ohmbrewer::Thermostat::update, this);
-}
-
-/**
  * The desired target temperature. Defaults to Celsius
  * @returns The target temperature in Celsius
  */
@@ -58,7 +49,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equ
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -73,7 +64,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -91,7 +82,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -111,7 +102,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -122,7 +113,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**

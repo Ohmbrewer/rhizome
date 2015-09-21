@@ -189,11 +189,6 @@ namespace Ohmbrewer {
              */
             Pump* _recirc;
 
-        private:
-            /**
-             * Adds the update function for the instance.
-             */
-            void addUpdateFunction();
     };
 };
 

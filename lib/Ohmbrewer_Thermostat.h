@@ -213,12 +213,6 @@ namespace Ohmbrewer {
              */
             Temperature* _targetTemp;
 
-        private:
-            /**
-             * Adds the update function for the instance.
-             */
-            void addUpdateFunction();
-
     };
 };
 

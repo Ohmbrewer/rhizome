@@ -126,6 +126,18 @@ void Ohmbrewer::Equipment::getUpdateFunctionName(String* buffer) const {
 }
 
 /**
+ * Registers the given function name for use with the Particle Cloud as the way to run update().
+ * @param name The name that should appear on the Particle Cloud that will be used to kick off update()
+ * @returns Any error code thrown during registration
+ */
+//int Ohmbrewer::Equipment::registerUpdateFunction(const char* name) {
+int Ohmbrewer::Equipment::registerUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    return Spark.function(updateFunction.c_str(), [this](const String& args) -> int { return this->update(args); } );
+}
+
+/**
  * Performs the Equipment's current task. Expect to use this during loop().
  * @returns The time taken to run the method
  */

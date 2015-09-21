@@ -2,15 +2,6 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::Relay::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::Relay>(updateFunction.c_str(), &Ohmbrewer::Relay::update, this);
-}
-
-/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to

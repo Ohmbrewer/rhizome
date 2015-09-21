@@ -1,21 +1,12 @@
 #include "Ohmbrewer_Pump.h"
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::Pump::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::Pump>(updateFunction.c_str(), &Ohmbrewer::Pump::update, this);
-}
-
-/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -28,7 +19,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins)
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -37,7 +28,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**

@@ -2,15 +2,6 @@
 #include "Ohmbrewer_Screen.h"
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::TemperatureSensor::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::TemperatureSensor>(updateFunction.c_str(), &Ohmbrewer::TemperatureSensor::update, this);
-}
-
-/**
  * The last temperature read by the sensor. Currently returns in Celsius.
  * @returns The last temperature reading
  */
@@ -43,7 +34,7 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -57,7 +48,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : 
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -67,7 +58,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, in
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**

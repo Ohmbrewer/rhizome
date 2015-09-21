@@ -131,11 +131,6 @@ namespace Ohmbrewer {
              */
             std::list<int>* whichPins() const;
 
-        private:
-            /**
-             * Adds the update function for the instance.
-             */
-            void addUpdateFunction();
     };
 };
 

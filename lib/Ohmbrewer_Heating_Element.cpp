@@ -1,21 +1,12 @@
 #include "Ohmbrewer_Heating_Element.h"
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::HeatingElement::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::HeatingElement>(updateFunction.c_str(), &Ohmbrewer::HeatingElement::update, this);
-}
-
-/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -28,7 +19,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -37,7 +28,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  */
 Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**

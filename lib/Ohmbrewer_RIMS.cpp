@@ -26,15 +26,6 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
 }
 
 /**
- * Adds the update function for the instance.
- */
-void Ohmbrewer::RIMS::addUpdateFunction() {
-    String updateFunction;
-    getUpdateFunctionName(&updateFunction);
-    Spark.function<Ohmbrewer::RIMS>(updateFunction.c_str(), &Ohmbrewer::RIMS::update, this);
-}
-
-/**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
  * @param pins The list of physical pins this Equipment is attached to
@@ -45,7 +36,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -63,7 +54,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -82,7 +73,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins, targetTemp);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**
@@ -95,7 +86,7 @@ Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clon
     _tunSensor = clonee.getTunSensor();
     _recirc = clonee.getRecirculator();
 
-    addUpdateFunction();
+    registerUpdateFunction();
 }
 
 /**

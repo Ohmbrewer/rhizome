@@ -158,12 +158,6 @@ namespace Ohmbrewer {
              */
             int _lastReadTime;
 
-        private:
-            /**
-             * Adds the update function for the instance.
-             */
-            void addUpdateFunction();
-
     };
 };
 

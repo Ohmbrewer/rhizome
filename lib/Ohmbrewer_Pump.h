@@ -87,11 +87,6 @@ namespace Ohmbrewer {
              */
             int doUpdate(String args);
 
-        private:
-            /**
-             * Adds the update function for the instance.
-             */
-            void addUpdateFunction();
 
     };
 };
