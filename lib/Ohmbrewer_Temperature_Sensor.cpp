@@ -149,11 +149,41 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
 /**
  * Performs the TemperatureSensor's current task. Expect to use this during loop().
  * This function is called by work().
+ *
+ * This analyzes the connected DS18B20 probes and updates temperature.from_c with the Celsius value.
+ *
+ *
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
-    // TODO: Implement TemperatureSensor::doWork
-    return -1;
+    unsigned long start_time = millis();        //starting time of reading temperature data
+    uint8_t subzero, cel, cel_frac_bits;        //local vars
+    char msg[100];
+    double temp_c;
+    log("Starting measurement");
+    //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
+    DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
+    //If your code has other tasks, you can store the timestamp instead and return when a second has passed.
+    delay(1000);
+
+    /*
+     * This section is where we can filter for the desired probe UID and only report that one. for now we will simply
+     * state that there is only one and use sensors[0] as the probe reading.
+     */
+    uint8_t numsensors = ow_search_sensors(10, sensors);
+    sprintf(msg, "Found %i sensors", numsensors);
+    log(msg);
+    if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &cel_frac_bits) == DS18X20_OK ) {
+        char sign = (subzero) ? '-' : '+';
+        int frac = cel_frac_bits*DS18X20_FRACCONV;
+        temp_c = (double)cel;
+       // temp_c = temp_c + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c
+        Temperature::fromC(temp_c);
+
+    }
+    return (int)(millis()-start_time);
+
+
 }
 
 /**
