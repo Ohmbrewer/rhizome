@@ -168,7 +168,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::TemperatureSensor::doUpdate(String args) {
+int Ohmbrewer::TemperatureSensor::doUpdate(String* args) {
     // TODO: Implement TemperatureSensor::doUpdate
     return -1;
 }

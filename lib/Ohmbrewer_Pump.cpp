@@ -68,7 +68,7 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Pump::doUpdate(String args) {
+int Ohmbrewer::Pump::doUpdate(String* args) {
     // TODO: Implement Pump::doUpdate
     return -1;
 }

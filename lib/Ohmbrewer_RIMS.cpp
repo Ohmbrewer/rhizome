@@ -275,7 +275,7 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doUpdate(String args) {
+int Ohmbrewer::RIMS::doUpdate(String* args) {
     // TODO: Implement RIMS::doUpdate
     return -1;
 }

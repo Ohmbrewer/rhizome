@@ -208,7 +208,7 @@ namespace Ohmbrewer {
              * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            virtual int doUpdate(String args) = 0;
+            virtual int doUpdate(String* args) = 0;
 
             /**
              * Reports which of the Rhizome's pins are occupied by the

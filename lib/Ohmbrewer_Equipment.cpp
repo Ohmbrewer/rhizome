@@ -160,7 +160,7 @@ const int Ohmbrewer::Equipment::display(Ohmbrewer::Screen *screen) {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Equipment::update(String args) {
-    return doUpdate(args);
+    return doUpdate(&args);
 }
 
 /**

@@ -85,7 +85,7 @@ namespace Ohmbrewer {
              * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            int doUpdate(String args);
+            int doUpdate(String* args);
 
     };
 };

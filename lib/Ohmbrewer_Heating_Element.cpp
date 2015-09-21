@@ -68,7 +68,7 @@ int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::HeatingElement::doUpdate(String args) {
+int Ohmbrewer::HeatingElement::doUpdate(String* args) {
     // TODO: Implement HeatingElement::doUpdate
     return -1;
 }

@@ -176,7 +176,7 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
  * This function is called by update().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Pump::doUpdate(String args) {
+int Ohmbrewer::Pump::doUpdate(String* args) {
     // TODO: Implement Pump::doUpdate
     return -1;
 }

@@ -165,7 +165,7 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Relay::doUpdate(String args) {
+int Ohmbrewer::Relay::doUpdate(String* args) {
     // TODO: Implement Relay::doUpdate
     return -1;
 }

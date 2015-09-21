@@ -307,7 +307,7 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate(String args) {
+int Ohmbrewer::Thermostat::doUpdate(String* args) {
     // TODO: Implement Thermostat::doUpdate
     return -1;
 }
