@@ -131,6 +131,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
+    char uid[8];                                //need the unique ID of the probe to search for.
     unsigned long start_time = millis();        //starting time of reading temperature data
     uint8_t subzero, cel, cel_frac_bits;        //local vars
     char msg[100];
@@ -154,8 +155,48 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         temp_c = (double)cel;
        // temp_c = temp_c + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c
         Temperature::fromC(temp_c);
-
     }
+    /*//scanning code
+
+    uint8_t numsensors = ow_search_sensors(10, sensors);
+    sprintf(msg, "Found %i sensors", numsensors);
+    log(msg);
+
+
+    for (uint8_t i=0; i<numsensors; i++){
+     //THIS NEEDS WORK STILL
+        //current probe ID
+        char probe_id[8] = {
+				sensors[(i*OW_ROMCODE_SIZE)+0],
+				sensors[(i*OW_ROMCODE_SIZE)+1],
+				sensors[(i*OW_ROMCODE_SIZE)+2],
+				sensors[(i*OW_ROMCODE_SIZE)+3],
+				sensors[(i*OW_ROMCODE_SIZE)+4],
+				sensors[(i*OW_ROMCODE_SIZE)+5],
+				sensors[(i*OW_ROMCODE_SIZE)+6],
+				sensors[(i*OW_ROMCODE_SIZE)+7]};
+
+        if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
+        {
+            // if current probe matches the probe we are looking for
+            if (uid == probe_id){
+                if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &cel_frac_bits) == DS18X20_OK ) {
+                    char sign = (subzero) ? '-' : '+';
+                    int frac = cel_frac_bits*DS18X20_FRACCONV;
+                    temp_c = (double)cel;
+                   // temp_c = temp_c + (10**(-4)*(double)frac);
+                    Temperature::fromC(temp_c);
+                }
+                else
+                {
+                    // Do Nothing, error?
+                }
+            }
+        }
+    }
+
+
+     */
     return (int)(millis()-start_time);
 
 
