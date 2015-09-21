@@ -141,7 +141,7 @@ namespace Ohmbrewer {
              * This function is called by update().
              * @returns The time taken to run the method
              */
-            int doUpdate();
+            int doUpdate(String* args);
 
             /**
              * Reports which of the Rhizome's pins are occupied by the

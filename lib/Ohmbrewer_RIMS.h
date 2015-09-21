@@ -24,6 +24,17 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+             */
+            const static constexpr char* TYPE_NAME = "rims";
+
+            /**
+             * The Equipment Type
+             * @returns The Equipment type name
+             */
+            virtual const char* getType() const { return RIMS::TYPE_NAME; };
+
+            /**
              * The Tube thermostat
              * @returns The Thermostat object representing the RIMS tube elements
              */
@@ -152,9 +163,10 @@ namespace Ohmbrewer {
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
+             * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            int doUpdate();
+            int doUpdate(String* args);
 
             /**
              * Reports which of the Rhizome's pins are occupied by the

@@ -59,14 +59,6 @@ int Ohmbrewer::Equipment::getID() const {
 }
 
 /**
- * The Equipment Type
- * @returns The Equipment type name
- */
-const char* Ohmbrewer::Equipment::getType() const {
-    return _type;
-}
-
-/**
  * The time at which the Equipment will stop operating.
  * @returns The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  */
@@ -112,12 +104,37 @@ const int Ohmbrewer::Equipment::setCurrentTask(String currentTask) {
  * The Particle event stream to publish Equipment status updates to.
  * @returns The Particle event stream the Equipment expects to publish to.
  */
-String Ohmbrewer::Equipment::getStream() {
+String Ohmbrewer::Equipment::getStream() const {
     String stream = String("/");
     stream.concat(this->getType());
     stream.concat("/");
     stream.concat(this->getID());
     return stream;
+}
+
+/**
+ * The name of the Spark.function for updating this Sprout.
+ * Currently, looks like "type_#" where # is the Sprout's ID number.
+ * Assumes that the buffer is empty!
+ * @param buffer Buffer to fill with the name
+ * @returns The name of the Spark.function for updating this Sprout
+ */
+void Ohmbrewer::Equipment::getUpdateFunctionName(String* buffer) const {
+    buffer->concat(getType());
+    buffer->concat("_");
+    buffer->concat(getID());
+}
+
+/**
+ * Registers the given function name for use with the Particle Cloud as the way to run update().
+ * @param name The name that should appear on the Particle Cloud that will be used to kick off update()
+ * @returns Any error code thrown during registration
+ */
+//int Ohmbrewer::Equipment::registerUpdateFunction(const char* name) {
+int Ohmbrewer::Equipment::registerUpdateFunction() {
+    String updateFunction;
+    getUpdateFunctionName(&updateFunction);
+    return Spark.function(updateFunction.c_str(), [this](const String& args) -> int { return this->update(args); } );
 }
 
 /**
@@ -139,10 +156,11 @@ const int Ohmbrewer::Equipment::display(Ohmbrewer::Screen *screen) {
 
 /**
  * Publishes updates to Ohmbrewer, etc.
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::Equipment::update() {
-    return doUpdate();
+int Ohmbrewer::Equipment::update(String args) {
+    return doUpdate(&args);
 }
 
 /**

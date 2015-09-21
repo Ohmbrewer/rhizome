@@ -6,7 +6,7 @@
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
-    _type = "pump";
+    registerUpdateFunction();
 }
 
 /**
@@ -19,7 +19,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins)
  */
 Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
-    _type = "pump";
+    registerUpdateFunction();
 }
 
 /**
@@ -28,7 +28,7 @@ Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    _type = "pump";
+    registerUpdateFunction();
 }
 
 /**
@@ -65,9 +65,10 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Pump::doUpdate() {
+int Ohmbrewer::Pump::doUpdate(String* args) {
     // TODO: Implement Pump::doUpdate
     return -1;
 }

@@ -21,6 +21,17 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+             */
+            const static constexpr char* TYPE_NAME = "pump";
+
+            /**
+             * The Equipment Type
+             * @returns The Equipment type name
+             */
+            virtual const char* getType() const { return Pump::TYPE_NAME; };
+
+            /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
@@ -71,9 +82,11 @@ namespace Ohmbrewer {
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
+             * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            int doUpdate();
+            int doUpdate(String* args);
+
 
     };
 };

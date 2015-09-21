@@ -49,7 +49,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equ
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
-    _type = "therm";
+    registerUpdateFunction();
 }
 
 /**
@@ -64,7 +64,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
-    _type = "therm";
+    registerUpdateFunction();
 }
 
 /**
@@ -82,7 +82,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(0);
-    _type = "therm";
+    registerUpdateFunction();
 }
 
 /**
@@ -102,7 +102,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
     _heatingElm = new HeatingElement(1,fakePins); // This isn't right
     _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
     _targetTemp = new Temperature(targetTemp);
-    _type = "therm";
+    registerUpdateFunction();
 }
 
 /**
@@ -113,7 +113,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
-    _type = "therm";
+    registerUpdateFunction();
 }
 
 /**
@@ -304,9 +304,10 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate() {
+int Ohmbrewer::Thermostat::doUpdate(String* args) {
     // TODO: Implement Thermostat::doUpdate
     return -1;
 }

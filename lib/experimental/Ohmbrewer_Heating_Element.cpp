@@ -30,7 +30,6 @@ const int Ohmbrewer::HeatingElement::setVoltage(const int voltage) {
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     _voltage = 0;
-    _type = "heat";
 }
 
 /**
@@ -44,7 +43,6 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
     _voltage = 0;
-    _type = "heat";
 }
 
 /**
@@ -59,7 +57,6 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, String currentTask, int voltage) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask)  {
     _voltage = voltage;
-    _type = "heat";
 }
 
 /**
@@ -68,7 +65,6 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  */
 Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Equipment(clonee) {
     _voltage = clonee.getVoltage();
-    _type = "heat";
 }
 
 /**
@@ -177,7 +173,7 @@ int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
  * This function is called by update().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::HeatingElement::doUpdate() {
+int Ohmbrewer::HeatingElement::doUpdate(String* args) {
     // TODO: Implement HeatingElement::doUpdate
     return -1;
 }

@@ -36,7 +36,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, p
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
+    registerUpdateFunction();
 }
 
 /**
@@ -54,7 +54,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
+    registerUpdateFunction();
 }
 
 /**
@@ -73,18 +73,20 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
     _tube = new Thermostat(1, fakePins, targetTemp);
     _tunSensor = new TemperatureSensor(1, fakePins);
     _recirc = new Pump(1,fakePins);
-    _type = "rims";
+    registerUpdateFunction();
 }
 
 /**
  * Copy constructor
+ * FIXME: Copy constructors should probably reset the pins and ID's, no?
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
     _tube = clonee.getTube();
     _tunSensor = clonee.getTunSensor();
     _recirc = clonee.getRecirculator();
-    _type = "rims";
+
+    registerUpdateFunction();
 }
 
 /**
@@ -270,9 +272,10 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doUpdate() {
+int Ohmbrewer::RIMS::doUpdate(String* args) {
     // TODO: Implement RIMS::doUpdate
     return -1;
 }

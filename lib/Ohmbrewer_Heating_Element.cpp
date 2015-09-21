@@ -6,7 +6,7 @@
  * @param pins The list of physical pins this Equipment is attached to
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
-    _type = "heat";
+    registerUpdateFunction();
 }
 
 /**
@@ -19,7 +19,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins) : Ohmbre
  */
 Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stopTime,
                                           bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
-    _type = "heat";
+    registerUpdateFunction();
 }
 
 /**
@@ -28,7 +28,7 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* pins, int stop
  */
 Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    _type = "heat";
+    registerUpdateFunction();
 }
 
 /**
@@ -65,9 +65,10 @@ int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
+ * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::HeatingElement::doUpdate() {
+int Ohmbrewer::HeatingElement::doUpdate(String* args) {
     // TODO: Implement HeatingElement::doUpdate
     return -1;
 }
