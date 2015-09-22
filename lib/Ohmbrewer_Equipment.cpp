@@ -163,7 +163,7 @@ const int Ohmbrewer::Equipment::update(const String &args) {
     unsigned long duration;
     args_map_t argsMap;
 
-    Serial.println(args);
+    // Serial.println(args);
 
     // Parse the supplied arguments into a map to figure out where to put them.
     parseArgs(args, argsMap);
@@ -174,8 +174,8 @@ const int Ohmbrewer::Equipment::update(const String &args) {
     // Now assign the appropriate variables.
     assignArgs(argsMap);
 
-    Serial.print("Still have this in the args buffer:");
-    Serial.println(remainingArgs);
+    // Serial.print("Still have this in the args buffer:");
+    // Serial.println(remainingArgs);
     duration = millis() - start;
     return doUpdate(remainingArgs, argsMap) + duration;
 }
@@ -271,11 +271,11 @@ void Ohmbrewer::Equipment::parseArgs(const String &argsStr, Ohmbrewer::Equipment
     result[String("state")] = state;
     result[String("stop_time")] = stopTime;
 
-    Serial.println("Got these results: ");
-    Serial.println(id);
-    Serial.println(currentTask);
-    Serial.println(state);
-    Serial.println(stopTime);
+    // Serial.println("Got these results: ");
+    // Serial.println(id);
+    // Serial.println(currentTask);
+    // Serial.println(state);
+    // Serial.println(stopTime);
 
     // Clear out that dynamically allocated buffer
     delete params;
