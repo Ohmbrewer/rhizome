@@ -27,6 +27,12 @@ set(SOURCE_FILES
     ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.cpp
     ../../Adafruit_mfGFX_IDE/firmware/fonts.h
     ../../Adafruit_mfGFX_IDE/firmware/fonts.cpp
+    ../../particle-ds18x20/firmware/ds18x20.cpp
+    ../../particle-ds18x20/firmware/ds18x20.h
+    ../../particle-ds18x20/firmware/crc8.cpp
+    ../../particle-ds18x20/firmware/crc8.h
+    ../../particle-ds18x20/firmware/onewire.cpp
+    ../../particle-ds18x20/firmware/onewire.h
     ../lib/Ohmbrewer_Screen.h
     ../lib/Ohmbrewer_Screen.cpp)
 

@@ -132,7 +132,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     char uid[8];                                //need the unique ID of the probe to search for.
-    unsigned long start_time = millis();        //starting time of reading temperature data
+    int start_time = millis();        //starting time of reading temperature data
     uint8_t subzero, cel, cel_frac_bits;        //local vars
     char msg[100];
     double temp_c;
@@ -153,8 +153,8 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         char sign = (subzero) ? '-' : '+';
         int frac = cel_frac_bits*DS18X20_FRACCONV;
         temp_c = (double)cel;
-       // temp_c = temp_c + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c
-        Temperature::fromC(temp_c);
+       // temp_c = temp_c + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c ??
+        Temperature::fromC(temp_c); //TODO still need access to a specific temperature object to update
     }
     /*//scanning code
 
@@ -197,7 +197,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
 
 
      */
-    return (int)(millis()-start_time);
+    return (millis()-start_time);
 
 
 }
