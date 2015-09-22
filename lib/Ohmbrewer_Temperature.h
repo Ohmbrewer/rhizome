@@ -8,6 +8,7 @@
 
 #include "application.h"
 
+
 namespace Ohmbrewer {
 
     class Temperature {

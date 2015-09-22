@@ -14,6 +14,7 @@
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
+#include "ds18x20.h"
 
 namespace Ohmbrewer {
 
