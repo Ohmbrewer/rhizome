@@ -158,10 +158,10 @@ void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipmen
             result[String("element_state")] = elmState;
         }
 
-        Serial.println("Got these additional results: ");
-        Serial.println(targetTemp);
-        Serial.println(sensorState);
-        Serial.println(elmState);
+        // Serial.println("Got these additional Thermostat results: ");
+        // Serial.println(targetTemp);
+        // Serial.println(sensorState);
+        // Serial.println(elmState);
 
         // Clear out that dynamically allocated buffer
         delete params;

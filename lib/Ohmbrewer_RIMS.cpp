@@ -134,10 +134,10 @@ void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::arg
 
         result[tubeKey] = argsStr.substring(tunSensorState.length() + rPumpState.length() + 2);
 
-        Serial.println("Got these additional results: ");
-        Serial.println(tunSensorState);
-        Serial.println(rPumpState);
-        Serial.println(result[tubeKey]);
+        // Serial.println("Got these additional RIMS results: ");
+        // Serial.println(tunSensorState);
+        // Serial.println(rPumpState);
+        // Serial.println(result[tubeKey]);
 
         // Clear out that dynamically allocated buffer
         delete params;
