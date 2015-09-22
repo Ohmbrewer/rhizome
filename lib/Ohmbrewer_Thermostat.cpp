@@ -138,31 +138,35 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
-    char* params = new char[argsStr.length() + 1];
-    strcpy(params, argsStr.c_str());
 
-    // Parse the parameters
-    String targetTemp  = String(strtok(params, ","));
-    String sensorState = String(strtok(NULL, ","));
-    String elmState    = String(strtok(NULL, ","));
+    if(argsStr.length() > 0) {
+        char* params = new char[argsStr.length() + 1];
+        strcpy(params, argsStr.c_str());
 
-    result[String("target_temp")] = targetTemp;
+        // Parse the parameters
+        String targetTemp  = String(strtok(params, ","));
+        String sensorState = String(strtok(NULL, ","));
+        String elmState    = String(strtok(NULL, ","));
 
-    // Save them to the map
-    if(sensorState.length() > 0) {
-        result[String("sensor_state")] = sensorState;
+        result[String("target_temp")] = targetTemp;
+
+        // Save them to the map
+        if(sensorState.length() > 0) {
+            result[String("sensor_state")] = sensorState;
+        }
+        if(sensorState.length() > 0) {
+            result[String("element_state")] = elmState;
+        }
+
+        Serial.println("Got these additional results: ");
+        Serial.println(targetTemp);
+        Serial.println(sensorState);
+        Serial.println(elmState);
+
+        // Clear out that dynamically allocated buffer
+        delete params;
     }
-    if(sensorState.length() > 0) {
-        result[String("element_state")] = elmState;
-    }
 
-    Serial.println("Got these additional results: ");
-    Serial.println(targetTemp);
-    Serial.println(sensorState);
-    Serial.println(elmState);
-
-    // Clear out that dynamically allocated buffer
-    delete params;
 }
 
 /**
@@ -337,7 +341,7 @@ int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map
         String targetKey = String("target_temp");
         String sensorKey = String("sensor_state");
         String elmKey = String("element_state");
-        // Process the parameters for the TemperatureSensor
+
         parseArgs(args, argsMap);
 
         // If there are any arguments, the will be a new Target Temperature value
@@ -358,9 +362,9 @@ int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map
 
         if(argsMap.count(elmKey) != 0) {
             if(argsMap[elmKey].equalsIgnoreCase("ON")) {
-                getSensor()->setState(true);
+                getElement()->setState(true);
             } else if(argsMap[elmKey].equalsIgnoreCase("OFF")) {
-                getSensor()->setState(false);
+                getElement()->setState(false);
             } else if(argsMap[elmKey].equalsIgnoreCase("--")) {
                 // Do nothing. Intentional.
             } else {
