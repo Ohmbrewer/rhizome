@@ -170,8 +170,9 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
-    // TODO: Implement TemperatureSensor::doUpdate
-    return -1;
+    unsigned long start = millis();
+    // Nothing to do as it is...
+    return millis() - start;
 }
 
 /**
