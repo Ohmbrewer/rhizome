@@ -81,5 +81,5 @@ int Ohmbrewer::Pump::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::Pump::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
-    Relay::parseArgs(argsStr, result);
+    // Nothing special to parse out for this class.
 }

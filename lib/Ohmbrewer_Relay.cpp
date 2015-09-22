@@ -57,7 +57,7 @@ Ohmbrewer::Relay::~Relay() {
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::Relay::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
-    Equipment::parseArgs(argsStr, result);
+    // Nothing special to parse out for this class.
 }
 
 /**

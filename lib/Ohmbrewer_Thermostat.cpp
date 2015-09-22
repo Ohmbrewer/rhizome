@@ -138,7 +138,31 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
-    Equipment::parseArgs(argsStr, result);
+    char* params = new char[argsStr.length() + 1];
+    strcpy(params, argsStr.c_str());
+
+    // Parse the parameters
+    String targetTemp  = String(strtok(params, ","));
+    String sensorState = String(strtok(NULL, ","));
+    String elmState    = String(strtok(NULL, ","));
+
+    result[String("target_temp")] = targetTemp;
+
+    // Save them to the map
+    if(sensorState.length() > 0) {
+        result[String("sensor_state")] = sensorState;
+    }
+    if(sensorState.length() > 0) {
+        result[String("element_state")] = elmState;
+    }
+
+    Serial.println("Got these additional results: ");
+    Serial.println(targetTemp);
+    Serial.println(sensorState);
+    Serial.println(elmState);
+
+    // Clear out that dynamically allocated buffer
+    delete params;
 }
 
 /**
@@ -306,8 +330,48 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
-    // TODO: Implement Thermostat::doUpdate
-    return -1;
+    unsigned long start = millis();
+
+    // If there are any remaining parameters
+    if(args.length() > 0) {
+        String targetKey = String("target_temp");
+        String sensorKey = String("sensor_state");
+        String elmKey = String("element_state");
+        // Process the parameters for the TemperatureSensor
+        parseArgs(args, argsMap);
+
+        // If there are any arguments, the will be a new Target Temperature value
+        setTargetTemp(argsMap[targetKey].toFloat());
+
+        // The remaining settings are optional/convenience parameters
+        if(argsMap.count(sensorKey) != 0) {
+            if(argsMap[sensorKey].equalsIgnoreCase("ON")) {
+                getSensor()->setState(true);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("OFF")) {
+                getSensor()->setState(false);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+        if(argsMap.count(elmKey) != 0) {
+            if(argsMap[elmKey].equalsIgnoreCase("ON")) {
+                getSensor()->setState(true);
+            } else if(argsMap[elmKey].equalsIgnoreCase("OFF")) {
+                getSensor()->setState(false);
+            } else if(argsMap[elmKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+    }
+
+
+    return millis() - start;
 }
 
 /**

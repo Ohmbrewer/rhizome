@@ -81,7 +81,7 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::TemperatureSensor::parseArgs(const String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
-    Equipment::parseArgs(args, argsMap);
+    // Nothing special to parse out for this class.
 }
 
 /**
