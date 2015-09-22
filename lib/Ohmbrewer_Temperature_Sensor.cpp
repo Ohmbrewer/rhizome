@@ -132,10 +132,10 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     //char uid[8];                                //need the unique ID of the probe to search for.
-    int start_time = millis();        //starting time of reading temperature data
-    uint8_t subzero, cel, cel_frac_bits;        //local vars
+    int startTime = millis();        //starting time of reading temperature data
+    uint8_t subzero, cel, celFracBits;        //local vars
     char msg[100];
-    double temp_c;
+    double tempC;
     log("Starting measurement");
     //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
     DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
@@ -149,12 +149,15 @@ int Ohmbrewer::TemperatureSensor::doWork() {
     uint8_t numsensors = ow_search_sensors(10, sensors);
     sprintf(msg, "Found %i sensors", numsensors);
     log(msg);
-    if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &cel_frac_bits) == DS18X20_OK ) {
+    if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
         char sign = (subzero) ? '-' : '+';
-        int frac = cel_frac_bits*DS18X20_FRACCONV;
-        temp_c = (double)cel;
-       // temp_c = temp_c + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c ??
-        getTemp()->fromC(temp_c);
+        int frac = celFracBits*DS18X20_FRACCONV;
+        tempC = (double)cel;
+        if (sign == '-'){
+            tempC = tempC * -1;
+        }
+       // tempC = tempC + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c ??
+        getTemp()->fromC(tempC);
     }
     /*//scanning code to filter out a desired probe.
 
@@ -166,7 +169,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
     for (uint8_t i=0; i<numsensors; i++){
      //THIS NEEDS WORK STILL
         //current probe ID
-        char probe_id[8] = {
+        char probeId[8] = {
 				sensors[(i*OW_ROMCODE_SIZE)+0],
 				sensors[(i*OW_ROMCODE_SIZE)+1],
 				sensors[(i*OW_ROMCODE_SIZE)+2],
@@ -179,13 +182,13 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
         {
             // if current probe matches the probe we are looking for
-            if (uid == probe_id){
-                if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &cel_frac_bits) == DS18X20_OK ) {
+            if (uid == probeId){
+                if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
                     char sign = (subzero) ? '-' : '+';
-                    int frac = cel_frac_bits*DS18X20_FRACCONV;
-                    temp_c = (double)cel;
-                   // temp_c = temp_c + (10**(-4)*(double)frac);
-                    Temperature::fromC(temp_c);
+                    int frac = celFracBits*DS18X20_FRACCONV;
+                    tempC = (double)cel;
+                   // tempC = tempC + (10**(-4)*(double)frac);
+                    getTemp()->fromC(tempC);
                 }
                 else
                 {
@@ -197,7 +200,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
 
 
      */
-    return (millis()-start_time);
+    return (millis()-startTime);
 
 
 }
