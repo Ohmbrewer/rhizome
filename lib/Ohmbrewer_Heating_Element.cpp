@@ -81,6 +81,6 @@ int Ohmbrewer::HeatingElement::doUpdate(String &args, Ohmbrewer::Equipment::args
  * @param result A map representing the key/value pairs for the update
  */
 void Ohmbrewer::HeatingElement::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
-    Relay::parseArgs(argsStr, result);
+    // Nothing special to parse out for this class.
 }
 
