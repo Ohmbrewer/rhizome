@@ -26,6 +26,15 @@ namespace Ohmbrewer {
             const static constexpr char* TYPE_NAME = "heat";
 
             /**
+             * Specifies the interface for arguments sent to this Equipment's associated function.
+             * Parses the supplied string into an array of strings for setting the Equipment's values.
+             * Most likely will be called during update().
+             * @param argsStr The arguments supplied as an update to the Rhizome.
+             * @param result A map representing the key/value pairs for the update
+             */
+            static void parseArgs(const String &argsStr, args_map_t &result);
+
+            /**
              * The Equipment Type
              * @returns The Equipment type name
              */
@@ -83,9 +92,10 @@ namespace Ohmbrewer {
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
              * @param args The argument string passed into the Particle Cloud
+             * @param argsMap A map representing the key/value pairs for the update
              * @returns The time taken to run the method
              */
-            int doUpdate(String* args);
+            int doUpdate(String &args, args_map_t &argsMap);
 
     };
 };

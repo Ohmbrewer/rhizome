@@ -74,14 +74,14 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
 // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
 /**
- * Specifies the interface for arguments sent to this Equipment's associated function. 
+ * Specifies the interface for arguments sent to this Equipment's associated function.
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const String argsStr) {
-    return Equipment::parseArgs(argsStr);
+void Ohmbrewer::TemperatureSensor::parseArgs(const String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    Equipment::parseArgs(args, argsMap);
 }
 
 /**
@@ -166,9 +166,10 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::TemperatureSensor::doUpdate(String* args) {
+int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
     // TODO: Implement TemperatureSensor::doUpdate
     return -1;
 }

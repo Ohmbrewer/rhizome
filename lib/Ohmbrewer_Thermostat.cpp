@@ -135,13 +135,10 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Thermostat::parseArgs(const String argsStr) {
-    // TODO: Implement Thermostat::parseArgs
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+    Equipment::parseArgs(argsStr, result);
 }
 
 /**
@@ -305,9 +302,10 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate(String* args) {
+int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
     // TODO: Implement Thermostat::doUpdate
     return -1;
 }

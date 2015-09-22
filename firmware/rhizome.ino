@@ -44,6 +44,7 @@ unsigned long lastUpdate = millis();
  * Does any preliminary setup work before the Rhizome starts the operation loop.
  */
 void setup() {
+    Serial.begin(9600); // Enable serial for debugging messages
     String fakeTask = "fake";
 
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
