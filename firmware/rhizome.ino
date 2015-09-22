@@ -83,17 +83,17 @@ void setup() {
  * The meat of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
-    if((millis() - lastUpdate) > 10000) {
-        // Toggle the last relay every 10 seconds, for illustration.
-//        sprouts.back()->setState(sprouts.back()->isOff()); // The last HeatingElement
-//        ((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
-//                                               ->setState(!((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
-//                                                                                                  ->getState()); // The Thermostat's HeatingElement
-        ((Ohmbrewer::RIMS*)sprouts.front())->getTube()
-                                           ->getElement()
-                                           ->toggleState();
-        lastUpdate = millis();
-    }
+//    if((millis() - lastUpdate) > 10000) {
+//        // Toggle the last relay every 10 seconds, for illustration.
+////        sprouts.back()->setState(sprouts.back()->isOff()); // The last HeatingElement
+////        ((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
+////                                               ->setState(!((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
+////                                                                                                  ->getState()); // The Thermostat's HeatingElement
+//        ((Ohmbrewer::RIMS*)sprouts.front())->getTube()
+//                                           ->getElement()
+//                                           ->toggleState();
+//        lastUpdate = millis();
+//    }
     screen.refreshDisplay();
 }
 
