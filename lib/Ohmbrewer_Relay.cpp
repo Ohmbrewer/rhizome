@@ -50,33 +50,14 @@ Ohmbrewer::Relay::~Relay() {
 // friend std::ostream& operator<<( std::ostream& os, Relay const& relay);
 
 /**
- * Specifies the interface for arguments sent to this Equipment's associated function. 
+ * Specifies the interface for arguments sent to this Equipment's associated function.
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Relay::parseArgs(const String argsStr) {
-    args_map_t result;
-    char* params = new char[argsStr.length() + 1];
-    strcpy(params, argsStr.c_str());
-
-    // Parse the parameters
-    String id          = String(strtok(params, ","));
-    String currentTask = String(strtok(params, ","));
-    String state       = String(strtok(NULL, ","));
-    String stopTime    = String(strtok(NULL, ","));
-
-    // Save them to the map
-    result[String("id")] = id;
-    result[String("current_task")] = currentTask;
-    result[String("state")] = state;
-    result[String("stopTime")] = stopTime;
-
-    // Clear out that dynamically allocated buffer
-    delete params;
-
-    return result;
+void Ohmbrewer::Relay::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+    // Nothing special to parse out for this class.
 }
 
 /**
@@ -163,11 +144,13 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Relay::doUpdate(String* args) {
-    // TODO: Implement Relay::doUpdate
-    return -1;
+int Ohmbrewer::Relay::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    unsigned long start = millis();
+    // Nothing to do as it is...
+    return millis() - start;
 }
 
 /**

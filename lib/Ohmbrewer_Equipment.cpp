@@ -130,7 +130,6 @@ void Ohmbrewer::Equipment::getUpdateFunctionName(String* buffer) const {
  * @param name The name that should appear on the Particle Cloud that will be used to kick off update()
  * @returns Any error code thrown during registration
  */
-//int Ohmbrewer::Equipment::registerUpdateFunction(const char* name) {
 int Ohmbrewer::Equipment::registerUpdateFunction() {
     String updateFunction;
     getUpdateFunctionName(&updateFunction);
@@ -159,8 +158,65 @@ const int Ohmbrewer::Equipment::display(Ohmbrewer::Screen *screen) {
  * @param args The argument string passed into the Particle Cloud
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Equipment::update(String args) {
-    return doUpdate(&args);
+const int Ohmbrewer::Equipment::update(const String &args) {
+    unsigned long start = millis();
+    unsigned long duration;
+    args_map_t argsMap;
+
+    // Serial.println(args);
+
+    // Parse the supplied arguments into a map to figure out where to put them.
+    parseArgs(args, argsMap);
+
+    // Trim the argument string for further processing.
+    String remainingArgs = cleanArgsString(args, argsMap);
+
+    // Now assign the appropriate variables.
+    assignArgs(argsMap);
+
+    // Serial.print("Still have this in the args buffer:");
+    // Serial.println(remainingArgs);
+    duration = millis() - start;
+    return doUpdate(remainingArgs, argsMap) + duration;
+}
+
+/**
+ * Publishes updates to Ohmbrewer, etc.
+ * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
+ * @returns The time taken to run the method
+ */
+String Ohmbrewer::Equipment::cleanArgsString(const String &args, args_map_t &argsMap) {
+    unsigned int firstArgsLen = argsMap[String("id")].length() + argsMap[String("current_task")].length() +
+                                argsMap[String("state")].length() + argsMap[String("stop_time")].length() + 4;
+
+    firstArgsLen = (args.length() <= firstArgsLen ? args.length() : firstArgsLen); // If there's only 4 args, we've miscounted the commas.
+
+    return args.substring(firstArgsLen);
+}
+
+/**
+ * Publishes updates to Ohmbrewer, etc.
+ * @param argsMap A map representing the key/value pairs for the update
+ * @returns Any error codes raised during assignment
+ */
+int Ohmbrewer::Equipment::assignArgs(args_map_t &argsMap) {
+
+    setCurrentTask(argsMap[String("current_task")]);
+
+    if(argsMap[String("state")].equalsIgnoreCase("ON")) {
+        setState(true);
+    } else if(argsMap[String("state")].equalsIgnoreCase("OFF")) {
+        setState(false);
+    } else if(argsMap[String("state")].equalsIgnoreCase("--")) {
+        // Do nothing. Intentional.
+    } else {
+        // Do nothing. TODO: Should probably raise an error code...
+    }
+
+    setStopTime(argsMap[String("stop_time")].toInt());
+
+    return 0;
 }
 
 /**
@@ -193,20 +249,19 @@ Ohmbrewer::Equipment::~Equipment() {
 // }
 
 /**
- * Specifies the interface for arguments sent to this Equipment's associated function. 
+ * Specifies the interface for arguments sent to this Equipment's associated function.
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Equipment::parseArgs(const String argsStr) {
-    args_map_t result;
+void Ohmbrewer::Equipment::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
     char* params = new char[argsStr.length() + 1];
     strcpy(params, argsStr.c_str());
 
     // Parse the parameters
     String id          = String(strtok(params, ","));
-    String currentTask = String(strtok(params, ","));
+    String currentTask = String(strtok(NULL, ","));
     String state       = String(strtok(NULL, ","));
     String stopTime    = String(strtok(NULL, ","));
 
@@ -214,11 +269,15 @@ Ohmbrewer::Equipment::args_map_t Ohmbrewer::Equipment::parseArgs(const String ar
     result[String("id")] = id;
     result[String("current_task")] = currentTask;
     result[String("state")] = state;
-    result[String("stopTime")] = stopTime;
+    result[String("stop_time")] = stopTime;
+
+    // Serial.println("Got these results: ");
+    // Serial.println(id);
+    // Serial.println(currentTask);
+    // Serial.println(state);
+    // Serial.println(stopTime);
 
     // Clear out that dynamically allocated buffer
     delete params;
-
-    return result;
 }
 

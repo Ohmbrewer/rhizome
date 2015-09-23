@@ -66,9 +66,20 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Pump::doUpdate(String* args) {
-    // TODO: Implement Pump::doUpdate
-    return -1;
+int Ohmbrewer::Pump::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    return Relay::doUpdate(args, argsMap);
+}
+
+/**
+ * Specifies the interface for arguments sent to this Equipment's associated function.
+ * Parses the supplied string into an array of strings for setting the Equipment's values.
+ * Most likely will be called during update().
+ * @param argsStr The arguments supplied as an update to the Rhizome.
+ * @param result A map representing the key/value pairs for the update
+ */
+void Ohmbrewer::Pump::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+    // Nothing special to parse out for this class.
 }

@@ -108,13 +108,41 @@ Ohmbrewer::RIMS::~RIMS() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::RIMS::parseArgs(const String argsStr) {
-    // TODO: Implement RIMS::parseArgs
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+
+    if(argsStr.length() > 0) {
+        // FIXME These should probably be converted into private const variables
+        String tunSensorKey = String("tun_sensor_state");
+        String rPumpKey = String("r_pump_state");
+        String tubeKey = String("tube_params");
+        char* params = new char[argsStr.length() + 1];
+        strcpy(params, argsStr.c_str());
+
+        // Parse the parameters
+        String tunSensorState = String(strtok(params, ","));
+        String rPumpState     = String(strtok(NULL, ","));
+
+        // Save them to the map
+        if(tunSensorState.length() > 0) {
+            result[tunSensorKey] = tunSensorState;
+        }
+        if(rPumpState.length() > 0) {
+            result[rPumpKey] = rPumpState;
+        }
+
+        result[tubeKey] = argsStr.substring(tunSensorState.length() + rPumpState.length() + 2);
+
+        // Serial.println("Got these additional RIMS results: ");
+        // Serial.println(tunSensorState);
+        // Serial.println(rPumpState);
+        // Serial.println(result[tubeKey]);
+
+        // Clear out that dynamically allocated buffer
+        delete params;
+    }
+
 }
 
 /**
@@ -273,11 +301,55 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doUpdate(String* args) {
-    // TODO: Implement RIMS::doUpdate
-    return -1;
+int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    unsigned long start = millis();
+
+    // If there are any remaining parameters
+    if(args.length() > 0) {
+        String tunSensorKey = String("tun_sensor_state");
+        String rPumpKey = String("r_pump_state");
+        String tubeKey = String("tube_params");
+
+        parseArgs(args, argsMap);
+
+        // The remaining settings are optional/convenience parameters
+        if(argsMap.count(tunSensorKey) != 0) {
+            if(argsMap[tunSensorKey].equalsIgnoreCase("ON")) {
+                getTunSensor()->setState(true);
+            } else if(argsMap[tunSensorKey].equalsIgnoreCase("OFF")) {
+                getTunSensor()->setState(false);
+            } else if(argsMap[tunSensorKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+        if(argsMap.count(rPumpKey) != 0) {
+            if(argsMap[rPumpKey].equalsIgnoreCase("ON")) {
+                getRecirculator()->setState(true);
+            } else if(argsMap[rPumpKey].equalsIgnoreCase("OFF")) {
+                getRecirculator()->setState(false);
+            } else if(argsMap[rPumpKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+
+        if(argsMap.count(tubeKey) != 0) {
+            // Pass the remaining parameters down to the Tube (a Thermostat)
+            getTube()->doUpdate(argsMap[tubeKey], argsMap);
+        }
+
+    }
+
+
+    return millis() - start;
 }
 
 /**

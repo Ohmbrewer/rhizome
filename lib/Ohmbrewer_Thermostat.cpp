@@ -135,13 +135,38 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Thermostat::parseArgs(const String argsStr) {
-    // TODO: Implement Thermostat::parseArgs
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+
+    if(argsStr.length() > 0) {
+        char* params = new char[argsStr.length() + 1];
+        strcpy(params, argsStr.c_str());
+
+        // Parse the parameters
+        String targetTemp  = String(strtok(params, ","));
+        String sensorState = String(strtok(NULL, ","));
+        String elmState    = String(strtok(NULL, ","));
+
+        result[String("target_temp")] = targetTemp;
+
+        // Save them to the map
+        if(sensorState.length() > 0) {
+            result[String("sensor_state")] = sensorState;
+        }
+        if(sensorState.length() > 0) {
+            result[String("element_state")] = elmState;
+        }
+
+        // Serial.println("Got these additional Thermostat results: ");
+        // Serial.println(targetTemp);
+        // Serial.println(sensorState);
+        // Serial.println(elmState);
+
+        // Clear out that dynamically allocated buffer
+        delete params;
+    }
+
 }
 
 /**
@@ -305,11 +330,52 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate(String* args) {
-    // TODO: Implement Thermostat::doUpdate
-    return -1;
+int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    unsigned long start = millis();
+
+    // If there are any remaining parameters
+    if(args.length() > 0) {
+        String targetKey = String("target_temp");
+        String sensorKey = String("sensor_state");
+        String elmKey = String("element_state");
+
+        parseArgs(args, argsMap);
+
+        // If there are any arguments, the will be a new Target Temperature value
+        setTargetTemp(argsMap[targetKey].toFloat());
+
+        // The remaining settings are optional/convenience parameters
+        if(argsMap.count(sensorKey) != 0) {
+            if(argsMap[sensorKey].equalsIgnoreCase("ON")) {
+                getSensor()->setState(true);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("OFF")) {
+                getSensor()->setState(false);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+        if(argsMap.count(elmKey) != 0) {
+            if(argsMap[elmKey].equalsIgnoreCase("ON")) {
+                getElement()->setState(true);
+            } else if(argsMap[elmKey].equalsIgnoreCase("OFF")) {
+                getElement()->setState(false);
+            } else if(argsMap[elmKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+    }
+
+
+    return millis() - start;
 }
 
 /**
