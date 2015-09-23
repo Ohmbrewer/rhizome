@@ -36,7 +36,7 @@ namespace Ohmbrewer {
 
             /**
              * The desired target temperature. Defaults to Celsius
-             * @returns The target temperature in Celsius
+             * @returns The target temperature in Celsius, as a Temperature object pointer
              */
             Temperature* getTargetTemp() const;
 
@@ -62,43 +62,43 @@ namespace Ohmbrewer {
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param pins The list of physical pins this Thermostat is attached to
              */
             Thermostat(int id, std::list<int>* pins);
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param pins The list of physical pins this Thermostat is attached to
              * @param targetTemp The new target temperature in Celsius
              */
             Thermostat(int id, std::list<int>* pins, const double targetTemp);
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
-             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
-             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
-             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param pins The list of physical pins this Thermostat is attached to
+             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              */
             Thermostat(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
-             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
-             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
-             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param pins The list of physical pins this Thermostat is attached to
+             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
             Thermostat(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy Constructor
-             * @param clonee The Equipment object to copy
+             * @param clonee The Thermostat object to copy
              */
             Thermostat(const Thermostat& clonee);
             
@@ -113,8 +113,8 @@ namespace Ohmbrewer {
             // friend std::ostream& operator<<( std::ostream& os, Thermostat const& thermostat);
 
             /**
-             * Specifies the interface for arguments sent to this Equipment's associated function.
-             * Parses the supplied string into an array of strings for setting the Equipment's values.
+             * Specifies the interface for arguments sent to this Thermostat's associated function.
+             * Parses the supplied string into an array of strings for setting the Thermostat's values.
              * Most likely will be called during update().
              * @param argsStr The arguments supplied as an update to the Rhizome.
              * @param result A map representing the key/value pairs for the update
@@ -122,7 +122,7 @@ namespace Ohmbrewer {
             static void parseArgs(const String &argsStr, args_map_t &result);
 
             /**
-             * Sets the Equipment state. True => On, False => Off
+             * Sets the Thermostat state. True => On, False => Off
              * This turns *EVERYTHING* on, so watch out. You may want to turn the components on individually instead.
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @returns The time taken to run the method
@@ -130,25 +130,25 @@ namespace Ohmbrewer {
             const int setState(const bool);
 
             /**
-             * The Equipment state. True => On, False => Off
+             * The Thermostat state. True => On, False => Off
              * @returns True => On, False => Off
              */
             bool getState() const;
 
             /**
-             * True if the Equipment state is On.
+             * True if the Thermostat state is On.
              * @returns Whether the Equipment is turned ON
              */
             bool isOn() const;
 
             /**
-             * True if the Equipment state is Off.
+             * True if the Thermostat state is Off.
              * @returns Whether the Equipment is turned OFF
              */
             bool isOff() const;
 
             /**
-             * Performs the Equipment's current task. Expect to use this during loop().
+             * Performs the Thermostat's current task. Expect to use this during loop().
              * This function is called by work().
              * @returns The time taken to run the method
              */
@@ -195,7 +195,7 @@ namespace Ohmbrewer {
             /**
              * Reports which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the Equipment is connected to.
+             * @returns The list of physical pins that the Thermostat is connected to.
              */
             std::list<int>* whichPins() const;
 
@@ -204,10 +204,12 @@ namespace Ohmbrewer {
              * The thermostat's heating element
              */
             HeatingElement* _heatingElm;
+
             /**
              * The thermostat's temperature sensor
              */
             TemperatureSensor* _tempSensor;
+
             /**
              * The desired operating temperature
              */
