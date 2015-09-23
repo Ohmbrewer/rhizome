@@ -54,7 +54,7 @@ void setup() {
 //    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
 //
 //    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
-//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(1337);
+//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(-20);
 
 // EX 2: A Thermostat
 //    sprouts.push_back(new Ohmbrewer::Thermostat( 1, new std::list<int>(1,0), 100 ));
