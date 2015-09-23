@@ -17,9 +17,9 @@ namespace Ohmbrewer {
 
     class Publisher {
 
-        typedef std::map<String, String> publish_map_t;
-
         public:
+
+            typedef std::map<String, String> publish_map_t;
 
             /**
              * The JSON representation of the provided keys and values.
@@ -40,7 +40,7 @@ namespace Ohmbrewer {
              * @param stream The Particle cloud event stream to publish to
              * @param data A map of data to publish as a JSON.
              */
-            Publisher(const String stream, const publish_map_t &todo);
+            Publisher(String *stream, publish_map_t *data);
             
             /**
              * Destructor
@@ -51,12 +51,12 @@ namespace Ohmbrewer {
             /**
              * The map of the JSON objects to publish, in order of presentation
              */
-            publish_map_t _data;
+            publish_map_t* _data;
 
             /**
              * The stream to publish to
              */
-            String _stream;
+            String* _stream;
     };
 };
 
