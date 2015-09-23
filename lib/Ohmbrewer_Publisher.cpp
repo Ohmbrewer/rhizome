@@ -9,13 +9,13 @@
 String Ohmbrewer::Publisher::toJSON() const {
     String returnVal = String("{");
 
-    for(publish_map_t::const_iterator itr = _data.begin(); itr != _data.end(); ++itr) {
+    for(publish_map_t::const_iterator itr = _data->begin(); itr != _data->end(); ++itr) {
         returnVal.concat(" \"");
         returnVal.concat(itr->first);
         returnVal.concat("\": \"");
         returnVal.concat(itr->second);
         returnVal.concat("\"");
-        if(itr->first != _data.rbegin()->first) {
+        if(itr->first != _data->rbegin()->first) {
             returnVal.concat(",");
         }
     }
@@ -31,7 +31,7 @@ String Ohmbrewer::Publisher::toJSON() const {
 int Ohmbrewer::Publisher::publish() const {
     unsigned long start = millis();
 
-    Spark.publish(_stream, this->toJSON(), 30, PRIVATE);
+    Spark.publish(*_stream, toJSON(), 30, PRIVATE);
 
     return start - millis();
 }
@@ -41,7 +41,7 @@ int Ohmbrewer::Publisher::publish() const {
  * @param stream The Particle cloud event stream to publish to
  * @param data A map of data to publish as a JSON.
  */
-Ohmbrewer::Publisher::Publisher(const String stream, const publish_map_t &data) {
+Ohmbrewer::Publisher::Publisher(String *stream, publish_map_t *data) {
     _stream = stream;
     _data = data;
 }
@@ -50,5 +50,5 @@ Ohmbrewer::Publisher::Publisher(const String stream, const publish_map_t &data) 
  * Destructor
  */
 Ohmbrewer::Publisher::~Publisher() {
-    // Nothing to do here...
+    delete _stream;
 }
