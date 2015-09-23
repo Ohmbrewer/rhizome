@@ -139,10 +139,10 @@ int Ohmbrewer::TemperatureSensor::doWork() {
 int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char relay_id[2];
-    char tempStr [24];
+    char tempStr [10];
 
     sprintf(relay_id,"%d", _id);
-    sprintf(tempStr, "%2.2f", getTemp()->c());
+    getTemp()->toStrC(tempStr);
 
     // Print a fancy identifier
     screen->print(" [");
@@ -154,7 +154,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     screen->print("]: ");
 
     // Print the temperature
-    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->println(tempStr);
 
     screen->resetTextColor();
