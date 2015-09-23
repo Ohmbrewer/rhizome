@@ -244,15 +244,15 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
         color = screen->CYAN;
     }
 
-    displayTemp(getSensor()->getTemp()->c(), "Current: ", color, screen);
+    displayTemp(getSensor()->getTemp(), "Current: ", color, screen);
 
     // Show a warning if the Heating Element is active
     if(getElement()->isOn()) {
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->print("  ON");
+        screen->print(" ON");
     } else {
         screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
-        screen->print("  ");
+        screen->print(" ");
         screen->writeBlock();
         screen->writeBlock();
     }
@@ -269,7 +269,7 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
  */
 unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    displayTemp(getTargetTemp()->c(), "Target:  ", screen->YELLOW, screen);
+    displayTemp(getTargetTemp(), "Target:  ", screen->YELLOW, screen);
     screen->println("");
     return micros() - start;
 }
@@ -281,11 +281,10 @@ unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen
  * @param color The color of the temperature text
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    char tempStr [24];
-
-    sprintf(tempStr, "%2.2f", temp);
+    char tempStr [10];
+    temp->toStrC(tempStr);
 
     // Print the label
     screen->resetTextColor();

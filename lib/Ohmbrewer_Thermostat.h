@@ -182,7 +182,7 @@ namespace Ohmbrewer {
              * @param color The color of the temperature text
              * @returns Time it took to run the function
              */
-            unsigned long displayTemp(double temp, char* label, uint16_t color, Screen *screen);
+            unsigned long displayTemp(const Temperature *temp, char* label, uint16_t color, Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.
