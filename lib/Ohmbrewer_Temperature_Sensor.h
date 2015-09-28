@@ -15,6 +15,7 @@
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
 #include "ds18x20.h"
+#include "onewire.h"
 
 namespace Ohmbrewer {
 
