@@ -156,12 +156,14 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
-    //char uid[8];                                //need the unique ID of the probe to search for.
+    //char uid[8];                   //need the unique ID of the probe to search for.
+    uint8_t sensors[80];
+
     int startTime = millis();        //starting time of reading temperature data
     uint8_t subzero, cel, celFracBits;        //local vars
     char msg[100];
     double tempC;
-    log("Starting measurement");
+    //log("Starting measurement");
     //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
     DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
     //If your code has other tasks, you can store the timestamp instead and return when a second has passed.
@@ -171,9 +173,9 @@ int Ohmbrewer::TemperatureSensor::doWork() {
      * This section is where we can filter for the desired probe UID and only report that one. for now we will simply
      * state that there is only one and use sensors[0] as the probe reading.
      */
-    uint8_t numsensors = ow_search_sensors(10, sensors);
-    sprintf(msg, "Found %i sensors", numsensors);
-    log(msg);
+    uint8_t numSensors = ow_search_sensors(10, sensors);
+    sprintf(msg, "Found %i sensors", numSensors);
+    //log(msg);
     if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
         char sign = (subzero) ? '-' : '+';
         int frac = celFracBits*DS18X20_FRACCONV;
@@ -181,17 +183,17 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         if (sign == '-'){
             tempC = tempC * -1;
         }
-       // tempC = tempC + (10**(-4)*(double)frac);  //TODO integrate fraction to end of temp_c ??
+        tempC = tempC + (.0001*(double)frac);  //TODO integrate fraction to end of temp_c ??
         getTemp()->fromC(tempC);
     }
     /*//scanning code to filter out a desired probe.
 
-    uint8_t numsensors = ow_search_sensors(10, sensors);
-    sprintf(msg, "Found %i sensors", numsensors);
+    uint8_t numSensors = ow_search_sensors(10, sensors);
+    sprintf(msg, "Found %i sensors", numSensors);
     log(msg);
 
 
-    for (uint8_t i=0; i<numsensors; i++){
+    for (uint8_t i=0; i<numSensors; i++){
      //THIS NEEDS WORK STILL
         //current probe ID
         char probeId[8] = {
@@ -213,7 +215,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
                     int frac = celFracBits*DS18X20_FRACCONV;
                     tempC = (double)cel;
                    // tempC = tempC + (10**(-4)*(double)frac);
-                    getTemp()->fromC(tempC);
+                    getTemp()->fromC(tempC);3
                 }
                 else
                 {
@@ -286,3 +288,11 @@ void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
 
 }
 
+/*
+ * publish to the log
+ */
+void log(char* msg)
+{
+    Spark.publish("log", msg);
+    delay(500);
+}
