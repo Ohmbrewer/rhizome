@@ -33,6 +33,24 @@ namespace Ohmbrewer {
             double get() const;
 
             /**
+             * Fills a provided C-string buffer with the temperature, formatted for display.
+             * Note that this expects your buffer to be sufficiently large!
+             * @param buffer Buffer to fill with the formatted temperature in Celsius
+             * @param width Formatter width, defaults to 2
+             * @param precision Formatter precision, defaults to 2
+             */
+            void toStrC(char* buffer, unsigned int width = 6, unsigned precision = 2) const;
+
+            /**
+             * Fills a provided C-string buffer with the temperature, formatted for display.
+             * Note that this expects your buffer to be sufficiently large!
+             * @param buffer Buffer to fill with the formatted temperature in Celsius
+             * @param width Formatter width, defaults to 2
+             * @param precision Formatter precision, defaults to 2
+             */
+            void toStrF(char* buffer, unsigned int width = 2, unsigned precision = 2) const;
+
+            /**
              * Sets the temperature from a Fahrenheit value
              * @param temp The temperature in Fahrenheit
              */

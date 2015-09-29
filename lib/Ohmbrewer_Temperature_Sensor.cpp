@@ -3,7 +3,7 @@
 
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
- * @returns The last temperature reading
+ * @returns A pointer to the Temperature object representing the last temperature reading
  */
 Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
     return _lastReading;
@@ -55,7 +55,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
 
 /**
  * Copy Constructor
- * @param clonee The Equipment object to copy
+ * @param clonee The TemperatureSensor object to copy
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _busPin = clonee.getBusPin();
@@ -99,19 +99,19 @@ const int Ohmbrewer::TemperatureSensor::setBusPin(const int pinNum) {
 // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
 /**
- * Specifies the interface for arguments sent to this Equipment's associated function. 
- * Parses the supplied string into an array of strings for setting the Equipment's values.
+ * Specifies the interface for arguments sent to this TemperatureSensor's associated function.
+ * Parses the supplied string into an array of strings for setting the TemperatureSensor's values.
  * Most likely will be called during update().
- * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param args The arguments supplied as an update to the Rhizome.
+ * @param argsMap A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::TemperatureSensor::parseArgs(const String argsStr) {
-    return Equipment::parseArgs(argsStr);
+void Ohmbrewer::TemperatureSensor::parseArgs(const String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    // Nothing special to parse out for this class.
 }
 
 /**
- * Sets the Equipment state. True => On, False => Off
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * Sets the TemperatureSensor state. True => On, False => Off
+ * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::TemperatureSensor::setState(const bool state) {
@@ -123,7 +123,7 @@ const int Ohmbrewer::TemperatureSensor::setState(const bool state) {
 }
 
 /**
- * The Equipment state. True => On, False => Off
+ * The TemperatureSensor state. True => On, False => Off
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::TemperatureSensor::getState() const {
@@ -131,23 +131,23 @@ bool Ohmbrewer::TemperatureSensor::getState() const {
 }
 
 /**
- * True if the Equipment state is On.
- * @returns Whether the Equipment is turned ON
+ * True if the TemperatureSensor state is On.
+ * @returns Whether the TemperatureSensor is turned ON
  */
 bool Ohmbrewer::TemperatureSensor::isOn() const {
     return _state;
 }
 
 /**
- * True if the Equipment state is Off.
- * @returns Whether the Equipment is turned OFF
+ * True if the TemperatureSensor state is Off.
+ * @returns Whether the TemperatureSensor is turned OFF
  */
 bool Ohmbrewer::TemperatureSensor::isOff() const {
     return !_state;
 }
 
 /**
- * Performs the Equipment's current task. Expect to use this during loop().
+ * Performs the TemperatureSensor's current task. Expect to use this during loop().
  * This function is called by work().
  * @returns The time taken to run the method
  */
@@ -164,10 +164,10 @@ int Ohmbrewer::TemperatureSensor::doWork() {
 int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char relay_id[2];
-    char tempStr [24];
+    char tempStr [10];
 
     sprintf(relay_id,"%d", _id);
-    sprintf(tempStr, "%2.2f", getTemp()->c());
+    getTemp()->toStrC(tempStr);
 
     // Print a fancy identifier
     screen->print(" [");
@@ -179,7 +179,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     screen->print("]: ");
 
     // Print the temperature
-    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->println(tempStr);
 
     screen->resetTextColor();
@@ -191,17 +191,19 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::TemperatureSensor::doUpdate(String* args) {
-    // TODO: Implement TemperatureSensor::doUpdate
-    return -1;
+int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    unsigned long start = millis();
+    // Nothing to do as it is...
+    return millis() - start;
 }
 
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the Equipment is connected to.
+ * @returns The list of physical pins that the TemperatureSensor is connected to.
  */
 std::list<int>* Ohmbrewer::TemperatureSensor::whichPins() const {
     return _pins;

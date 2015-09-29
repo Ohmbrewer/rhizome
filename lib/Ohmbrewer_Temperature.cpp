@@ -26,6 +26,24 @@ double Ohmbrewer::Temperature::get() const {
 }
 
 /**
+ * Fills a provided C-string buffer with the temperature, formatted for display.
+ * Note that this expects your buffer to be sufficiently large!
+ * @param buffer Buffer to fill with the formatted temperature in Celsius
+ */
+void Ohmbrewer::Temperature::toStrC(char* buffer, unsigned int width, unsigned precision) const {
+    sprintf(buffer, "%*.*f", width, precision, c());
+}
+
+/**
+ * Fills a provided C-string buffer with the temperature, formatted for display.
+ * Note that this expects your buffer to be sufficiently large!
+ * @param buffer Buffer to fill with the formatted temperature in Fahrenheit
+ */
+void Ohmbrewer::Temperature::toStrF(char* buffer, unsigned int width, unsigned precision) const {
+    sprintf(buffer, "%*.*f", width, precision, f());
+}
+
+/**
  * Sets the temperature from a Fahrenheit value
  * @param temp The temperature in Fahrenheit
  */

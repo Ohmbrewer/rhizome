@@ -7,6 +7,7 @@
 #include "Ohmbrewer_Publisher.h"
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_RIMS.h"
+// #include "Ohmbrewer_Publisher.h" // (*)
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
 #undef min
@@ -37,6 +38,11 @@ Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
 
 unsigned long lastUpdate = millis();
 
+// EX: Using a Publisher object. Other parts are marked with a (*). You'll probably want to use a different update
+//     rate (more like 30s instead of 10s) below.
+//Ohmbrewer::Publisher::publish_map_t pMap;
+//Ohmbrewer::Publisher* navi = new Ohmbrewer::Publisher(new String("fairies"), &pMap);
+
 /* ========================================================================= */
 /*  Main Functions                                                           */
 /* ========================================================================= */
@@ -44,6 +50,7 @@ unsigned long lastUpdate = millis();
  * Does any preliminary setup work before the Rhizome starts the operation loop.
  */
 void setup() {
+    // Serial.begin(9600); // Enable serial for debugging messages
     String fakeTask = "fake";
 
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
@@ -53,7 +60,7 @@ void setup() {
 //    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
 //
 //    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 2, new std::list<int>(1,1) ));
-//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(1337);
+//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(-20);
 
 // EX 2: A Thermostat
 //    sprouts.push_back(new Ohmbrewer::Thermostat( 1, new std::list<int>(1,0), 100 ));
@@ -76,6 +83,7 @@ void setup() {
     sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,5) ));
 
     screen.initScreen();
+//    pMap[String("hey")] = String("listen!"); // (*)
 }
 
 /**
@@ -91,6 +99,7 @@ void loop() {
         ((Ohmbrewer::RIMS*)sprouts.front())->getTube()
                                            ->getElement()
                                            ->toggleState();
+//        navi->publish(); // (*)
         lastUpdate = millis();
     }
     screen.refreshDisplay();

@@ -3,7 +3,7 @@
 
 /**
  * The desired target temperature. Defaults to Celsius
- * @returns The target temperature in Celsius
+ * @returns The target temperature in Celsius, as a Temperature object pointer
  */
 Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
     return _targetTemp;
@@ -40,8 +40,8 @@ Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param id The Sprout ID to use for this piece of Thermostat
+ * @param pins The list of physical pins this Thermostat is attached to
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
     // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
@@ -54,8 +54,8 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equ
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param id The Sprout ID to use for this piece of Thermostat
+ * @param pins The list of physical pins this Thermostat is attached to
  * @param targetTemp The new target temperature in Celsius
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double targetTemp) : Ohmbrewer::Equipment(id, pins) {
@@ -69,11 +69,11 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @param id The Sprout ID to use for this piece of Thermostat
+ * @param pins The list of physical pins this Thermostat is attached to
+ * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
@@ -87,11 +87,11 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @param id The Sprout ID to use for this piece of Thermostat
+ * @param pins The list of physical pins this Thermostat is attached to
+ * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
@@ -107,7 +107,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
 
 /**
  * Copy Constructor
- * @param clonee The Equipment object to copy
+ * @param clonee The Thermostat object to copy
  */
 Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrewer::Equipment(clonee) {
     _heatingElm = clonee.getElement();
@@ -131,23 +131,48 @@ Ohmbrewer::Thermostat::~Thermostat() {
 // friend std::ostream& Ohmbrewer::Thermostat::operator<<( std::ostream& os, Thermostat const& thermostat);
 
 /**
- * Specifies the interface for arguments sent to this Equipment's associated function.
- * Parses the supplied string into an array of strings for setting the Equipment's values.
+ * Specifies the interface for arguments sent to this Thermostat's associated function.
+ * Parses the supplied string into an array of strings for setting the Thermostat's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @returns A map representing the key/value pairs for the update
+ * @param result A map representing the key/value pairs for the update
  */
-Ohmbrewer::Equipment::args_map_t Ohmbrewer::Thermostat::parseArgs(const String argsStr) {
-    // TODO: Implement Thermostat::parseArgs
-    args_map_t placeholder;
-    placeholder[String("fixme")] = String("nonononononono");
-    return placeholder;
+void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+
+    if(argsStr.length() > 0) {
+        char* params = new char[argsStr.length() + 1];
+        strcpy(params, argsStr.c_str());
+
+        // Parse the parameters
+        String targetTemp  = String(strtok(params, ","));
+        String sensorState = String(strtok(NULL, ","));
+        String elmState    = String(strtok(NULL, ","));
+
+        result[String("target_temp")] = targetTemp;
+
+        // Save them to the map
+        if(sensorState.length() > 0) {
+            result[String("sensor_state")] = sensorState;
+        }
+        if(sensorState.length() > 0) {
+            result[String("element_state")] = elmState;
+        }
+
+        // Serial.println("Got these additional Thermostat results: ");
+        // Serial.println(targetTemp);
+        // Serial.println(sensorState);
+        // Serial.println(elmState);
+
+        // Clear out that dynamically allocated buffer
+        delete params;
+    }
+
 }
 
 /**
- * Sets the Equipment state. True => On, False => Off
+ * Sets the Thermostat state. True => On, False => Off
  * This turns *EVERYTHING* on, so watch out. You may want to turn the components on individually instead.
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::Thermostat::setState(const bool state) {
@@ -160,7 +185,7 @@ const int Ohmbrewer::Thermostat::setState(const bool state) {
 }
 
 /**
- * The Equipment state. True => On, False => Off
+ * The Thermostat state. True => On, False => Off
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::Thermostat::getState() const {
@@ -168,23 +193,23 @@ bool Ohmbrewer::Thermostat::getState() const {
 }
 
 /**
- * True if the Equipment state is On.
- * @returns Whether the Equipment is turned ON
+ * True if the Thermostat state is On.
+ * @returns Whether the Thermostat is turned ON
  */
 bool Ohmbrewer::Thermostat::isOn() const {
     return getState();
 }
 
 /**
- * True if the Equipment state is Off.
- * @returns Whether the Equipment is turned OFF
+ * True if the Thermostat state is Off.
+ * @returns Whether the Thermostat is turned OFF
  */
 bool Ohmbrewer::Thermostat::isOff() const {
     return !getState();
 }
 
 /**
- * Performs the Equipment's current task. Expect to use this during loop().
+ * Performs the Thermostat's current task. Expect to use this during loop().
  * This function is called by work().
  * @returns The time taken to run the method
  */
@@ -244,15 +269,15 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
         color = screen->CYAN;
     }
 
-    displayTemp(getSensor()->getTemp()->c(), "Current: ", color, screen);
+    displayTemp(getSensor()->getTemp(), "Current: ", color, screen);
 
     // Show a warning if the Heating Element is active
     if(getElement()->isOn()) {
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->print("  ON");
+        screen->print(" ON");
     } else {
         screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
-        screen->print("  ");
+        screen->print(" ");
         screen->writeBlock();
         screen->writeBlock();
     }
@@ -269,7 +294,7 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
  */
 unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    displayTemp(getTargetTemp()->c(), "Target:  ", screen->YELLOW, screen);
+    displayTemp(getTargetTemp(), "Target:  ", screen->YELLOW, screen);
     screen->println("");
     return micros() - start;
 }
@@ -281,11 +306,10 @@ unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen
  * @param color The color of the temperature text
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    char tempStr [24];
-
-    sprintf(tempStr, "%2.2f", temp);
+    char tempStr [10];
+    temp->toStrC(tempStr);
 
     // Print the label
     screen->resetTextColor();
@@ -305,17 +329,58 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().
  * @param args The argument string passed into the Particle Cloud
+ * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doUpdate(String* args) {
-    // TODO: Implement Thermostat::doUpdate
-    return -1;
+int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+    unsigned long start = millis();
+
+    // If there are any remaining parameters
+    if(args.length() > 0) {
+        String targetKey = String("target_temp");
+        String sensorKey = String("sensor_state");
+        String elmKey = String("element_state");
+
+        parseArgs(args, argsMap);
+
+        // If there are any arguments, the will be a new Target Temperature value
+        setTargetTemp(argsMap[targetKey].toFloat());
+
+        // The remaining settings are optional/convenience parameters
+        if(argsMap.count(sensorKey) != 0) {
+            if(argsMap[sensorKey].equalsIgnoreCase("ON")) {
+                getSensor()->setState(true);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("OFF")) {
+                getSensor()->setState(false);
+            } else if(argsMap[sensorKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+        if(argsMap.count(elmKey) != 0) {
+            if(argsMap[elmKey].equalsIgnoreCase("ON")) {
+                getElement()->setState(true);
+            } else if(argsMap[elmKey].equalsIgnoreCase("OFF")) {
+                getElement()->setState(false);
+            } else if(argsMap[elmKey].equalsIgnoreCase("--")) {
+                // Do nothing. Intentional.
+            } else {
+                // Do nothing. TODO: Should probably raise an error code...
+            }
+        }
+
+    }
+
+
+    return millis() - start;
 }
 
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the Equipment is connected to.
+ * @returns The list of physical pins that the Thermostat is connected to.
  */
 std::list<int>* Ohmbrewer::Thermostat::whichPins() const {
     // TODO: Implement Thermostat::whichPins

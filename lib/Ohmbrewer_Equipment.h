@@ -110,7 +110,7 @@ namespace Ohmbrewer {
              * @param args The argument string passed into the Particle Cloud
              * @returns The time taken to run the method
              */
-            int update(String args);
+            const int update(const String &args);
             
             /**
              * Constructors
@@ -153,9 +153,9 @@ namespace Ohmbrewer {
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().
              * @param argsStr The arguments supplied as an update to the Rhizome.
-             * @returns A map representing the key/value pairs for the update
+             * @param result A map representing the key/value pairs for the update
              */
-            static args_map_t parseArgs(const String argsStr);
+            static void parseArgs(const String &argsStr, args_map_t &result);
 
             /*
              * Virtual Functions! All of these need to be defined in child classes! 
@@ -205,9 +205,10 @@ namespace Ohmbrewer {
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().
              * @param args The argument string passed into the Particle Cloud
+             * @param argsMap A map representing the key/value pairs for the update
              * @returns The time taken to run the method
              */
-            virtual int doUpdate(String* args) = 0;
+            virtual int doUpdate(String &args, args_map_t &argsMap) = 0;
 
             /**
              * Reports which of the Rhizome's pins are occupied by the
@@ -241,6 +242,10 @@ namespace Ohmbrewer {
              * The Task the Equipment is currently processing.
              */
             String          _currentTask;
+
+        private:
+            String cleanArgsString(const String &args, args_map_t &argsMap);
+            int assignArgs(args_map_t &argsMap);
     };
 };
 
