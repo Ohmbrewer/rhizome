@@ -37,19 +37,21 @@ namespace Ohmbrewer {
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param powerPin - The power pin - on/off line. Digital pin number X.
+             * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
              */
-            Relay(int id, std::list<int>* pins);
+            Relay(int id, int powerPin, int controlPin);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param powerPin - The power pin - on/off line. Digital pin number X.
+             * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Relay(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            Relay(int id, int powerPin, int controlPin, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -61,10 +63,39 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~Relay();
-            
+
             /**
-             * Overloaded << operator.
+             * The power pin - on/off line
+             * hardware destinations (hardware switches - DPDT, main power)
+             * @returns The pin number in use for this piece of Equipment
              */
+            int getPowerPin() const;
+
+            /**
+             * Sets the Digital pin for the power pin.
+             * @param pinNum Dx
+             * @returns The time taken to run the method
+             */
+            const int setPowerPin(int pinNum);
+
+            /**
+             * The Control pin - Data/speed/power level
+             * hardware destinations (SSR, databus(temp sensor), pump speed control)
+             * @returns The pin number in use for this piece of Equipment
+             */
+            int getControlPin() const;
+
+            /**
+             * Sets the Digital pin for the control pin.
+             * @param pinNum Dx
+             * @returns The time taken to run the method
+             */
+            const int setControlPin(int pinNum);
+
+
+        /**
+         * Overloaded << operator.
+         */
             // friend std::ostream& operator<<( std::ostream& os, Relay const& Relay);
 
             /**

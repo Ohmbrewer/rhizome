@@ -214,7 +214,7 @@ bool Ohmbrewer::Thermostat::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Thermostat::doWork() {
-    // TODO: Implement Thermostat::doWork
+    // TODO: Implement Thermostat::doWork PID stuff here.
     return -1;
 }
 

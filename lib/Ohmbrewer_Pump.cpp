@@ -50,6 +50,7 @@ Ohmbrewer::Pump::~Pump() {
  */
 int Ohmbrewer::Pump::doWork() {
     // TODO: Implement Pump::doWork
+    //digitalWrite( someWayOfGettingTheSinglePin(), (getState() : HIGH ? LOW) )
     return -1;
 }
 
@@ -69,6 +70,7 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
  * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
+
 int Ohmbrewer::Pump::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
     return Relay::doUpdate(args, argsMap);
 }
@@ -82,4 +84,5 @@ int Ohmbrewer::Pump::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
  */
 void Ohmbrewer::Pump::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
     // Nothing special to parse out for this class.
+
 }
