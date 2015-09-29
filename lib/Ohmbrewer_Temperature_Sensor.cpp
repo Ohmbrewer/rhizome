@@ -28,10 +28,11 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this TemperatureSensor
- * @param pins The list of physical pins this TemperatureSensor is attached to
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to.
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
+    _busPin = busPin;
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
@@ -39,13 +40,14 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins) : 
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of TemperatureSensor
- * @param pins The list of physical pins this TemperatureSensor is attached to
- * @param stopTime The time at which the TemperatureSensor should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the TemperatureSensor believes it should be processing
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to.
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    _busPin = busPin;
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
@@ -56,6 +58,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, std::list<int>* pins, in
  * @param clonee The TemperatureSensor object to copy
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
+    _busPin = clonee.getBusPin();
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
     registerUpdateFunction();
@@ -66,6 +69,28 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
  */
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
     delete _lastReading;
+}
+
+/**
+ * The Bus pin - Data input line
+ * onewire protocol input location for DS18b20
+ * @returns The pin number in use for this piece of Equipment
+ */
+int Ohmbrewer::TemperatureSensor::getBusPin() const{
+    return _busPin;
+}
+
+/**
+ * Sets the Digital pin for the data Bus.
+ * @param pinNum Dx
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::TemperatureSensor::setBusPin(const int pinNum) {
+    unsigned long start = millis();
+
+    _busPin = pinNum;
+
+    return start - millis();
 }
 
 /**
@@ -178,9 +203,12 @@ int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::a
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the TemperatureSensor is connected to.
+ * @param pins The list of physical pins that the TemperatureSensor is connected to.
  */
-std::list<int>* Ohmbrewer::TemperatureSensor::whichPins() const {
-    return _pins;
+void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
+
+    pins->push_back(getBusPin());
+
+
 }
 

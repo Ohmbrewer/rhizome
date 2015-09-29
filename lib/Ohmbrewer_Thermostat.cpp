@@ -1,5 +1,8 @@
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Publisher.h"
+
+
 
 /**
  * The desired target temperature. Defaults to Celsius
@@ -41,13 +44,26 @@ Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param pins The list of physical pins this Thermostat is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
-    // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
-    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[]) : Ohmbrewer::Equipment(id) {
+    int n = sizeof(thermPins) / sizeof(int);
+    if ( n > 2){
+        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
+        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else{
+        //publish error
+
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int id, int[])");
+        pub->publish();
+    }
+
     _targetTemp = new Temperature(0);
     registerUpdateFunction();
 }
@@ -55,14 +71,25 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins) : Ohmbrewer::Equ
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param pins The list of physical pins this Thermostat is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double targetTemp) : Ohmbrewer::Equipment(id, pins) {
-    // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
-    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], const double targetTemp) : Ohmbrewer::Equipment(id) {
+    int n = sizeof(thermPins) / sizeof(int);
+    if ( n > 2){
+        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
+        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int[], double)");
+        pub->publish();
+    }
     _targetTemp = new Temperature(targetTemp);
     registerUpdateFunction();
 }
@@ -70,17 +97,28 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, const double tar
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param pins The list of physical pins this Thermostat is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
-                                  bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
-    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], int stopTime,
+                                  bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    int n = sizeof(thermPins) / sizeof(int);
+    if ( n > 2){
+        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
+        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int[], int, bool, String)");
+        pub->publish();
+    }
     _targetTemp = new Temperature(0);
     registerUpdateFunction();
 }
@@ -88,19 +126,31 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param pins The list of physical pins this Thermostat is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* pins, int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], int stopTime,
                                   bool state, String currentTask,
-                                  const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    // TODO: Figure out how to properly set the HeatingElement and TemperatureSensor in the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _heatingElm = new HeatingElement(1,fakePins); // This isn't right
-    _tempSensor = new TemperatureSensor(1, fakePins); // Neither is this
+                                  const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+
+    int n = sizeof(thermPins) / sizeof(int);
+    if ( n > 2){
+        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
+        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
+        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int [], int, bool, String, double)");
+        pub->publish();
+    }
     _targetTemp = new Temperature(targetTemp);
     registerUpdateFunction();
 }
@@ -214,7 +264,7 @@ bool Ohmbrewer::Thermostat::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Thermostat::doWork() {
-    // TODO: Implement Thermostat::doWork
+    // TODO: Implement Thermostat::doWork PID stuff here.
     return -1;
 }
 
@@ -380,11 +430,12 @@ int Ohmbrewer::Thermostat::doUpdate(String &args, Ohmbrewer::Equipment::args_map
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the Thermostat is connected to.
+ * @param pins The list of physical pins that the Thermostat is connected to.
  */
-std::list<int>* Ohmbrewer::Thermostat::whichPins() const {
-    // TODO: Implement Thermostat::whichPins
-    //return {&_pins, &getElement(), &getSensor()};
-    return _pins;
+void Ohmbrewer::Thermostat::whichPins(std::list<int>* pins) {
+
+    pins->push_back(_tempSensor->getBusPin());
+    _heatingElm->whichPins(pins);
+
 }
 

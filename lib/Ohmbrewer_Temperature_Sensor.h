@@ -56,7 +56,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
              */
-            TemperatureSensor(int id, std::list<int>* pins);
+            TemperatureSensor(int id, int busPin);
 
             /**
              * Constructor
@@ -66,7 +66,7 @@ namespace Ohmbrewer {
              * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the TemperatureSensor believes it should be processing
              */
-            TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            TemperatureSensor(int id, int busPin, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -78,7 +78,21 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~TemperatureSensor();
-            
+
+            /**
+             * The Bus pin - Data input line
+             * onewire protocol input location for DS18b20
+             * @returns The pin number in use for this piece of Equipment
+             */
+            int getBusPin() const;
+
+            /**
+             * Sets the Digital pin for the data Bus.
+             * @param pinNum Dx
+             * @returns The time taken to run the method
+             */
+            const int setBusPin(const int pinNum) ;
+
             /**
              * Overloaded << operator.
              */
@@ -145,9 +159,9 @@ namespace Ohmbrewer {
             /**
              * Reports which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the TemperatureSensor is connected to.
+             * @param pins The list of physical pins that the TemperatureSensor is connected to.
              */
-            std::list<int>* whichPins() const;
+            void whichPins(std::list<int>* pins);
 
         protected:
             /**
@@ -160,6 +174,10 @@ namespace Ohmbrewer {
              */
             int _lastReadTime;
 
+            /**
+             * Digital Pin for the temperature bus one wire protocol
+             */
+            int _busPin;
     };
 };
 
