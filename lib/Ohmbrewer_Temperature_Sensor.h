@@ -56,7 +56,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this piece of Equipment
              * @param pins The list of physical pins this Equipment is attached to
              */
-            TemperatureSensor(int id, std::list<int>* pins);
+            TemperatureSensor(int id, int busPin);
 
             /**
              * Constructor
@@ -66,7 +66,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            TemperatureSensor(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            TemperatureSensor(int id, int busPin, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -78,10 +78,25 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~TemperatureSensor();
-            
+
+
             /**
-             * Overloaded << operator.
+             * The Bus pin - Data input line
+             * onewire protocol input location for DS18b20
+             * @returns The pin number in use for this piece of Equipment
              */
+            int getBusPin();
+
+            /**
+             * Sets the Digital pin for the data Bus.
+             * @param pinNum Dx
+             * @returns The time taken to run the method
+             */
+            const int setBusPin(int pinNum) ;
+
+        /**
+         * Overloaded << operator.
+         */
             // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
             /**

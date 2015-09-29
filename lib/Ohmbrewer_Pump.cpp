@@ -50,6 +50,7 @@ Ohmbrewer::Pump::~Pump() {
  */
 int Ohmbrewer::Pump::doWork() {
     // TODO: Implement Pump::doWork
+    //digitalWrite( someWayOfGettingTheSinglePin(), (getState() : HIGH ? LOW) )
     return -1;
 }
 
@@ -70,5 +71,7 @@ int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
  */
 int Ohmbrewer::Pump::doUpdate(String* args) {
     // TODO: Implement Pump::doUpdate
+
+    //update relay state, then call dowork which will flip the actual pin power
     return -1;
 }

@@ -189,7 +189,7 @@ bool Ohmbrewer::Thermostat::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Thermostat::doWork() {
-    // TODO: Implement Thermostat::doWork
+    // TODO: Implement Thermostat::doWork PID stuff here.
     return -1;
 }
 
@@ -309,6 +309,9 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  */
 int Ohmbrewer::Thermostat::doUpdate(String* args) {
     // TODO: Implement Thermostat::doUpdate
+
+    //update relay state, then call dowork which will flip the actual pin power
+
     return -1;
 }
 

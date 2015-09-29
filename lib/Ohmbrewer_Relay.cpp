@@ -4,9 +4,12 @@
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param powerPin - The power pin - on/off line. Digital pin number X.
+ * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
  */
-Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
+Ohmbrewer::Relay::Relay(int id, int powerPin, int controlPin) : Ohmbrewer::Equipment(id) {
+    _powerPin = powerPin;
+    _controlPin = controlPin;
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.
@@ -15,13 +18,16 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id,
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param powerPin - The power pin - on/off line. Digital pin number X.
+ * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Relay::Relay(int id, std::list<int>* pins, int stopTime,
-                      bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
+Ohmbrewer::Relay::Relay(int id, int powerPin, int controlPin, int stopTime,
+                      bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    _powerPin = powerPin;
+    _controlPin = controlPin;
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.
@@ -43,6 +49,54 @@ Ohmbrewer::Relay::Relay(const Relay& clonee) : Ohmbrewer::Equipment(clonee) {
 Ohmbrewer::Relay::~Relay() {
     // Nothing to do here...
 }
+
+
+/**
+ * The power pin - on/off line
+ * hardware destinations (hardware switches - DPDT, main power)
+ * @returns The pin number in use for this piece of Equipment
+ */
+int Ohmbrewer::Relay::getPowerPin(){
+    return _powerPin;
+}
+
+/**
+ * Sets the Digital pin for the power pin.
+ * @param pinNum Dx
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::Relay::setPowerPin(int pinNum) {
+    unsigned long start = millis();
+
+    _powerPin = pinNum;
+
+    return start - millis();
+}
+
+
+/**
+ * The Control pin - Data/speed/power level
+ * hardware destinations (SSR, databus(temp sensor), pump speed control)
+ * @returns The pin number in use for this piece of Equipment
+ */
+int Ohmbrewer::Relay::getControlPin(){
+    return _controlPin;
+}
+
+/**
+ * Sets the Digital pin for the control pin.
+ * @param pinNum Dx
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::Relay::setControlPin(int pinNum) {
+    unsigned long start = millis();
+
+    _controlPin = pinNum;
+
+    return start - millis();
+}
+
+
 
 /**
  * Overloaded << operator.
@@ -118,12 +172,31 @@ bool Ohmbrewer::Relay::isOff() const {
 
 /**
  * Performs the Equipment's current task. Expect to use this during loop().
+ * Switches the power pin on or off for a generic relay, subclasses can utilize the controlPin
  * This function is called by work().
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Relay::doWork() {
-    // TODO: Implement Relay::doWork
-    return -1;
+    int startTime = millis();
+    bool relayState = getState();
+    //Import equipment pins
+    int onPin = getPowerPin();                      //on/off pin for switch control
+    int modPin = getControlPin();                     //control pin
+
+
+
+    if (relayState) {               //turn pin on
+        digitalWrite(onPin, HIGH);
+    }else{                          //turn it off
+        digitalWrite(onPin, LOW);
+    }
+
+    //Speed or PID Control
+
+    //TODO: manage controlPin in children
+
+
+    return millis()-startTime;
 }
 
 /**
@@ -167,6 +240,9 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
  */
 int Ohmbrewer::Relay::doUpdate(String* args) {
     // TODO: Implement Relay::doUpdate
+
+    //update relay state, then call dowork which will flip the actual pin power
+
     return -1;
 }
 

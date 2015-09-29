@@ -8,17 +8,17 @@ Ohmbrewer::Equipment::Equipment() {
     _id = 0;
     _stopTime = 0;
     _state = false;
-    _pins = new std::list<int>;
+
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param powerPin - The power pin - on/off line. Digital pin number X.
+ * @param controlPin - The Control pin - Data/speed/power level. Digital pin number X.
  */
-Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins) {
+Ohmbrewer::Equipment::Equipment(int id) {
     _id = id;
-    _pins = pins;
     _stopTime = 0;
     _state = false;
 }
@@ -26,14 +26,12 @@ Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins) {
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins, int stopTime, bool state, String currentTask) {
+Ohmbrewer::Equipment::Equipment(int id, int stopTime, bool state, String currentTask) {
     _id = id;
-    _pins = pins;
     _stopTime = stopTime;
     _state = state;
 }
@@ -44,7 +42,6 @@ Ohmbrewer::Equipment::Equipment(int id, std::list<int>* pins, int stopTime, bool
  */
 Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
     _id = clonee.getID();
-    _pins = clonee.whichPins();
     _stopTime = clonee.getStopTime();
     _state = clonee.getState();
     _currentTask = clonee.getCurrentTask();

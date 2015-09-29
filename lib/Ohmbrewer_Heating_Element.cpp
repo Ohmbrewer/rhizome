@@ -50,6 +50,7 @@ Ohmbrewer::HeatingElement::~HeatingElement() {
  */
 int Ohmbrewer::HeatingElement::doWork() {
     // TODO: Implement HeatingElement::doWork
+    //digitalWrite( someWayOfGettingTheSinglePin(), (getState() : HIGH ? LOW) )
     return -1;
 }
 
