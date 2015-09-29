@@ -73,14 +73,19 @@ void setup() {
 //    sprouts.push_back(new Ohmbrewer::HeatingElement( 2, new std::list<int>(1,5), 0, true, fakeTask ));
 
 // EX 4: A RIMS w/ a Pump to the Kettle
-    std::list<int>* rimsPins = new std::list<int>();
-    for(int i = 1; i < 5; i++) {rimsPins->push_back(i);}
+    //TODO change to array
+    // [ tube temp busPin ; tube heating powerPin ; tube heating controlPin ; mashtun temp busPin ; pump powerPin ; pump controlPin]
 
-    sprouts.push_back(new Ohmbrewer::RIMS( 1, rimsPins ));
+    int tubePins[] = {0,1,2};
+    int tunPin = 3;
+    int pumpPins[] = {4,5};
+    //for(int i = 1; i < 5; i++) {rimsPins->push_back(i);}
+
+    sprouts.push_back(new Ohmbrewer::RIMS( 1, tubePins, tunPin, pumpPins ));
     ((Ohmbrewer::RIMS*)sprouts.front())->setState(true); // Turn everything on.
     ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(559);
 
-    sprouts.push_back(new Ohmbrewer::Pump( 2, new std::list<int>(1,5) ));
+    sprouts.push_back(new Ohmbrewer::Pump( 2, pumpPins[0], pumpPins[1] ));
 
     screen.initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)

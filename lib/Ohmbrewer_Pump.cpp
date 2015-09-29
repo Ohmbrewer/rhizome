@@ -3,22 +3,24 @@
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param powerPin - The power pin - on/off line. Digital pin number X.
+ * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
  */
-Ohmbrewer::Pump::Pump(int id, std::list<int>* pins) : Ohmbrewer::Relay(id, pins) {
+Ohmbrewer::Pump::Pump(int id, int powerPin, int controlPin) : Ohmbrewer::Relay(id, powerPin, controlPin) {
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param powerPin - The power pin - on/off line. Digital pin number X.
+ * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Pump::Pump(int id, std::list<int>* pins, int stopTime,
-                      bool state, String currentTask) : Ohmbrewer::Relay(id, pins, stopTime, state, currentTask) {
+Ohmbrewer::Pump::Pump(int id, int powerPin, int controlPin, int stopTime,
+                      bool state, String currentTask) : Ohmbrewer::Relay(id, powerPin, controlPin, stopTime, state, currentTask) {
     registerUpdateFunction();
 }
 
