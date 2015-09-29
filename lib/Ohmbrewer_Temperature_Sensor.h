@@ -92,7 +92,7 @@ namespace Ohmbrewer {
              * @param pinNum Dx
              * @returns The time taken to run the method
              */
-            const int setBusPin(int pinNum) ;
+            const int setBusPin(const int pinNum) ;
 
         /**
          * Overloaded << operator.
