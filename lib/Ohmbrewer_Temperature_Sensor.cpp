@@ -58,7 +58,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
-    _busPin = clonee.getBusPin;
+    _busPin = clonee.getBusPin();
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
     registerUpdateFunction();
@@ -76,7 +76,7 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * onewire protocol input location for DS18b20
  * @returns The pin number in use for this piece of Equipment
  */
-int Ohmbrewer::TemperatureSensor::getBusPin(){
+int Ohmbrewer::TemperatureSensor::getBusPin() const{
     return _busPin;
 }
 
@@ -85,7 +85,7 @@ int Ohmbrewer::TemperatureSensor::getBusPin(){
  * @param pinNum Dx
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::TemperatureSensor::setBusPin(int pinNum) {
+const int Ohmbrewer::TemperatureSensor::setBusPin(const int pinNum) {
     unsigned long start = millis();
 
     _busPin = pinNum;

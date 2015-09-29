@@ -38,6 +38,8 @@ Ohmbrewer::Relay::Relay(int id, int powerPin, int controlPin, int stopTime,
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::Relay::Relay(const Relay& clonee) : Ohmbrewer::Equipment(clonee) {
+    _powerPin = clonee.getPowerPin();
+    _controlPin = clonee.getControlPin();
     // For now, we will not automatically add a Spark.function to Relays as
     // it's used mostly as a base class and our subclasses call the Relay constructor. If we can find a safe way to
     // determine if a function for actual Relay types should be added, then we'll change that.
@@ -56,7 +58,7 @@ Ohmbrewer::Relay::~Relay() {
  * hardware destinations (hardware switches - DPDT, main power)
  * @returns The pin number in use for this piece of Equipment
  */
-int Ohmbrewer::Relay::getPowerPin(){
+int Ohmbrewer::Relay::getPowerPin() const{
     return _powerPin;
 }
 
@@ -65,7 +67,7 @@ int Ohmbrewer::Relay::getPowerPin(){
  * @param pinNum Dx
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::Relay::setPowerPin(int pinNum) {
+const int Ohmbrewer::Relay::setPowerPin(const int pinNum) {
     unsigned long start = millis();
 
     _powerPin = pinNum;
@@ -79,7 +81,7 @@ const int Ohmbrewer::Relay::setPowerPin(int pinNum) {
  * hardware destinations (SSR, databus(temp sensor), pump speed control)
  * @returns The pin number in use for this piece of Equipment
  */
-int Ohmbrewer::Relay::getControlPin(){
+int Ohmbrewer::Relay::getControlPin() const {
     return _controlPin;
 }
 
@@ -88,7 +90,7 @@ int Ohmbrewer::Relay::getControlPin(){
  * @param pinNum Dx
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::Relay::setControlPin(int pinNum) {
+const int Ohmbrewer::Relay::setControlPin(const int pinNum) {
     unsigned long start = millis();
 
     _controlPin = pinNum;
@@ -178,17 +180,11 @@ bool Ohmbrewer::Relay::isOff() const {
  */
 int Ohmbrewer::Relay::doWork() {
     int startTime = millis();
-    bool relayState = getState();
-    //Import equipment pins
-    int onPin = getPowerPin();                      //on/off pin for switch control
-    int modPin = getControlPin();                     //control pin
 
-
-
-    if (relayState) {               //turn pin on
-        digitalWrite(onPin, HIGH);
+    if (getState()) {               //turn pin on
+        digitalWrite(getPowerPin(), HIGH);
     }else{                          //turn it off
-        digitalWrite(onPin, LOW);
+        digitalWrite(getPowerPin(), LOW);
     }
 
     //Speed or PID Control

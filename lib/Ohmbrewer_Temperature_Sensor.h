@@ -85,7 +85,7 @@ namespace Ohmbrewer {
              * onewire protocol input location for DS18b20
              * @returns The pin number in use for this piece of Equipment
              */
-            int getBusPin();
+            int getBusPin() const;
 
             /**
              * Sets the Digital pin for the data Bus.
