@@ -309,9 +309,6 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(double temp, char* label, uint1
  */
 int Ohmbrewer::Thermostat::doUpdate(String* args) {
     // TODO: Implement Thermostat::doUpdate
-
-    //update relay state, then call dowork which will flip the actual pin power
-
     return -1;
 }
 

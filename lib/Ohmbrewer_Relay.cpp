@@ -240,9 +240,6 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
  */
 int Ohmbrewer::Relay::doUpdate(String* args) {
     // TODO: Implement Relay::doUpdate
-
-    //update relay state, then call dowork which will flip the actual pin power
-
     return -1;
 }
 
