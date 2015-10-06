@@ -35,35 +35,19 @@ namespace Ohmbrewer {
             virtual const char* getType() const { return TemperatureSensor::TYPE_NAME; };
 
             /**
-             * The last temperature read by the sensor. Currently returns in Celsius.
-             * @returns A pointer to the Temperature object representing the last temperature reading
-             */
-            Temperature* getTemp() const;
-
-            /**
-             * The last time the temperature was read by the sensor
-             * @returns The last temperature reading time
-             */
-            int getLastReadTime() const;
-
-            /**
-             * Sets the last time the temperature was read by the sensor
-             * @param lastReadTime The last temperature reading time
-             */
-            const int setLastReadTime(const int lastReadTime);
-
-            /**
-             * @returns the probe for this sensor
-             */
-            Probe* getProbe() const;
-
-
-            /**
              * Constructor
              * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
              */
             TemperatureSensor(int id, int busPin);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this TemperatureSensor
+             * @param pins The list of physical pins this TemperatureSensor is attached to
+             * @param uid - the unique id code for the Dallas sensor connected to the bus.
+             */
+            TemperatureSensor(int id, int busPin, uint8_t (&uid)[8]);
 
             /**
              * Constructor
@@ -97,6 +81,29 @@ namespace Ohmbrewer {
              * Overloaded << operator.
              */
             // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
+
+            /**
+             * The last temperature read by the sensor. Currently returns in Celsius.
+             * @returns A pointer to the Temperature object representing the last temperature reading
+             */
+            Temperature* getTemp() const;
+
+            /**
+             * The last time the temperature was read by the sensor
+             * @returns The last temperature reading time
+             */
+            int getLastReadTime() const;
+
+            /**
+             * Sets the last time the temperature was read by the sensor
+             * @param lastReadTime The last temperature reading time
+             */
+            const int setLastReadTime(const int lastReadTime);
+
+            /**
+             * @returns the probe for this sensor
+             */
+            Probe* getProbe() const;
 
             /**
              * Specifies the interface for arguments sent to this TemperatureSensor's associated function.

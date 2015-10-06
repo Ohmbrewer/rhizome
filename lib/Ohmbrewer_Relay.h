@@ -35,23 +35,44 @@ namespace Ohmbrewer {
             virtual const char* getType() const { return Relay::TYPE_NAME; };
 
             /**
-             * Constructor
+             * Constructor - used by Pump to manually instantiate Relay
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param powerPin - The power pin - on/off line. Digital pin number X.
-             * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
+             * @param pumpPin - Single speed pump will only have PowerPin
+
              */
-            Relay(int id, int powerPin, int controlPin);
+            Relay(int id, int pumpPin);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param powerPin - The power pin - on/off line. Digital pin number X.
-             * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
+             * @param relayPins - controlPin always first in <list>
+             *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+             *  powerPin - The power pin - on/off line. Digital pin number X.
+             *
+             */
+            Relay(int id, std::list<int>* relayPins);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Equipment
+             * @param pumpPin - Single speed pump will only have PowerPin
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Relay(int id, int powerPin, int controlPin, int stopTime, bool state, String currentTask);
+            Relay(int id, int pumpPin, int stopTime, bool state, String currentTask);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Equipment
+             * @param relayPins - controlPin always first in <list>
+             *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+             *  powerPin - The power pin - on/off line. Digital pin number X.
+             * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+             */
+            Relay(int id, std::list<int>* relayPins, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
