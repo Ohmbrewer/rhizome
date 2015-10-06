@@ -1,5 +1,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Publisher.h"
+
 
 /**
  * The Tube thermostat
@@ -28,57 +30,100 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tunBus - mash tun temperature pin
+ * @param pumpPins[powerPin ; controlPin ]
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins) : Ohmbrewer::Equipment(id, pins) {
-    // TODO: Figure out how to properly set the components of the RIMS the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _tube = new Thermostat(1, fakePins);
-    _tunSensor = new TemperatureSensor(1, fakePins);
-    _recirc = new Pump(1,fakePins);
+Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[] ) : Ohmbrewer::Equipment(id) {
+    _tube = new Thermostat(id+3, tubePins);
+    _tunSensor = new TemperatureSensor(id+1, tunBus);
+    int n = sizeof(pumpPins) / sizeof(int);
+        if ( n > 1){
+        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+    }else if (n == 1){
+        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+
+        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int , int[])");
+        pub->publish();
+    }
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tunBus - mash tun temperature pin
+ * @param pumpPins[powerPin ; controlPin ]
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
-                      bool state, String currentTask) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    // TODO: Figure out how to properly set the components of the RIMS the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _tube = new Thermostat(1, fakePins);
-    _tunSensor = new TemperatureSensor(1, fakePins);
-    _recirc = new Pump(1,fakePins);
+Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime,
+                      bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    _tube = new Thermostat(id+2, tubePins);
+    _tunSensor = new TemperatureSensor(id+1, tunBus);
+    int n = sizeof(pumpPins) / sizeof(int);
+    Ohmbrewer::Publisher::publish_map_t pMap;
+    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+    if ( n > 1){
+        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+    }else if (n == 1){
+        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int, int[], int, bool, String)");
+        pub->publish();
+    }
+
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param pins The list of physical pins this Equipment is attached to
+ * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tunBus - mash tun temperature pin
+ * @param pumpPins[powerPin ; controlPin ]
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* pins, int stopTime,
-                      bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, pins, stopTime, state, currentTask) {
-    // TODO: Figure out how to properly set the components of the RIMS the constructors
-    std::list<int>* fakePins = new std::list<int>(1,-1);
-    _tube = new Thermostat(1, fakePins, targetTemp);
-    _tunSensor = new TemperatureSensor(1, fakePins);
-    _recirc = new Pump(1,fakePins);
+Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime,
+                      bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+
+    _tube = new Thermostat(id+2, tubePins, targetTemp);
+    _tunSensor = new TemperatureSensor(id+1, tunBus);
+    int n = sizeof(pumpPins) / sizeof(int);
+    Ohmbrewer::Publisher::publish_map_t pMap;
+    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+    if ( n > 1){
+        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+    }else if (n == 1){
+        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+
+        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int , int[], int, int[], int, bool, String, double)");
+        pub->publish();
+    }
     registerUpdateFunction();
 }
 
 /**
  * Copy constructor
- * FIXME: Copy constructors should probably reset the pins and ID's, no?
+ * FIXME: Copy constructors should probably reset the pins and ID's, no? Depends why we are copying it
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
@@ -108,7 +153,7 @@ Ohmbrewer::RIMS::~RIMS() {
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().
  * @param argsStr The arguments supplied as an update to the Rhizome.
- * @param result A map representing the key/value pairs for the update
+ * @param result A map reprsenting the key/value pairs for the update
  */
 void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
 
@@ -355,11 +400,13 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
 /**
  * Reports which of the Rhizome's pins are occupied by the
  * Equipment, forming a logical Sprout.
- * @returns The list of physical pins that the Equipment is connected to.
+ * @param pins The list of physical pins that the Equipment is connected to.
  */
-std::list<int>* Ohmbrewer::RIMS::whichPins() const {
-    // TODO: Implement RIMS::whichPins
-    //return {&_pins, &getTube()->whichPins(), &getTunSensor()->whichPins(), &getRecirculator()->whichPins()};
-    return _pins;
+void Ohmbrewer::RIMS::whichPins(std::list<int>* pins){
+
+    pins->push_back(_tunSensor->getBusPin());
+    _tube->whichPins(pins);
+    _recirc->whichPins(pins);
+
 }
 

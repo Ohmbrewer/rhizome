@@ -15,7 +15,9 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Pump.h"
 #include "Ohmbrewer_Temperature.h"
+#include "Ohmbrewer_Publisher.h"
 #include "application.h"
+
 
 namespace Ohmbrewer {
 
@@ -55,30 +57,36 @@ namespace Ohmbrewer {
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+             * @param tunBus - mash tun temperature pin
+             * @param pumpPins[powerPin ; controlPin ]
              */
-            RIMS(int id, std::list<int>* pins);
+            RIMS(int id, int tubePins[], int tunBus, int pumpPins[]);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+             * @param tunBus - mash tun temperature pin
+             * @param pumpPins[powerPin ; controlPin ]
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            RIMS(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param pins The list of physical pins this Equipment is attached to
+             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+             * @param tunBus - mash tun temperature pin
+             * @param pumpPins[powerPin ; controlPin ]
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            RIMS(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, const double targetTemp);
+            RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy constructor
@@ -172,9 +180,9 @@ namespace Ohmbrewer {
             /**
              * Reports which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the Equipment is connected to.
+             * @param pins The list of physical pins that the Equipment is connected to.
              */
-            std::list<int>* whichPins() const;
+            void whichPins(std::list<int>* pins);
 
         protected:
             /**

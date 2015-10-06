@@ -63,38 +63,38 @@ namespace Ohmbrewer {
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Thermostat
-             * @param pins The list of physical pins this Thermostat is attached to
+             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
              */
-            Thermostat(int id, std::list<int>* pins);
+            Thermostat(int id, int thermPins[]);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Thermostat
-             * @param pins The list of physical pins this Thermostat is attached to
+             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
              * @param targetTemp The new target temperature in Celsius
              */
-            Thermostat(int id, std::list<int>* pins, const double targetTemp);
+            Thermostat(int id, int thermPins[], const double targetTemp);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Thermostat
-             * @param pins The list of physical pins this Thermostat is attached to
+             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
              * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              */
-            Thermostat(int id, std::list<int>* pins, int stopTime, bool state, String currentTask);
+            Thermostat(int id, int thermPins[], int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Thermostat
-             * @param pins The list of physical pins this Thermostat is attached to
+             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
              * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            Thermostat(int id, std::list<int>* pins, int stopTime, bool state, String currentTask, const double targetTemp);
+            Thermostat(int id, int thermPins[], int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy Constructor
@@ -195,9 +195,9 @@ namespace Ohmbrewer {
             /**
              * Reports which of the Rhizome's pins are occupied by the
              * Equipment, forming a logical Sprout.
-             * @returns The list of physical pins that the Thermostat is connected to.
+             * @param pins The list of physical pins that the Thermostat is connected to.
              */
-            std::list<int>* whichPins() const;
+            void whichPins(std::list<int>* pins);
 
         protected:
             /**
