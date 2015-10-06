@@ -4,6 +4,97 @@
 
 
 /**
+ * Constructor - creating a RIMS will use 7 equipment IDs
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param pumpPin - Single speed pump will only have PowerPin
+ * @param elementPins - controlPin always first in <list>
+ * TODO add UID?
+ */
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin ) : Ohmbrewer::Equipment(id) {
+    //TODO currently only one probe at a time working.
+    initRIMS(id, thermPins, pumpPin);
+    registerUpdateFunction();
+}
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param pumpPin - Single speed pump will only have PowerPin
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ */
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime,
+                      bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    initRIMS(id, thermPins, pumpPin);
+    registerUpdateFunction();
+}
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param pumpPin - Single speed pump will only have PowerPin
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ * @param targetTemp The new target temperature in Celsius
+ */
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime,
+                      bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    initRIMS(id, thermPins, pumpPin);
+    getTube()->setTargetTemp(targetTemp);
+    registerUpdateFunction();
+}
+
+/**
+ * Copy constructor
+ * FIXME: Copy constructors should probably reset the pins and ID's, no? Depends why we are copying it
+ * @param clonee The Equipment object to copy
+ */
+Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
+    _tube = clonee.getTube();
+    _recirc = clonee.getRecirculator();
+
+    registerUpdateFunction();
+}
+
+/**
+ * Destructor
+ */
+Ohmbrewer::RIMS::~RIMS() {
+    delete _recirc;
+    delete _tube;
+    delete _safetySensor;
+    delete _safetyTemp;
+}
+
+/**
+ * Initializes the members of the RIMS class
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param pumpPin - Single speed pump will only have PowerPin
+ */
+void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
+    int size = thermPins->size();
+    if ( (size == 2) || (size == 3) ){
+        _safetySensor = new TemperatureSensor(id+2, thermPins->front());  //TODO need UIDS
+        _tube = new Thermostat(id+3, thermPins);
+    }else{
+        //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+        pMap[String("list_check_rims")] = String("improperly formed array - RIMS(int, int<list>, int");
+        pub->publish();
+        delete pub;
+    }
+    _recirc = new Pump(id+2, pumpPin);
+    _safetyTemp = new Temperature(-69);
+}
+
+/**
  * The Tube thermostat
  * @returns The Thermostat object representing the RIMS tube elements
  */
@@ -16,7 +107,44 @@ Ohmbrewer::Thermostat* Ohmbrewer::RIMS::getTube() const {
  * @returns The Temperature Sensor object representing the sensor located in the mash tun
  */
 Ohmbrewer::TemperatureSensor* Ohmbrewer::RIMS::getTunSensor() const {
-    return _tunSensor;
+    return _tube->getSensor();
+}
+
+/**
+ * The desired safety temperature. Defaults to Celsius
+ * @returns The safety temperature in Celsius
+ */
+Ohmbrewer::Temperature* Ohmbrewer::RIMS::getSafetyTemp() const{
+    return _safetyTemp;
+}
+
+/**
+ * Sets the safety temperature
+ * @param safetyTemp The new safety temperature in Celsius
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::RIMS::setSafetyTemp(const double safetyTemp){
+    unsigned long start = millis();
+    _safetyTemp->set(safetyTemp);
+    return start - millis();
+}
+/**
+ * The Thermostat's safety temperature sensor
+ * @returns The temperature sensor
+ */
+Ohmbrewer::TemperatureSensor* Ohmbrewer::RIMS::getSafetySensor() const{
+    return _safetySensor;
+}
+
+/**
+ * Sets the Thermostat's temperature sensor
+ * @param sensor -  The temperature sensor
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::RIMS::setSafetySensor(Ohmbrewer::TemperatureSensor* sensor){
+    unsigned long start = millis();
+    _safetySensor = sensor;
+    return start - millis();
 }
 
 /**
@@ -25,122 +153,6 @@ Ohmbrewer::TemperatureSensor* Ohmbrewer::RIMS::getTunSensor() const {
  */
 Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
     return _recirc;
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
- * @param pumpPins[powerPin ; controlPin ]
- */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2] ) : Ohmbrewer::Equipment(id) {
-    _tube = new Thermostat(id+3, tubePins);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
-    int n = sizeof(pumpPins) / sizeof(int);
-        if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int , int[])");
-        pub->publish();
-    }
-    registerUpdateFunction();
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
- * @param pumpPins[powerPin ; controlPin ]
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
- */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
-                      bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _tube = new Thermostat(id+2, tubePins);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
-    int n = sizeof(pumpPins) / sizeof(int);
-    Ohmbrewer::Publisher::publish_map_t pMap;
-    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-    if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int, int[], int, bool, String)");
-        pub->publish();
-    }
-
-    registerUpdateFunction();
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
- * @param pumpPins[powerPin ; controlPin ]
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
- * @param targetTemp The new target temperature in Celsius
- */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
-                      bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-
-    _tube = new Thermostat(id+2, tubePins, targetTemp);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
-    int n = sizeof(pumpPins) / sizeof(int);
-    Ohmbrewer::Publisher::publish_map_t pMap;
-    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-    if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int , int[], int, int[], int, bool, String, double)");
-        pub->publish();
-    }
-    registerUpdateFunction();
-}
-
-/**
- * Copy constructor
- * FIXME: Copy constructors should probably reset the pins and ID's, no? Depends why we are copying it
- * @param clonee The Equipment object to copy
- */
-Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
-    _tube = clonee.getTube();
-    _tunSensor = clonee.getTunSensor();
-    _recirc = clonee.getRecirculator();
-
-    registerUpdateFunction();
-}
-
-/**
- * Destructor
- */
-Ohmbrewer::RIMS::~RIMS() {
-    delete _recirc;
-    delete _tube;
-    delete _tunSensor;
 }
 
 /**
@@ -193,9 +205,10 @@ void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::arg
  */
 const int Ohmbrewer::RIMS::setState(const bool state) {
     unsigned long start = millis();
-
+    _state = state;
     getTube()->setState(state);
     getTunSensor()->setState(state);
+    getSafetySensor()->setState(state);
     getRecirculator()->setState(state);
 
     return start - millis();
@@ -206,7 +219,8 @@ const int Ohmbrewer::RIMS::setState(const bool state) {
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::RIMS::getState() const {
-    return getRecirculator()->getState() || getTunSensor()->getState() || getTube()->getState();
+    return ( getRecirculator()->getState() || getTunSensor()->getState() || getTube()->getState()
+             || getSafetySensor()->getState() );
 }
 
 /**
@@ -232,6 +246,10 @@ bool Ohmbrewer::RIMS::isOff() const {
  */
 int Ohmbrewer::RIMS::doWork() {
     // TODO: Implement RIMS::doWork
+    // enable thermotat?
+    //disable is safetysensor is on alert
+    //call them dowork()
+    //futz with pump a bit too.
     return -1;
 }
 
@@ -248,23 +266,17 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
     screen->resetTextColor();
 
     // Print the section title
-    screen->print("===== RIMS #");
+    screen->print("= ID#");
     screen->print(getID());
-    screen->print("  =====");
+    screen->print(":RIMS System =");
 
     // Add a wee margin
     screen->printMargin(2);
 
-    // Print out the current temp from the Tun
+    // Print out the temperature from the Tube
     displayTunTemp(screen);
 
-    screen->printMargin(2);
-    screen->print("------  Tube  ------");
-    screen->printMargin(2);
-
-    // Print out the temperature from the Tube
-    getTube()->displayCurrentTemp(screen);
-
+    displaySafetyTemp(screen);
     // Print out the target temp
     getTube()->displayTargetTemp(screen);
 
@@ -281,7 +293,6 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
  */
 unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    char tempStr [24];
     // If current == target, we'll default to yellow, 'cause we're golden...
     uint16_t color = screen->YELLOW;
 
@@ -293,19 +304,35 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
         color = screen->CYAN;
     }
 
-    sprintf(tempStr, "%2.2f", getTunSensor()->getTemp()->c());
-
-    // Print the label
-    screen->resetTextColor();
-    screen->print(" Tun (");
-    screen->writeDegree();
-    screen->print("C): ");
-
-    // Print out the temp
-    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
-    screen->println(tempStr);
+    getTube()->displayTemp(getTunSensor()->getTemp(), "Tun", color, screen);
 
     screen->resetTextColor();
+    screen->println("");
+
+    return micros() - start;
+}
+
+/**
+ * Prints the temperature information for our safety sensor onto the touchscreen.
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::RIMS::displaySafetyTemp(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    // If current == target, we'll default to yellow, 'cause we're golden...
+    uint16_t color = screen->YELLOW;
+
+    if(getSafetySensor()->getTemp()->c() >= getSafetyTemp()->c()) {
+        // Too hot
+        color = screen->RED;
+    } else if(getSafetySensor()->getTemp()->c() < getSafetyTemp()->c()) {
+        // Too cold ... ie ok
+        color = screen->CYAN;
+    }
+
+    getTube()->displayTemp(getSafetySensor()->getTemp(), "Tube", color, screen);
+
+    screen->resetTextColor();
+    screen->println("");
 
     return micros() - start;
 }
@@ -399,7 +426,7 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
  */
 void Ohmbrewer::RIMS::whichPins(std::list<int>* pins){
 
-    pins->push_back(_tunSensor->getBusPin());
+    pins->push_back(getSafetySensor()->getBusPin());
     _tube->whichPins(pins);
     _recirc->whichPins(pins);
 
