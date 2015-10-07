@@ -61,7 +61,7 @@ namespace Ohmbrewer {
              * @param tunBus - mash tun temperature pin
              * @param pumpPins[powerPin ; controlPin ]
              */
-            RIMS(int id, int tubePins[], int tunBus, int pumpPins[]);
+            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2]);
 
             /**
              * Constructor
@@ -73,7 +73,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime, bool state, String currentTask);
+            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
@@ -86,7 +86,7 @@ namespace Ohmbrewer {
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime, bool state, String currentTask, const double targetTemp);
+            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy constructor
