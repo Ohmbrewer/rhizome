@@ -65,7 +65,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this piece of Thermostat
              * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
              */
-            Thermostat(int id, int thermPins[]);
+            Thermostat(int id, int (&thermPins)[3]);
 
             /**
              * Constructor
@@ -73,7 +73,7 @@ namespace Ohmbrewer {
              * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
              * @param targetTemp The new target temperature in Celsius
              */
-            Thermostat(int id, int thermPins[], const double targetTemp);
+            Thermostat(int id, int (&thermPins)[3], const double targetTemp);
 
             /**
              * Constructor
@@ -83,7 +83,7 @@ namespace Ohmbrewer {
              * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              */
-            Thermostat(int id, int thermPins[], int stopTime, bool state, String currentTask);
+            Thermostat(int id, int (&thermPins)[3], int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
@@ -94,7 +94,7 @@ namespace Ohmbrewer {
              * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            Thermostat(int id, int thermPins[], int stopTime, bool state, String currentTask, const double targetTemp);
+            Thermostat(int id, int (&thermPins)[3], int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy Constructor

@@ -34,7 +34,7 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
  * @param tunBus - mash tun temperature pin
  * @param pumpPins[powerPin ; controlPin ]
  */
-Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[] ) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2] ) : Ohmbrewer::Equipment(id) {
     _tube = new Thermostat(id+3, tubePins);
     _tunSensor = new TemperatureSensor(id+1, tunBus);
     int n = sizeof(pumpPins) / sizeof(int);
@@ -64,7 +64,7 @@ Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[] ) : Ohm
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     _tube = new Thermostat(id+2, tubePins);
     _tunSensor = new TemperatureSensor(id+1, tunBus);
@@ -98,7 +98,7 @@ Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int st
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::RIMS::RIMS(int id, int tubePins[], int tunBus, int pumpPins[], int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
 
     _tube = new Thermostat(id+2, tubePins, targetTemp);

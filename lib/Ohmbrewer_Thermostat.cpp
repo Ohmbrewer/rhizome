@@ -46,7 +46,7 @@ Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
  * @param id The Sprout ID to use for this piece of Thermostat
  * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[]) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3]) : Ohmbrewer::Equipment(id) {
     int n = sizeof(thermPins) / sizeof(int);
     if ( n > 2){
         _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
@@ -74,7 +74,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[]) : Ohmbrewer::Equipmen
  * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], const double targetTemp) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], const double targetTemp) : Ohmbrewer::Equipment(id) {
     int n = sizeof(thermPins) / sizeof(int);
     if ( n > 2){
         _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
@@ -102,7 +102,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], const double targetTe
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     int n = sizeof(thermPins) / sizeof(int);
     if ( n > 2){
@@ -132,7 +132,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], int stopTime,
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int thermPins[], int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], int stopTime,
                                   bool state, String currentTask,
                                   const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
 
