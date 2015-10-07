@@ -36,6 +36,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer:
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
+    _probeId;
 }
 
 /**
@@ -50,7 +51,9 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
     _busPin = busPin;
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
+    _probeId;
     registerUpdateFunction();
+
 }
 
 /**
@@ -61,6 +64,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
     _busPin = clonee.getBusPin();
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
+    _probeId;
     registerUpdateFunction();
 }
 
@@ -69,6 +73,14 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
  */
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
     delete _lastReading;
+}
+
+/**
+ * Sets the probeID
+ * @param - id char[] of the ds18b20 probe
+ */
+void setProbeId(char id[]){
+    _probeId = id;
 }
 
 /**

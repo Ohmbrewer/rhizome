@@ -52,6 +52,11 @@ namespace Ohmbrewer {
              */
             const int setLastReadTime(const int lastReadTime);
 
+            /**
+             * Sets the probeID
+             * @param - id char[] of the ds18b20 probe
+             */
+            void setProbeId(char id[]);
 
             /**
              * Constructor
@@ -180,6 +185,11 @@ namespace Ohmbrewer {
              * Digital Pin for the temperature bus one wire protocol
              */
             int _busPin;
+
+            /**
+             * Unique ID for the temperature probe
+             */
+            char _probeId[8];
     };
 };
 
