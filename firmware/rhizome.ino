@@ -53,6 +53,8 @@ void setup() {
     // Serial.begin(9600); // Enable serial for debugging messages
     String fakeTask = "fake";
 
+    ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
+
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
     // We'll also set some temperatures and relay values explicitly when we probably wouldn't.
 // EX 1: Temperature Sensors
