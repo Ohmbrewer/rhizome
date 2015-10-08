@@ -29,29 +29,31 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to.
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
     _busPin = busPin;
+    ow_setPin(D0);
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
-    _probeId;
+//    _probeId;
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to.
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     _busPin = busPin;
+    ow_setPin(D0);
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-    _probeId;
+//    _probeId;
     registerUpdateFunction();
 
 }
@@ -62,9 +64,10 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _busPin = clonee.getBusPin();
+    ow_setPin(D0);                      //needed?
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
-    _probeId;
+//    _probeId;
     registerUpdateFunction();
 }
 
@@ -79,8 +82,16 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * Sets the probeID
  * @param - id char[] of the ds18b20 probe
  */
-void setProbeId(char id[]){
+void Ohmbrewer::TemperatureSensor::setProbeId(char id[8]){
     _probeId = id;
+}
+/**
+ * reads current probes connected to busPin
+ * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
+ * @returns - number of sensors discovered
+ */
+int Ohmbrewer::TemperatureSensor::findProbeIds(uint8_t sensors[80]){
+    return (int)ow_search_sensors(10, sensors);
 }
 
 /**
@@ -179,15 +190,16 @@ int Ohmbrewer::TemperatureSensor::doWork() {
     //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
     DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
     //If your code has other tasks, you can store the timestamp instead and return when a second has passed.
-    delay(1000);
+    delay(1000);                                        //TODO change / manage this delay
+    uint8_t numSensors = ow_search_sensors(10, sensors);
+    //sprintf(msg, "Found %i sensors", numSensors);
+    //log(msg);
 
     /*
      * This section is where we can filter for the desired probe UID and only report that one. for now we will simply
      * state that there is only one and use sensors[0] as the probe reading.
      */
-    uint8_t numSensors = ow_search_sensors(10, sensors);
-    sprintf(msg, "Found %i sensors", numSensors);
-    //log(msg);
+
     if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
         char sign = (subzero) ? '-' : '+';
         int frac = celFracBits*DS18X20_FRACCONV;
@@ -195,18 +207,14 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         if (sign == '-'){
             tempC = tempC * -1;
         }
-        tempC = tempC + (.0001*(double)frac);  //TODO integrate fraction to end of temp_c ??
+        tempC = tempC + (.0001*(double)frac);
         getTemp()->fromC(tempC);
     }
-    /*//scanning code to filter out a desired probe.
 
-    uint8_t numSensors = ow_search_sensors(10, sensors);
-    sprintf(msg, "Found %i sensors", numSensors);
-    log(msg);
-
-
+    ///////////////Code below replaces above block when infrastructure is ready/////////////////
+/*
+    // filters for a desired probe.
     for (uint8_t i=0; i<numSensors; i++){
-     //THIS NEEDS WORK STILL
         //current probe ID
         char probeId[8] = {
 				sensors[(i*OW_ROMCODE_SIZE)+0],
@@ -221,24 +229,27 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
         {
             // if current probe matches the probe we are looking for
-            if (uid == probeId){
+            if (_probeId == probeId){
                 if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
                     char sign = (subzero) ? '-' : '+';
                     int frac = celFracBits*DS18X20_FRACCONV;
                     tempC = (double)cel;
-                   // tempC = tempC + (10**(-4)*(double)frac);
-                    getTemp()->fromC(tempC);3
+                    tempC = tempC + (.0001*(double)frac);
+                    getTemp()->fromC(tempC);
                 }
-                else
-                {
-                    // Do Nothing, error?
+                else {
+                    if (i == numSensors - 1) {
+                        sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID
+                        //log(msg);
+                        //getTemp()->fromC(-69);
+                    }
                 }
             }
         }
     }
+*/
 
 
-     */
     return (millis()-startTime);
 
 

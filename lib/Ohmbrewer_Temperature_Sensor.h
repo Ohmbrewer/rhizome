@@ -59,6 +59,13 @@ namespace Ohmbrewer {
             void setProbeId(char id[]);
 
             /**
+             * reads current probes connected to busPin
+             * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
+             * @returns - number of sensors discovered
+             */
+            int findProbeIds(uint8_t sensors[80]);
+
+            /**
              * Constructor
              * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
@@ -187,9 +194,9 @@ namespace Ohmbrewer {
             int _busPin;
 
             /**
-             * Unique ID for the temperature probe
+             * Unique ID for the temperature probe [8] char array ID code
              */
-            char _probeId[8];
+            char* _probeId;
     };
 };
 
