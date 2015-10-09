@@ -86,7 +86,7 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
 /**
  * @returns the probe for this sensor
  */
-Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
+Ohmbrewer::Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
     return _probe;
 }
 
