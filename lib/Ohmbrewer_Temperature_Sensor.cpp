@@ -229,7 +229,7 @@ int Ohmbrewer::TemperatureSensor::doWork() {
         if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
         {
             // if current probe matches the probe we are looking for
-            if (_probeId == probeId){
+            if ( strcmp(_probeId, probeId) ){
                 if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
                     char sign = (subzero) ? '-' : '+';
                     int frac = celFracBits*DS18X20_FRACCONV;
@@ -314,7 +314,7 @@ void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
 /*
  * publish to the log
  */
-void log(char* msg)
+void Ohmbrewer::TemperatureSensor::log(char* msg)
 {
     Spark.publish("log", msg);
     delay(500);
