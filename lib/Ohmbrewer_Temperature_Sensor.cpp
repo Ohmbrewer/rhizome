@@ -34,12 +34,10 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
     _probe = new Onewire();                 //For now all probes are all onewire
-//    _busPin = busPin;
-//    ow_setPin(D0);
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
-//    _probeId;
+
 }
 
 /**
@@ -52,11 +50,8 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer:
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     _probe = new Onewire();
-//    _busPin = busPin;
-//    ow_setPin(D0);
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
-//    _probeId;
     registerUpdateFunction();
 
 }
@@ -67,11 +62,8 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
     _probe = clonee.getProbe();
-//    _busPin = clonee.getBusPin();
-//    ow_setPin(D0);                      //needed?
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
-//    _probeId;
     registerUpdateFunction();
 }
 
@@ -90,25 +82,6 @@ Ohmbrewer::Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
     return _probe;
 }
 
-
-//
-///**
-// * Sets the probeID
-// * @param - id char[] of the ds18b20 probe
-// */
-//void Ohmbrewer::TemperatureSensor::setProbeId(char id[8]){
-//    _probeId = id;
-//}
-//
-///**
-// * reads current probes connected to busPin
-// * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
-// * @returns - number of sensors discovered
-// */
-//int Ohmbrewer::TemperatureSensor::findProbeIds(uint8_t sensors[80]){
-//    return (int)ow_search_sensors(10, sensors);
-//}
-//
 /**
  * The Bus pin - Data input line
  * onewire protocol input location for DS18b20
@@ -116,22 +89,8 @@ Ohmbrewer::Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
  */
 int Ohmbrewer::TemperatureSensor::getBusPin() const{
     return _probe->getPin();
+    //TODO will need work once more probe subclasses are added
 }
-//
-///**
-// * Sets the Digital pin for the data Bus.
-// * @param pinNum Dx
-// * @returns The time taken to run the method
-// */
-//const int Ohmbrewer::TemperatureSensor::setBusPin(const int pinNum) {
-//    unsigned long start = millis();
-//
-//    _busPin = pinNum;
-//
-//    return start - millis();
-//}
-
-
 
 /**
  * Overloaded << operator.
@@ -197,8 +156,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     int startTime = millis();
-    double tempC = _probe->getTempReading();
-    getTemp()->fromC(tempC);
+    getTemp()->fromC(_probe->getTempReading());
     return (millis()-startTime);
 }
 

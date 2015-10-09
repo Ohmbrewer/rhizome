@@ -13,29 +13,18 @@ namespace Ohmbrewer {
     public:
         /**
          * Constructors
-         * @param busPin Digital pin that serves as the bus for all onewire
          * @param probeId Unique ID for the temperature probe [8] char array ID code
          */
         Onewire();
 
-        Onewire(int busPin);
-
-        Onewire(int busPin, char* probeId);
+        Onewire(char* probeId);
 
         /**
-         * @returns the
+         * @returns the Celsius reading from the specified connected DS18b20 probe
+         *      returns -69 for no value
          */
-        double getTempReading();
+        double getReading();
 
-        /**
-         * sets the class variable busPin
-         */
-        void setBusPin(int busPin);
-
-        /**
-         * @returns _busPin
-         */
-        double getBusPin();
 
         /**
          * sets the probe id for this instance
@@ -44,7 +33,7 @@ namespace Ohmbrewer {
         void setProbeId(char* probeId);
 
         /**
-         * @returns _probeID
+         * @returns _probeID Unique probe ID
          */
         char* getProbeId();
 
@@ -70,6 +59,12 @@ namespace Ohmbrewer {
          * Unique ID for the temperature probe [8] char array ID code
          */
         char* _probeId;
+
+        /**
+         * Digital pin that the data stream is on
+         */
+        int _dataPin;
+
     };
 };
 

@@ -14,7 +14,7 @@ namespace Ohmbrewer {
         /**
          * @returns the Celsius temperature reading from the connected probe
          */
-        virtual double getTempReading() = 0;
+        virtual double getReading() = 0;
 
         /**
          * Constructor

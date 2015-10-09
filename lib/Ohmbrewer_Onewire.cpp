@@ -9,21 +9,19 @@
  * @param probeId Unique ID for the temperature probe [8] char array ID code
  */
 Ohmbrewer::Onewire::Onewire() : Ohmbrewer::Probe(){
-
+    _dataPin = _busPin;
 }
 
-Ohmbrewer::Onewire::Onewire(int busPin) : Ohmbrewer::Probe(){
-
-}
-
-Ohmbrewer::Onewire::Onewire(int busPin, char* probeId) : Ohmbrewer::Probe(){
+Ohmbrewer::Onewire::Onewire(char* probeId) : Ohmbrewer::Probe(){
+    _dataPin = _busPin;
     _probeId = probeId;
 }
 
 /**
- * The short-hand type name. Used for communicating with Ohmbrewer and disambiguating Equipment* pointers.
+ * @returns the Celsius reading from the specified connected DS18b20 probe
+ *      returns -69 for no value
  */
-double Ohmbrewer::Onewire::getTempReading(){
+double Ohmbrewer::Onewire::getReading(){
     //char uid[8];                   //need the unique ID of the probe to search for.
     uint8_t sensors[80];
 
@@ -84,7 +82,7 @@ double Ohmbrewer::Onewire::getTempReading(){
                 }
                 else {
                     if (i == numSensors - 1) {
-                        sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID
+                        sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID?
                         //log(msg);
                         //TempC = -69;
                     }
@@ -101,20 +99,6 @@ double Ohmbrewer::Onewire::getTempReading(){
 }
 
 /**
- * sets the class variable busPin
- */
-void Ohmbrewer::Onewire::setBusPin(int busPin){
-    _busPin = busPin;
-}
-
-/**
- * @returns _busPin
- */
-double Ohmbrewer::Onewire::getBusPin(){
-    return _busPin;
-}
-
-/**
  * sets the probe id for this instance
  * @param probe id  Unique probe ID
  */
@@ -123,7 +107,7 @@ void Ohmbrewer::Onewire::setProbeId(char* probeId){
 }
 
 /**
- * @returns _probeID
+ * @returns _probeID Unique probe ID
  */
 char* Ohmbrewer::Onewire::getProbeId(){
     return _probeId;
