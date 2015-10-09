@@ -2,7 +2,7 @@
 #ifndef RHIZOME_OHMBREWER_PROBE_H
 #define RHIZOME_OHMBREWER_PROBE_H
 
-#include "Ohmbrewer_Temperature_Sensor.h"
+//#include "Ohmbrewer_Temperature_Sensor.h"
 
 
 namespace Ohmbrewer {
@@ -21,6 +21,10 @@ namespace Ohmbrewer {
          */
         Probe();
 
+        /**
+        * Destructor
+        */
+        virtual ~Probe();
 
         /**
          * @returns the Pin in use for this probe

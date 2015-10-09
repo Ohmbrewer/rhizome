@@ -55,20 +55,8 @@ namespace Ohmbrewer {
             /**
              * @returns the probe for this sensor
              */
-            Probe* getProbe();
+            Probe* getProbe() const;
 
-            /**
-             * Sets the probeID
-             * @param - id char[] of the ds18b20 probe
-             */
-//            void setProbeId(char id[]);
-
-            /**
-             * reads current probes connected to busPin
-             * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
-             * @returns - number of sensors discovered
-             */
-//            int findProbeIds(uint8_t sensors[80]);
 
             /**
              * Constructor
@@ -103,14 +91,7 @@ namespace Ohmbrewer {
              * onewire protocol input location for DS18b20
              * @returns The pin number in use for this piece of Equipment
              */
-//            int getBusPin() const;
-
-            /**
-             * Sets the Digital pin for the data Bus.
-             * @param pinNum Dx
-             * @returns The time taken to run the method
-             */
-//            const int setBusPin(const int pinNum) ;
+            int getBusPin() const;
 
             /**
              * Overloaded << operator.

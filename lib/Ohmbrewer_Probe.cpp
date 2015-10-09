@@ -7,3 +7,11 @@
 Ohmbrewer::Probe::Probe(){
     _dataPin = 0;
 }
+
+/**
+* Destructor
+*/
+Ohmbrewer::Probe::~Probe() {
+
+}
+

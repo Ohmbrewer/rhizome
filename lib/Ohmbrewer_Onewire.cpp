@@ -1,6 +1,7 @@
 
 #include "Ohmbrewer_Onewire.h"
-
+#include "ds18x20.h"
+#include "onewire.h"
 
 /**
  * Constructors

@@ -1,5 +1,6 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Onewire.h"
 
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
@@ -85,7 +86,7 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
 /**
  * @returns the probe for this sensor
  */
-Probe* Ohmbrewer::TemperatureSensor::getProbe(){
+Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
     return _probe;
 }
 
@@ -108,14 +109,14 @@ Probe* Ohmbrewer::TemperatureSensor::getProbe(){
 //    return (int)ow_search_sensors(10, sensors);
 //}
 //
-///**
-// * The Bus pin - Data input line
-// * onewire protocol input location for DS18b20
-// * @returns The pin number in use for this piece of Equipment
-// */
-//int Ohmbrewer::TemperatureSensor::getBusPin() const{
-//    return _busPin;
-//}
+/**
+ * The Bus pin - Data input line
+ * onewire protocol input location for DS18b20
+ * @returns The pin number in use for this piece of Equipment
+ */
+int Ohmbrewer::TemperatureSensor::getBusPin() const{
+    return _probe->getPin();
+}
 //
 ///**
 // * Sets the Digital pin for the data Bus.
@@ -252,7 +253,7 @@ int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::a
  */
 void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
 
-    pins->push_back(probe->getPin());
+    pins->push_back(_probe->getPin());
 
 
 }

@@ -3,8 +3,8 @@
 #define RHIZOME_OHMBREWER_ONEWIRE_H
 
 #include "Ohmbrewer_Probe.h"
-#include "ds18x20.h"
-#include "onewire.h"
+#include "application.h"
+
 
 namespace Ohmbrewer {
 
