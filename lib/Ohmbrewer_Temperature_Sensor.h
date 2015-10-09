@@ -14,8 +14,8 @@
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
-#include "ds18x20.h"
-#include "onewire.h"
+#include "Ohmbrewer_Probe.h"
+
 
 namespace Ohmbrewer {
 
@@ -53,17 +53,22 @@ namespace Ohmbrewer {
             const int setLastReadTime(const int lastReadTime);
 
             /**
+             * @returns the probe for this sensor
+             */
+            Probe* getProbe();
+
+            /**
              * Sets the probeID
              * @param - id char[] of the ds18b20 probe
              */
-            void setProbeId(char id[]);
+//            void setProbeId(char id[]);
 
             /**
              * reads current probes connected to busPin
              * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
              * @returns - number of sensors discovered
              */
-            int findProbeIds(uint8_t sensors[80]);
+//            int findProbeIds(uint8_t sensors[80]);
 
             /**
              * Constructor
@@ -98,14 +103,14 @@ namespace Ohmbrewer {
              * onewire protocol input location for DS18b20
              * @returns The pin number in use for this piece of Equipment
              */
-            int getBusPin() const;
+//            int getBusPin() const;
 
             /**
              * Sets the Digital pin for the data Bus.
              * @param pinNum Dx
              * @returns The time taken to run the method
              */
-            const int setBusPin(const int pinNum) ;
+//            const int setBusPin(const int pinNum) ;
 
             /**
              * Overloaded << operator.
@@ -189,14 +194,10 @@ namespace Ohmbrewer {
             int _lastReadTime;
 
             /**
-             * Digital Pin for the temperature bus one wire protocol
+             * temperature Probe
              */
-            int _busPin;
+            Probe* _probe;
 
-            /**
-             * Unique ID for the temperature probe [8] char array ID code
-             */
-            char* _probeId;
     };
 };
 

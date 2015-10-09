@@ -9,6 +9,10 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Relay.cpp
     ../lib/Ohmbrewer_Heating_Element.h
     ../lib/Ohmbrewer_Heating_Element.cpp
+    ../lib/Ohmbrewer_Onewire.cpp
+    ../lib/Ohmbrewer_Onewire.h
+    ../lib/Ohmbrewer_Probe.cpp
+    ../lib/Ohmbrewer_Probe.h
     ../lib/Ohmbrewer_Pump.h
     ../lib/Ohmbrewer_Pump.cpp
     ../lib/Ohmbrewer_Temperature_Sensor.h
