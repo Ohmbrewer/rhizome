@@ -9,11 +9,11 @@
  * @param probeId Unique ID for the temperature probe [8] char array ID code
  */
 Ohmbrewer::Onewire::Onewire() : Ohmbrewer::Probe(){
-//    ow_setPin(D0);
+
 }
 
 Ohmbrewer::Onewire::Onewire(char* probeId) : Ohmbrewer::Probe(){
-//    ow_setPin(D0);
+
     _probeId = probeId;
 }
 
@@ -52,7 +52,9 @@ double Ohmbrewer::Onewire::getReading(){
         }
         tempC = tempC + (.0001*(double)frac);
         //getTemp()->fromC(tempC);
+
     }else{tempC=-69;}
+
 
     ///////////////Code below replaces above block when infrastructure is ready/////////////////
 /*
@@ -119,6 +121,7 @@ char* Ohmbrewer::Onewire::getProbeId(){
  * @returns - number of sensors discovered
  */
 int Ohmbrewer::Onewire::findProbeIds(uint8_t (&sensors)[80]){
+
     return (int)ow_search_sensors(10, sensors);
 }
 
