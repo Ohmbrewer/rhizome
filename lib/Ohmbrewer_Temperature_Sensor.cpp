@@ -1,5 +1,6 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Screen.h"
+#include "Ohmbrewer_Onewire.h"
 
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
@@ -29,28 +30,30 @@ const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to.
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
-    _busPin = busPin;
+    _probe = new Onewire();                 //For now all probes are all onewire
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
+
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to.
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _busPin = busPin;
+    _probe = new Onewire();
     _lastReading = new Temperature(0);
     _lastReadTime = Time.now();
     registerUpdateFunction();
+
 }
 
 /**
@@ -58,7 +61,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTim
  * @param clonee The TemperatureSensor object to copy
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
-    _busPin = clonee.getBusPin();
+    _probe = clonee.getProbe();
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
     registerUpdateFunction();
@@ -69,6 +72,14 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
  */
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
     delete _lastReading;
+    delete _probe;
+}
+
+/**
+ * @returns the probe for this sensor
+ */
+Ohmbrewer::Probe* Ohmbrewer::TemperatureSensor::getProbe() const{
+    return _probe;
 }
 
 /**
@@ -77,20 +88,8 @@ Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
  * @returns The pin number in use for this piece of Equipment
  */
 int Ohmbrewer::TemperatureSensor::getBusPin() const{
-    return _busPin;
-}
-
-/**
- * Sets the Digital pin for the data Bus.
- * @param pinNum Dx
- * @returns The time taken to run the method
- */
-const int Ohmbrewer::TemperatureSensor::setBusPin(const int pinNum) {
-    unsigned long start = millis();
-
-    _busPin = pinNum;
-
-    return start - millis();
+    return _probe->getPin();
+    //TODO will need work once more probe subclasses are added
 }
 
 /**
@@ -149,11 +148,16 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
 /**
  * Performs the TemperatureSensor's current task. Expect to use this during loop().
  * This function is called by work().
+ *
+ * This analyzes the connected DS18B20 probes and updates temperature.from_c with the Celsius value.
+ *
+ *
  * @returns The time taken to run the method
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
-    // TODO: Implement TemperatureSensor::doWork
-    return -1;
+    int startTime = millis();
+    getTemp()->fromC(_probe->getReading());
+    return (millis()-startTime);
 }
 
 /**
@@ -207,7 +211,7 @@ int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::a
  */
 void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
 
-    pins->push_back(getBusPin());
+    pins->push_back(_probe->getPin());
 
 
 }
