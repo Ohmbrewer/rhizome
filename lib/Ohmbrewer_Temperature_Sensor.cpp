@@ -156,7 +156,7 @@ bool Ohmbrewer::TemperatureSensor::isOff() const {
  */
 int Ohmbrewer::TemperatureSensor::doWork() {
     int startTime = millis();
-    getTemp()->fromC(_probe->getTempReading());
+    getTemp()->fromC(_probe->getReading());
     return (millis()-startTime);
 }
 

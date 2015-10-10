@@ -9,11 +9,9 @@
  * @param probeId Unique ID for the temperature probe [8] char array ID code
  */
 Ohmbrewer::Onewire::Onewire() : Ohmbrewer::Probe(){
-    _dataPin = _busPin;
 }
 
 Ohmbrewer::Onewire::Onewire(char* probeId) : Ohmbrewer::Probe(){
-    _dataPin = _busPin;
     _probeId = probeId;
 }
 
@@ -126,7 +124,7 @@ int Ohmbrewer::Onewire::findProbeIds(uint8_t sensors[80]){
 * @returns the Pin in use for this probe
 */
 int Ohmbrewer::Onewire::getPin(){
-    return _dataPin;
+    return 0;       //Onewire global busPin
 }
 
 /* OPTIONAL

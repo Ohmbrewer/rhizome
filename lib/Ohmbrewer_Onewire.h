@@ -50,10 +50,6 @@ namespace Ohmbrewer {
         int getPin();
 
     protected:
-        /**
-         * Digital Pin for the temperature bus one wire protocol
-         */
-        static int _busPin; //TODO class variable??
 
         /**
          * Unique ID for the temperature probe [8] char array ID code
