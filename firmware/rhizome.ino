@@ -7,6 +7,7 @@
 #include "Ohmbrewer_Publisher.h"
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_RIMS.h"
+#include "onewire.h"
 // #include "Ohmbrewer_Publisher.h" // (*)
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
@@ -52,6 +53,8 @@ unsigned long lastUpdate = millis();
 void setup() {
     // Serial.begin(9600); // Enable serial for debugging messages
     String fakeTask = "fake";
+
+    ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
 
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
     // We'll also set some temperatures and relay values explicitly when we probably wouldn't.
@@ -107,6 +110,7 @@ void loop() {
 //        navi->publish(); // (*)
         lastUpdate = millis();
     }
+    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->doWork(); //Temp patch to make sensor read in TUBE
     screen.refreshDisplay();
 }
 
