@@ -14,6 +14,7 @@
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
+#include "Ohmbrewer_Probe.h"
 
 namespace Ohmbrewer {
 
@@ -50,6 +51,10 @@ namespace Ohmbrewer {
              */
             const int setLastReadTime(const int lastReadTime);
 
+            /**
+             * @returns the probe for this sensor
+             */
+            Probe* getProbe() const;
 
             /**
              * Constructor
@@ -85,13 +90,6 @@ namespace Ohmbrewer {
              * @returns The pin number in use for this piece of Equipment
              */
             int getBusPin() const;
-
-            /**
-             * Sets the Digital pin for the data Bus.
-             * @param pinNum Dx
-             * @returns The time taken to run the method
-             */
-            const int setBusPin(const int pinNum) ;
 
             /**
              * Overloaded << operator.
@@ -175,9 +173,10 @@ namespace Ohmbrewer {
             int _lastReadTime;
 
             /**
-             * Digital Pin for the temperature bus one wire protocol
+             * temperature Probe
              */
-            int _busPin;
+            Probe* _probe;
+
     };
 };
 
