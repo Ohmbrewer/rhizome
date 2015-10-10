@@ -16,7 +16,6 @@
 #include "application.h"
 #include "Ohmbrewer_Probe.h"
 
-
 namespace Ohmbrewer {
 
     class TemperatureSensor : public Equipment {
@@ -56,7 +55,6 @@ namespace Ohmbrewer {
              * @returns the probe for this sensor
              */
             Probe* getProbe() const;
-
 
             /**
              * Constructor
