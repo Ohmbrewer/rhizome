@@ -110,6 +110,7 @@ void loop() {
 //        navi->publish(); // (*)
         lastUpdate = millis();
     }
+    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->doWork(); //Temp patch to make sensor read in TUBE
     screen.refreshDisplay();
 }
 

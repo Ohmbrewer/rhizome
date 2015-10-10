@@ -42,7 +42,7 @@ namespace Ohmbrewer {
          * @param - sensors array to update with ID values of all(max10) the connected ds18b20 probes
          * @returns - number of sensors discovered
          */
-        int findProbeIds(uint8_t sensors[80]);
+        int findProbeIds(uint8_t (&sensors)[80]);
 
         /**
          * @returns the Pin in use for this probe
