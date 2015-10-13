@@ -35,32 +35,6 @@ namespace Ohmbrewer {
             virtual const char* getType() const { return Thermostat::TYPE_NAME; };
 
             /**
-             * The desired target temperature. Defaults to Celsius
-             * @returns The target temperature in Celsius, as a Temperature object pointer
-             */
-            Temperature* getTargetTemp() const;
-
-            /**
-             * Sets the target temperature
-             * @param targetTemp The new target temperature in Celsius
-             * @returns The time taken to run the method
-             */
-            const int setTargetTemp(const double targetTemp);
-
-            /**
-             * The Thermostat's heating element
-             * @returns The heating element
-             */
-            HeatingElement* getElement() const;
-
-            /**
-             * The Thermostat's temperature sensor
-             * @returns The temperature sensor
-             */
-            TemperatureSensor* getSensor() const;
-
-
-            /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Thermostat
              * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
@@ -111,6 +85,31 @@ namespace Ohmbrewer {
              * Overloaded << operator.
              */
             // friend std::ostream& operator<<( std::ostream& os, Thermostat const& thermostat);
+
+            /**
+             * The desired target temperature. Defaults to Celsius
+             * @returns The target temperature in Celsius, as a Temperature object pointer
+             */
+            Temperature* getTargetTemp() const;
+
+            /**
+             * Sets the target temperature
+             * @param targetTemp The new target temperature in Celsius
+             * @returns The time taken to run the method
+             */
+            const int setTargetTemp(const double targetTemp);
+
+            /**
+             * The Thermostat's heating element
+             * @returns The heating element
+             */
+            HeatingElement* getElement() const;
+
+            /**
+             * The Thermostat's temperature sensor
+             * @returns The temperature sensor
+             */
+            TemperatureSensor* getSensor() const;
 
             /**
              * Specifies the interface for arguments sent to this Thermostat's associated function.

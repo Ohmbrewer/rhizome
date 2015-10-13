@@ -6,6 +6,7 @@
 #include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Publisher.h"
 #include "Ohmbrewer_Thermostat.h"
+#include "Ohmbrewer_Still.h"
 #include "Ohmbrewer_RIMS.h"
 #include "onewire.h"
 // #include "Ohmbrewer_Publisher.h" // (*)
@@ -79,16 +80,16 @@ void setup() {
     //TODO change to array
     // [ tube temp busPin ; tube heating powerPin ; tube heating controlPin ; mashtun temp busPin ; pump powerPin ; pump controlPin]
 
-    int tubePins[] = {0,1,2};
-    int tunPin = 3;
+    //int tubePins[] = {0,1,2};
+    //int tunPin = 3;
     int pumpPins[] = {4,5};
     //for(int i = 1; i < 5; i++) {rimsPins->push_back(i);}
 
-    sprouts.push_back(new Ohmbrewer::RIMS( 1, tubePins, tunPin, pumpPins ));
-    ((Ohmbrewer::RIMS*)sprouts.front())->setState(true); // Turn everything on.
-    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(559);
+    sprouts.push_back(new Ohmbrewer::Still( 1, pumpPins, 0 ));
+    ((Ohmbrewer::Still*)sprouts.front())->setState(true); // Turn everything on.
+    ((Ohmbrewer::Still*)sprouts.front())->getTherm()->setTargetTemp(666);
 
-    sprouts.push_back(new Ohmbrewer::Pump( 2, pumpPins[0], pumpPins[1] ));
+    //sprouts.push_back(new Ohmbrewer::Pump( 2, pumpPins[0], pumpPins[1] ));
 
     screen.initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)
@@ -104,13 +105,13 @@ void loop() {
 //        ((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
 //                                               ->setState(!((Ohmbrewer::Thermostat*)sprouts.at(0))->getElement()
 //                                                                                                  ->getState()); // The Thermostat's HeatingElement
-        ((Ohmbrewer::RIMS*)sprouts.front())->getTube()
+        ((Ohmbrewer::Still*)sprouts.front())->getTherm()
                                            ->getElement()
                                            ->toggleState();
 //        navi->publish(); // (*)
         lastUpdate = millis();
     }
-    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->doWork(); //Temp patch to make sensor read in TUBE
+    ((Ohmbrewer::Still*)sprouts.front())->getColumnSensor()->doWork(); //Temp patch to make sensor read in TUBE
     screen.refreshDisplay();
 }
 

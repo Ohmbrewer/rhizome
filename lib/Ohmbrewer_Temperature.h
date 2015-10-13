@@ -15,6 +15,28 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * Constructor.
+             * @param temp The temperature in Celsius
+             */
+            Temperature(const double temp);
+
+            /**
+             * Copy Constructor.
+             * @param copy The Temperature to copy
+             */
+            Temperature(const Temperature& copy);
+            
+            /**
+             * Destructor
+             */
+            virtual ~Temperature();
+            
+            /**
+             * Overloaded << operator.
+             */
+             // friend std::ostream& operator<<( std::ostream& os, Temperature const& temp);
+
+            /**
              * The temperature in Fahrenheit
              * @returns The temperature in Fahrenheit
              */
@@ -68,29 +90,7 @@ namespace Ohmbrewer {
              */
             const bool set(const double temp);
 
-            /**
-             * Constructor.
-             * @param temp The temperature in Celsius
-             */
-            Temperature(const double temp);
-
-            /**
-             * Copy Constructor.
-             * @param copy The Temperature to copy
-             */
-            Temperature(const Temperature& copy);
-            
-            /**
-             * Destructor
-             */
-            virtual ~Temperature();
-            
-            /**
-             * Overloaded << operator.
-             */
-             // friend std::ostream& operator<<( std::ostream& os, Temperature const& temp);
-    
-        protected:
+    protected:
             /**
              * The temperature in Celsius
              */

@@ -1,23 +1,67 @@
-#include "Ohmbrewer_RIMS.h"
+
+#include "Ohmbrewer_Still.h"
+
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Publisher.h"
 
 
 /**
+ * Constructor - standard still
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param elementPins[ heating powerPin ; heating controlPin ]
+ * @param tempBus - onewire temperature pin
+ */
+Ohmbrewer::Still::Still(int id, int (&elementPins)[2], int tempBus ) : Ohmbrewer::Equipment(id) {
+
+
+    //Thermostat
+    //Temp therm constructor with no array checking
+    int thermPins[3] = {tempBus, elementPins[0], elementPins[1]};
+//    memcpy(&thermPins+sizeof(int), elementPins, 2*sizeof(int));
+//    _therm = new Thermostat(id+4, thermPins);
+
+    _therm = new Thermostat(id+4, thermPins );
+    /*
+    int n = sizeof(elementPins) / sizeof(int);
+    if (elementPins[1]==NULL){      //publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+        pMap[String("array_check_still")] = String("improperly formed array - Still(int, int[], int)");
+        pub->publish();
+    }
+    if (elementPins[1]==NULL){      //no switch leg on pump
+        _therm = new Thermostat(id+4, {tempBus, elementPins[0], NULL} );
+    }else{                          //switch and SSR
+        _therm = new Thermostat(id+4, {tempBus, elementPins[0], elementPins[1]} );
+    }*/
+    //Temperature Sensors (DS18b20)
+    _kettleSensor = new TemperatureSensor(id+1, tempBus);
+    _columnSensor = new TemperatureSensor(id+2, tempBus);
+    _coolantSensor = new TemperatureSensor(id+3, tempBus); //optional
+
+    registerUpdateFunction();
+}
+
+/**TODO additional constuctors need work USE CONSTRUCTOR 1
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
+ * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tempBus - mash tun temperature pin
  * @param pumpPins[powerPin ; controlPin ]
  */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2] ) : Ohmbrewer::Equipment(id) {
-    _tube = new Thermostat(id+3, tubePins);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
+Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2] ) : Ohmbrewer::Equipment(id) {
+    //Thermostat
+    _therm = new Thermostat(id+3, thermPins);
+    //Temperature Sensors (DS18b20)
+    _kettleSensor = new TemperatureSensor(id+1, tempBus);
+    _columnSensor = new TemperatureSensor(id+1, tempBus);
+    _coolantSensor = new TemperatureSensor(id+1, tempBus);
+    //Pump
     int n = sizeof(pumpPins) / sizeof(int);
-        if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+    if ( n > 1){
+        _coolantPump = new Pump(id+4, pumpPins[0], pumpPins[1]);
     }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+        _coolantPump = new Pump(id+4, pumpPins[0], -1);//Single speed pump
     }else{
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
@@ -30,27 +74,27 @@ Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2]
     registerUpdateFunction();
 }
 
-/**
+/**FIXME
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
+ * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tempBus - mash tun temperature pin
  * @param pumpPins[powerPin ; controlPin ]
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
+Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _tube = new Thermostat(id+2, tubePins);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
+    _therm = new Thermostat(id+2, thermPins);
+    _kettleSensor = new TemperatureSensor(id+1, tempBus);
     int n = sizeof(pumpPins) / sizeof(int);
     Ohmbrewer::Publisher::publish_map_t pMap;
     Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
     if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
     }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
     }else{
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
@@ -63,29 +107,29 @@ Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2]
     registerUpdateFunction();
 }
 
-/**
+/**FIXME
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
- * @param tunBus - mash tun temperature pin
+ * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param tempBus - mash tun temperature pin
  * @param pumpPins[powerPin ; controlPin ]
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime,
+Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
 
-    _tube = new Thermostat(id+2, tubePins, targetTemp);
-    _tunSensor = new TemperatureSensor(id+1, tunBus);
+    _therm = new Thermostat(id+2, thermPins, targetTemp);
+    _kettleSensor = new TemperatureSensor(id+1, tempBus);
     int n = sizeof(pumpPins) / sizeof(int);
     Ohmbrewer::Publisher::publish_map_t pMap;
     Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
     if ( n > 1){
-        _recirc = new Pump(1, pumpPins[0], pumpPins[1]);
+        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
     }else if (n == 1){
-        _recirc = new Pump(1, pumpPins[0], -1);//Single speed pump
+        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
     }else{
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
@@ -102,10 +146,12 @@ Ohmbrewer::RIMS::RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2]
  * FIXME: Copy constructors should probably reset the pins and ID's, no? Depends why we are copying it
  * @param clonee The Equipment object to copy
  */
-Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clonee) {
-    _tube = clonee.getTube();
-    _tunSensor = clonee.getTunSensor();
-    _recirc = clonee.getRecirculator();
+Ohmbrewer::Still::Still(const Ohmbrewer::Still& clonee) : Ohmbrewer::Equipment(clonee) {
+    _therm = clonee.getTherm();
+    _kettleSensor = clonee.getKettleSensor();
+    _columnSensor = clonee.getColumnSensor();
+    _coolantSensor = clonee.getCoolantSensor();
+    _coolantPump = clonee.getCoolantPump();
 
     registerUpdateFunction();
 }
@@ -113,10 +159,10 @@ Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clon
 /**
  * Destructor
  */
-Ohmbrewer::RIMS::~RIMS() {
-    delete _recirc;
-    delete _tube;
-    delete _tunSensor;
+Ohmbrewer::Still::~Still() {
+    delete _coolantPump;
+    delete _therm;
+    delete _kettleSensor;
 }
 
 /**
@@ -128,24 +174,40 @@ Ohmbrewer::RIMS::~RIMS() {
  * The Tube thermostat
  * @returns The Thermostat object representing the RIMS tube elements
  */
-Ohmbrewer::Thermostat* Ohmbrewer::RIMS::getTube() const {
-    return _tube;
+Ohmbrewer::Thermostat* Ohmbrewer::Still::getTherm() const {
+    return _therm;
 }
 
 /**
  * The temperature sensor located in the tun
  * @returns The Temperature Sensor object representing the sensor located in the mash tun
  */
-Ohmbrewer::TemperatureSensor* Ohmbrewer::RIMS::getTunSensor() const {
-    return _tunSensor;
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Still::getKettleSensor() const {
+    return _kettleSensor;
+}
+
+/**
+ * The temperature sensor located in the tun
+ * @returns The Temperature Sensor object representing the sensor located in the mash tun
+ */
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Still::getColumnSensor() const {
+    return _columnSensor;
+}
+
+/**
+ * The temperature sensor located in the tun
+ * @returns The Temperature Sensor object representing the sensor located in the mash tun
+ */
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Still::getCoolantSensor() const {
+    return _coolantSensor;
 }
 
 /**
  * The recirculation pump between the tun and the tube
  * @returns The Pump object representing the recirculation pump
  */
-Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
-    return _recirc;
+Ohmbrewer::Pump* Ohmbrewer::Still::getCoolantPump() const {
+    return _coolantPump;
 }
 
 /**
@@ -155,7 +217,7 @@ Ohmbrewer::Pump* Ohmbrewer::RIMS::getRecirculator() const {
  * @param argsStr The arguments supplied as an update to the Rhizome.
  * @param result A map reprsenting the key/value pairs for the update
  */
-void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
+void Ohmbrewer::Still::parseArgs(const String &argsStr, Ohmbrewer::Equipment::args_map_t &result) {
 
     if(argsStr.length() > 0) {
         // FIXME These should probably be converted into private const variables
@@ -196,12 +258,14 @@ void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::arg
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @returns The time taken to run the method
  */
-const int Ohmbrewer::RIMS::setState(const bool state) {
+const int Ohmbrewer::Still::setState(const bool state) {
     unsigned long start = millis();
 
-    getTube()->setState(state);
-    getTunSensor()->setState(state);
-    getRecirculator()->setState(state);
+    getTherm()->setState(state);
+    getKettleSensor()->setState(state);
+    getColumnSensor()->setState(state);
+    getCoolantSensor()->setState(state);
+    getCoolantPump()->setState(state);
 
     return start - millis();
 }
@@ -210,15 +274,16 @@ const int Ohmbrewer::RIMS::setState(const bool state) {
  * The Equipment state. True => On, False => Off
  * @returns True => On, False => Off
  */
-bool Ohmbrewer::RIMS::getState() const {
-    return getRecirculator()->getState() || getTunSensor()->getState() || getTube()->getState();
+bool Ohmbrewer::Still::getState() const {
+    return getCoolantPump()->getState() || getKettleSensor()->getState() || getTherm()->getState()
+            || getCoolantSensor()->getState() || getColumnSensor()->getState();
 }
 
 /**
  * True if the Equipment state is On.
  * @returns Whether the Equipment is turned ON
  */
-bool Ohmbrewer::RIMS::isOn() const {
+bool Ohmbrewer::Still::isOn() const {
     return getState();
 }
 
@@ -226,7 +291,7 @@ bool Ohmbrewer::RIMS::isOn() const {
  * True if the Equipment state is Off.
  * @returns Whether the Equipment is turned OFF
  */
-bool Ohmbrewer::RIMS::isOff() const {
+bool Ohmbrewer::Still::isOff() const {
     return !getState();
 }
 
@@ -235,8 +300,14 @@ bool Ohmbrewer::RIMS::isOff() const {
  * This function is called by work().
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doWork() {
-    // TODO: Implement RIMS::doWork
+int Ohmbrewer::Still::doWork() {
+    // TODO: Implement STILL::doWork
+    //need to call the PID functionality
+    //set the column temp as the therm sensor someplace
+    //call PID on column temp
+    //call pID on coolant if enabled. TODO
+
+
     return -1;
 }
 
@@ -246,35 +317,37 @@ int Ohmbrewer::RIMS::doWork() {
  * @param screen The Rhizome's touchscreen
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
+int Ohmbrewer::Still::doDisplay(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
 
     screen->resetTextSize();
     screen->resetTextColor();
 
     // Print the section title
-    screen->print("===== RIMS #");
+    screen->print("===== STILL #");
     screen->print(getID());
-    screen->print("  =====");
+    screen->print(" =====");
 
     // Add a wee margin
     screen->printMargin(2);
 
     // Print out the current temp from the Tun
-    displayTunTemp(screen);
+    displayKettleTemp(screen);
+    displayColumnTemp(screen);
+    displayCoolantTemp(screen);
 
     screen->printMargin(2);
-    screen->print("------  Tube  ------");
-    screen->printMargin(2);
+//    screen->print("------ status ------");
+//    screen->printMargin(2);
 
     // Print out the temperature from the Tube
-    getTube()->displayCurrentTemp(screen);
+    getTherm()->displayCurrentTemp(screen);
 
     // Print out the target temp
-    getTube()->displayTargetTemp(screen);
+    getTherm()->displayTargetTemp(screen);
 
     // Print the pump status
-    displayRecircStatus(screen);
+    displayCoolantPumpStatus(screen);
 
     return micros() - start;
 }
@@ -284,25 +357,97 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
  * @param screen The Rhizome's touchscreen
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Still::displayKettleTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char tempStr [24];
     // If current == target, we'll default to yellow, 'cause we're golden...
     uint16_t color = screen->YELLOW;
 
-    if(getTunSensor()->getTemp()->c() > getTube()->getTargetTemp()->c()) {
+    if(getKettleSensor()->getTemp()->c() > getTherm()->getTargetTemp()->c()) {
         // Too hot
         color = screen->RED;
-    } else if(getTunSensor()->getTemp()->c() < getTube()->getTargetTemp()->c()) {
+    } else if(getKettleSensor()->getTemp()->c() < getTherm()->getTargetTemp()->c()) {
         // Too cold
         color = screen->CYAN;
     }
 
-    sprintf(tempStr, "%2.2f", getTunSensor()->getTemp()->c());
+    sprintf(tempStr, "%2.2f", getKettleSensor()->getTemp()->c());
 
     // Print the label
     screen->resetTextColor();
-    screen->print(" Tun (");
+    screen->print(" Kettle (");
+    screen->writeDegree();
+    screen->print("C): ");
+
+    // Print out the temp
+    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
+    screen->println(tempStr);
+
+    screen->resetTextColor();
+
+    return micros() - start;
+}
+
+/**
+ * Prints the temperature information for our sensors onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Still::displayColumnTemp(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char tempStr [24];
+    // If current == target, we'll default to yellow, 'cause we're golden...
+    uint16_t color = screen->YELLOW;
+
+    if(getColumnSensor()->getTemp()->c() > getTherm()->getTargetTemp()->c()) {
+        // Too hot
+        color = screen->RED;
+    } else if(getColumnSensor()->getTemp()->c() < getTherm()->getTargetTemp()->c()) {
+        // Too cold
+        color = screen->CYAN;
+    }
+
+    sprintf(tempStr, "%2.2f", getColumnSensor()->getTemp()->c());
+
+    // Print the label
+    screen->resetTextColor();
+    screen->print(" column (");
+    screen->writeDegree();
+    screen->print("C): ");
+
+    // Print out the temp
+    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
+    screen->println(tempStr);
+
+    screen->resetTextColor();
+
+    return micros() - start;
+}
+
+/**
+ * Prints the temperature information for our sensors onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Still::displayCoolantTemp(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char tempStr [24];
+    // If current == target, we'll default to yellow, 'cause we're golden...
+    uint16_t color = screen->YELLOW;
+
+    if(getCoolantSensor()->getTemp()->c() > getTherm()->getTargetTemp()->c()) {
+        // Too hot
+        color = screen->RED;
+    } else if(getCoolantSensor()->getTemp()->c() < getTherm()->getTargetTemp()->c()) {
+        // Too cold
+        color = screen->CYAN;
+    }
+
+    sprintf(tempStr, "%2.2f", getCoolantSensor()->getTemp()->c());
+
+    // Print the label
+    screen->resetTextColor();
+    screen->print(" coolant (");
     screen->writeDegree();
     screen->print("C): ");
 
@@ -320,15 +465,15 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
  * @param screen The Rhizome's touchscreen
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Still::displayCoolantPumpStatus(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
 
     // Print the label
     screen->resetTextColor();
-    screen->print(" R. Pump: "); // We want a little margin
+    screen->print(" C. Pump: "); // We want a little margin
 
     // Print the state
-    if (getRecirculator()->getState()){
+    if (getCoolantPump()->getState()){
         screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
         screen->print("ON ");
     } else {
@@ -349,23 +494,24 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
  * @param argsMap A map representing the key/value pairs for the update
  * @returns The time taken to run the method
  */
-int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
+int Ohmbrewer::Still::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &argsMap) {
     unsigned long start = millis();
 
     // If there are any remaining parameters
     if(args.length() > 0) {
-        String tunSensorKey = String("tun_sensor_state");
-        String rPumpKey = String("r_pump_state");
-        String tubeKey = String("tube_params");
+        String tunSensorKey = String("kettle_sensor_state");
+        String rPumpKey = String("c_pump_state");
+        String tubeKey = String("therm_params");
 
         parseArgs(args, argsMap);
 
+        //TODO flush out with all vars
         // The remaining settings are optional/convenience parameters
         if(argsMap.count(tunSensorKey) != 0) {
             if(argsMap[tunSensorKey].equalsIgnoreCase("ON")) {
-                getTunSensor()->setState(true);
+                getKettleSensor()->setState(true);
             } else if(argsMap[tunSensorKey].equalsIgnoreCase("OFF")) {
-                getTunSensor()->setState(false);
+                getKettleSensor()->setState(false);
             } else if(argsMap[tunSensorKey].equalsIgnoreCase("--")) {
                 // Do nothing. Intentional.
             } else {
@@ -375,9 +521,9 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
 
         if(argsMap.count(rPumpKey) != 0) {
             if(argsMap[rPumpKey].equalsIgnoreCase("ON")) {
-                getRecirculator()->setState(true);
+                getCoolantPump()->setState(true);
             } else if(argsMap[rPumpKey].equalsIgnoreCase("OFF")) {
-                getRecirculator()->setState(false);
+                getCoolantPump()->setState(false);
             } else if(argsMap[rPumpKey].equalsIgnoreCase("--")) {
                 // Do nothing. Intentional.
             } else {
@@ -388,7 +534,7 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
 
         if(argsMap.count(tubeKey) != 0) {
             // Pass the remaining parameters down to the Tube (a Thermostat)
-            getTube()->doUpdate(argsMap[tubeKey], argsMap);
+            getTherm()->doUpdate(argsMap[tubeKey], argsMap);
         }
 
     }
@@ -402,11 +548,11 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
  * Equipment, forming a logical Sprout.
  * @param pins The list of physical pins that the Equipment is connected to.
  */
-void Ohmbrewer::RIMS::whichPins(std::list<int>* pins){
+void Ohmbrewer::Still::whichPins(std::list<int>* pins){
 
-    pins->push_back(_tunSensor->getBusPin());
-    _tube->whichPins(pins);
-    _recirc->whichPins(pins);
+    pins->push_back(_kettleSensor->getBusPin()); //assumes onewire protocol
+    _therm->whichPins(pins);
+    _coolantPump->whichPins(pins);
 
 }
 

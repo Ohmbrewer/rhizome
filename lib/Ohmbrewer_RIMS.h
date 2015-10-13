@@ -37,24 +37,6 @@ namespace Ohmbrewer {
             virtual const char* getType() const { return RIMS::TYPE_NAME; };
 
             /**
-             * The Tube thermostat
-             * @returns The Thermostat object representing the RIMS tube elements
-             */
-            Thermostat* getTube() const;
-
-            /**
-             * The temperature sensor located in the tun
-             * @returns The Temperature Sensor object representing the sensor located in the mash tun
-             */
-            TemperatureSensor* getTunSensor() const;
-
-            /**
-             * The recirculation pump between the tun and the tube
-             * @returns The Pump object representing the recirculation pump
-             */
-            Pump* getRecirculator() const;
-
-            /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
              * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
@@ -103,6 +85,24 @@ namespace Ohmbrewer {
              * Overloaded << operator.
              */
             // friend std::ostream& operator<<( std::ostream& os, RIMS const& rims);
+
+            /**
+             * The Tube thermostat
+             * @returns The Thermostat object representing the RIMS tube elements
+             */
+            Thermostat* getTube() const;
+
+            /**
+             * The temperature sensor located in the tun
+             * @returns The Temperature Sensor object representing the sensor located in the mash tun
+             */
+            TemperatureSensor* getTunSensor() const;
+
+            /**
+             * The recirculation pump between the tun and the tube
+             * @returns The Pump object representing the recirculation pump
+             */
+            Pump* getRecirculator() const;
 
             /**
              * Specifies the interface for arguments sent to this Equipment's associated function.

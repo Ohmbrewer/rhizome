@@ -1,6 +1,38 @@
 #include "Ohmbrewer_Temperature.h"
 
 
+
+/**
+ * Constructor.
+ * @param temp The temperature in Celsius
+ */
+Ohmbrewer::Temperature::Temperature(const double temp) {
+    _targetTemp = temp;
+}
+
+/**
+ * Copy Constructor.
+ * @param copy The Temperature to copy
+ */
+Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
+    _targetTemp = copy.c();
+}
+
+/**
+ * Destructor
+ */
+Ohmbrewer::Temperature::~Temperature() {
+    // Nothing to do here...
+}
+
+/**
+ * Overloaded << operator.
+ */
+//friend std::ostream& operator<<( std::ostream& os, Ohmbrewer::Temperature::Temperature const& temp) {
+//    os << temp.c() << " C";
+//    return os;
+//}
+
 /**
  * The temperature in Fahrenheit
  * @returns The temperature in Fahrenheit
@@ -69,34 +101,3 @@ const bool Ohmbrewer::Temperature::set(const double temp) {
     _targetTemp = temp;
     return true;
 }
-
-/**
- * Constructor.
- * @param temp The temperature in Celsius
- */
-Ohmbrewer::Temperature::Temperature(const double temp) {
-    _targetTemp = temp;
-}
-
-/**
- * Copy Constructor.
- * @param copy The Temperature to copy
- */
-Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
-    _targetTemp = copy.c();
-}
-
-/**
- * Destructor
- */
-Ohmbrewer::Temperature::~Temperature() {
-    // Nothing to do here...
-}
-
-/**
- * Overloaded << operator.
- */
-//friend std::ostream& operator<<( std::ostream& os, Ohmbrewer::Temperature::Temperature const& temp) {
-//    os << temp.c() << " C";
-//    return os;
-//}

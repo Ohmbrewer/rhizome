@@ -3,44 +3,6 @@
 #include "Ohmbrewer_Publisher.h"
 
 
-
-/**
- * The desired target temperature. Defaults to Celsius
- * @returns The target temperature in Celsius, as a Temperature object pointer
- */
-Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
-    return _targetTemp;
-}
-
-/**
- * Sets the target temperature
- * @param targetTemp The new target temperature in Celsius
- * @returns The time taken to run the method
- */
-const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
-    unsigned long start = millis();
-
-    _targetTemp->set(targetTemp);
-
-    return start - millis();
-}
-
-/**
- * The Thermostat's heating element
- * @returns The heating element
- */
-Ohmbrewer::HeatingElement* Ohmbrewer::Thermostat::getElement() const {
-    return _heatingElm;
-}
-
-/**
- * The Thermostat's temperature sensor
- * @returns The temperature sensor
- */
-Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
-    return _tempSensor;
-}
-
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
@@ -179,6 +141,43 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * Overloaded << operator.
  */
 // friend std::ostream& Ohmbrewer::Thermostat::operator<<( std::ostream& os, Thermostat const& thermostat);
+
+/**
+ * The desired target temperature. Defaults to Celsius
+ * @returns The target temperature in Celsius, as a Temperature object pointer
+ */
+Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
+    return _targetTemp;
+}
+
+/**
+ * Sets the target temperature
+ * @param targetTemp The new target temperature in Celsius
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
+    unsigned long start = millis();
+
+    _targetTemp->set(targetTemp);
+
+    return start - millis();
+}
+
+/**
+ * The Thermostat's heating element
+ * @returns The heating element
+ */
+Ohmbrewer::HeatingElement* Ohmbrewer::Thermostat::getElement() const {
+    return _heatingElm;
+}
+
+/**
+ * The Thermostat's temperature sensor
+ * @returns The temperature sensor
+ */
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
+    return _tempSensor;
+}
 
 /**
  * Specifies the interface for arguments sent to this Thermostat's associated function.

@@ -2,30 +2,6 @@
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Onewire.h"
 
-/**
- * The last temperature read by the sensor. Currently returns in Celsius.
- * @returns A pointer to the Temperature object representing the last temperature reading
- */
-Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
-    return _lastReading;
-}
-
-/**
- * The last time the temperature was read by the sensor
- * @returns The last temperature reading time
- */
-int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
-    return _lastReadTime;
-}
-
-/**
- * Sets the last time the temperature was read by the sensor
- * @param lastReadTime The last temperature reading time
- */
-const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) {
-    _lastReadTime = lastReadTime;
-    return 0;
-}
 
 /**
  * Constructor
@@ -73,6 +49,31 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
     delete _lastReading;
     delete _probe;
+}
+
+/**
+ * The last temperature read by the sensor. Currently returns in Celsius.
+ * @returns A pointer to the Temperature object representing the last temperature reading
+ */
+Ohmbrewer::Temperature* Ohmbrewer::TemperatureSensor::getTemp() const {
+    return _lastReading;
+}
+
+/**
+ * The last time the temperature was read by the sensor
+ * @returns The last temperature reading time
+ */
+int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
+    return _lastReadTime;
+}
+
+/**
+ * Sets the last time the temperature was read by the sensor
+ * @param lastReadTime The last temperature reading time
+ */
+const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) {
+    _lastReadTime = lastReadTime;
+    return 0;
 }
 
 /**
