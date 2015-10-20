@@ -9,7 +9,10 @@
  * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
  */
 Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3]) : Ohmbrewer::Equipment(id) {
-    int n = sizeof(thermPins) / sizeof(int);
+    _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
+    _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
+
+    /*int n = sizeof(thermPins) / sizeof(int);
     if ( n > 2){
         _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
         _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
@@ -24,7 +27,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3]) : Ohmbrewer::Equi
 
         pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int id, int[])");
         pub->publish();
-    }
+    }*/
 
     _targetTemp = new Temperature(0);
     registerUpdateFunction();

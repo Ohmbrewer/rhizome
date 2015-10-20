@@ -87,9 +87,9 @@ void setup() {
 
     sprouts.push_back(new Ohmbrewer::Still( 1, pumpPins, 0 ));
     ((Ohmbrewer::Still*)sprouts.front())->setState(true); // Turn everything on.
-    ((Ohmbrewer::Still*)sprouts.front())->getTherm()->setTargetTemp(666);
+    ((Ohmbrewer::Still*)sprouts.front())->getTherm()->setTargetTemp(1);
 
-    //sprouts.push_back(new Ohmbrewer::Pump( 2, pumpPins[0], pumpPins[1] ));
+    sprouts.push_back(new Ohmbrewer::Pump( 2, pumpPins[0], pumpPins[1] ));
 
     screen.initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)
@@ -111,7 +111,7 @@ void loop() {
 //        navi->publish(); // (*)
         lastUpdate = millis();
     }
-    ((Ohmbrewer::Still*)sprouts.front())->getColumnSensor()->doWork(); //Temp patch to make sensor read in TUBE
+    ((Ohmbrewer::Still*)sprouts.front())->getColumnSensor()->work(); //Temp patch to make sensor read in TUBE
     screen.refreshDisplay();
 }
 

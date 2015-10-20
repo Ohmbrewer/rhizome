@@ -16,7 +16,7 @@ Ohmbrewer::Still::Still(int id, int (&elementPins)[2], int tempBus ) : Ohmbrewer
 
     //Thermostat
     //Temp therm constructor with no array checking
-    int thermPins[3] = {tempBus, elementPins[0], elementPins[1]};
+    int thermPins[] = {0, 2, 3};
 //    memcpy(&thermPins+sizeof(int), elementPins, 2*sizeof(int));
 //    _therm = new Thermostat(id+4, thermPins);
 
@@ -50,28 +50,28 @@ Ohmbrewer::Still::Still(int id, int (&elementPins)[2], int tempBus ) : Ohmbrewer
  * @param pumpPins[powerPin ; controlPin ]
  */
 Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2] ) : Ohmbrewer::Equipment(id) {
-    //Thermostat
-    _therm = new Thermostat(id+3, thermPins);
-    //Temperature Sensors (DS18b20)
-    _kettleSensor = new TemperatureSensor(id+1, tempBus);
-    _columnSensor = new TemperatureSensor(id+1, tempBus);
-    _coolantSensor = new TemperatureSensor(id+1, tempBus);
-    //Pump
-    int n = sizeof(pumpPins) / sizeof(int);
-    if ( n > 1){
-        _coolantPump = new Pump(id+4, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _coolantPump = new Pump(id+4, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int , int[])");
-        pub->publish();
-    }
-    registerUpdateFunction();
+//    //Thermostat
+//    _therm = new Thermostat(id+3, thermPins);
+//    //Temperature Sensors (DS18b20)
+//    _kettleSensor = new TemperatureSensor(id+1, tempBus);
+//    _columnSensor = new TemperatureSensor(id+1, tempBus);
+//    _coolantSensor = new TemperatureSensor(id+1, tempBus);
+//    //Pump
+//    int n = sizeof(pumpPins) / sizeof(int);
+//    if ( n > 1){
+//        _coolantPump = new Pump(id+4, pumpPins[0], pumpPins[1]);
+//    }else if (n == 1){
+//        _coolantPump = new Pump(id+4, pumpPins[0], -1);//Single speed pump
+//    }else{
+//        //publish error
+//        Ohmbrewer::Publisher::publish_map_t pMap;
+//        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+//
+//
+//        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int , int[])");
+//        pub->publish();
+//    }
+//    registerUpdateFunction();
 }
 
 /**FIXME
@@ -86,25 +86,25 @@ Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins
  */
 Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _therm = new Thermostat(id+2, thermPins);
-    _kettleSensor = new TemperatureSensor(id+1, tempBus);
-    int n = sizeof(pumpPins) / sizeof(int);
-    Ohmbrewer::Publisher::publish_map_t pMap;
-    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-    if ( n > 1){
-        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int, int[], int, bool, String)");
-        pub->publish();
-    }
-
-    registerUpdateFunction();
+//    _therm = new Thermostat(id+2, thermPins);
+//    _kettleSensor = new TemperatureSensor(id+1, tempBus);
+//    int n = sizeof(pumpPins) / sizeof(int);
+//    Ohmbrewer::Publisher::publish_map_t pMap;
+//    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+//    if ( n > 1){
+//        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
+//    }else if (n == 1){
+//        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
+//    }else{
+//        //publish error
+//        Ohmbrewer::Publisher::publish_map_t pMap;
+//        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+//
+//        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int, int[], int, int[], int, bool, String)");
+//        pub->publish();
+//    }
+//
+//    registerUpdateFunction();
 }
 
 /**FIXME
@@ -120,25 +120,25 @@ Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins
  */
 Ohmbrewer::Still::Still(int id, int (&thermPins)[3], int tempBus, int (&pumpPins)[2], int stopTime,
                       bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-
-    _therm = new Thermostat(id+2, thermPins, targetTemp);
-    _kettleSensor = new TemperatureSensor(id+1, tempBus);
-    int n = sizeof(pumpPins) / sizeof(int);
-    Ohmbrewer::Publisher::publish_map_t pMap;
-    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-    if ( n > 1){
-        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
-    }else if (n == 1){
-        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int , int[], int, int[], int, bool, String, double)");
-        pub->publish();
-    }
-    registerUpdateFunction();
+//
+//    _therm = new Thermostat(id+2, thermPins, targetTemp);
+//    _kettleSensor = new TemperatureSensor(id+1, tempBus);
+//    int n = sizeof(pumpPins) / sizeof(int);
+//    Ohmbrewer::Publisher::publish_map_t pMap;
+//    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+//    if ( n > 1){
+//        _coolantPump = new Pump(1, pumpPins[0], pumpPins[1]);
+//    }else if (n == 1){
+//        _coolantPump = new Pump(1, pumpPins[0], -1);//Single speed pump
+//    }else{
+//        //publish error
+//        Ohmbrewer::Publisher::publish_map_t pMap;
+//        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+//
+//        pMap[String("array_check_rims")] = String("improperly formed array - RIMS(int , int[], int, int[], int, bool, String, double)");
+//        pub->publish();
+//    }
+//    registerUpdateFunction();
 }
 
 /**
@@ -163,6 +163,8 @@ Ohmbrewer::Still::~Still() {
     delete _coolantPump;
     delete _therm;
     delete _kettleSensor;
+    delete _columnSensor;
+    delete _coolantSensor;
 }
 
 /**
