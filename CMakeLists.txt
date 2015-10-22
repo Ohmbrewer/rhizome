@@ -40,7 +40,9 @@ set(SOURCE_FILES
     ../../Spark-PID/firmware/pid.cpp
     ../../Spark-PID/firmware/pid.h
     ../lib/Ohmbrewer_Screen.h
-    ../lib/Ohmbrewer_Screen.cpp)
+    ../lib/Ohmbrewer_Screen.cpp
+    ../lib/Ohmbrewer_Sprouts.h
+    ../lib/Ohmbrewer_Sprouts.cpp)
 
 if(DEVICE_TYPE)
     # You can specify which device to compile for, if desired...
