@@ -84,11 +84,6 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~Temperature();
-            
-            /**
-             * Overloaded << operator.
-             */
-             // friend std::ostream& operator<<( std::ostream& os, Temperature const& temp);
     
         protected:
             /**

@@ -98,11 +98,6 @@ const int Ohmbrewer::Relay::setControlPin(const int pinNum) {
 }
 
 /**
- * Overloaded << operator.
- */
-// friend std::ostream& operator<<( std::ostream& os, Relay const& relay);
-
-/**
  * Specifies the interface for arguments sent to this Equipment's associated function.
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().

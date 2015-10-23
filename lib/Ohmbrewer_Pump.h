@@ -69,11 +69,6 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~Pump();
-            
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
             /**
              * Performs the Equipment's current task. Expect to use this during loop().

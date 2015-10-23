@@ -94,11 +94,6 @@ namespace Ohmbrewer {
             int getBusPin() const;
 
             /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
-
-            /**
              * Specifies the interface for arguments sent to this TemperatureSensor's associated function.
              * Parses the supplied string into an array of strings for setting the TemperatureSensor's values.
              * Most likely will be called during update().

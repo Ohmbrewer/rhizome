@@ -176,11 +176,6 @@ Ohmbrewer::Thermostat::~Thermostat() {
 }
 
 /**
- * Overloaded << operator.
- */
-// friend std::ostream& Ohmbrewer::Thermostat::operator<<( std::ostream& os, Thermostat const& thermostat);
-
-/**
  * Specifies the interface for arguments sent to this Thermostat's associated function.
  * Parses the supplied string into an array of strings for setting the Thermostat's values.
  * Most likely will be called during update().
