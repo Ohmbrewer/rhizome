@@ -92,12 +92,6 @@ namespace Ohmbrewer {
              */
             const int setControlPin(const int pinNum);
 
-
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Relay const& Relay);
-
             /**
              * Specifies the interface for arguments sent to this Equipment's associated function.
              * Parses the supplied string into an array of strings for setting the Equipment's values.

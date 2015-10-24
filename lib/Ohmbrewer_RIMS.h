@@ -98,11 +98,6 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~RIMS();
-            
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, RIMS const& rims);
 
             /**
              * Specifies the interface for arguments sent to this Equipment's associated function.

@@ -222,28 +222,6 @@ Ohmbrewer::Equipment::~Equipment() {
 }
 
 /**
- * Overloaded << operator. Returns information about the Equipment in such a way that adding
- * curly-braces on either side should provide a JSON-formatted string.
- */
-// std::ostream& operator<<(std::ostream& os, Ohmbrewer::Equipment const& equipment) {
-//     os << " \"type\": \"" << equipment.getType() << "\"," << 
-//           " \"sprout_id\": \"" << equipment.getID() << "\"," << 
-//           " \"pins\": \"[";
-//     for (i=0; i < 6 && equipment.whichPins()[i] != NULL; i++) {
-//         if(i > 0) {
-//             os << ", ";
-//         }
-//         os << equipment.whichPins()[i]; 
-//     }
-//     os << "]\"," <<
-          
-//     os << " \"state\": \"" << (equipment.isOn() ? "ON" : "OFF") << "\"," << 
-//           " \"stop_time\": \"" << equipment.getStopTime() << "\"," << 
-//           " \"current_task\": \"" << equipment.getCurrentTask() << "\",";
-//     return os;
-// }
-
-/**
  * Specifies the interface for arguments sent to this Equipment's associated function.
  * Parses the supplied string into an array of strings for setting the Equipment's values.
  * Most likely will be called during update().

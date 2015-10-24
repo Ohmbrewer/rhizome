@@ -92,11 +92,3 @@ Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
 Ohmbrewer::Temperature::~Temperature() {
     // Nothing to do here...
 }
-
-/**
- * Overloaded << operator.
- */
-//friend std::ostream& operator<<( std::ostream& os, Ohmbrewer::Temperature::Temperature const& temp) {
-//    os << temp.c() << " C";
-//    return os;
-//}

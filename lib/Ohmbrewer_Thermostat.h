@@ -106,11 +106,6 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~Thermostat();
-            
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Thermostat const& thermostat);
 
             /**
              * Specifies the interface for arguments sent to this Thermostat's associated function.
