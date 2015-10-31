@@ -260,9 +260,9 @@ namespace Ohmbrewer {
             PID* _thermPID;
 
             //Define Variables we'll be connecting to with PID
-            static const double setPoint;
-            static const double input;
-            static const double output;
+            double setPoint;
+            double input;
+            double output;
 
             //Define the aggressive and conservative Tuning Parameters for PID
             static const double aggKp=4;
