@@ -130,6 +130,50 @@ namespace Ohmbrewer {
             Pump* getRecirculator() const;
 
             /**
+             * The Tube thermostat
+             * @returns The Thermostat object representing the RIMS tube elements
+             */
+            Thermostat* getTube() const;
+
+            /**
+             * The temperature sensor located in the tun
+             * @returns The Temperature Sensor object representing the sensor located in the mash tun
+             */
+            TemperatureSensor* getTunSensor() const;
+
+            /**
+             * The Thermostat's safety temperature sensor
+             * @returns The temperature sensor
+             */
+            TemperatureSensor* getSafetySensor() const;
+
+            /**
+             * Sets the Thermostat's Safety temperature sensor
+             * @param sensor -  The temperature sensor
+             * @returns The time taken to run the method
+             */
+            const int setSafetySensor(TemperatureSensor* sensor);
+
+            /**
+             * The desired safety temperature. Defaults to Celsius
+             * @returns The safety temperature in Celsius
+             */
+            Temperature* getSafetyTemp() const;
+
+            /**
+             * Sets the safety temperature
+             * @param safetyTemp The new safety temperature in Celsius
+             * @returns The time taken to run the method
+             */
+            const int setSafetyTemp(const double safetyTemp);
+
+            /**
+             * The recirculation pump between the tun and the tube
+             * @returns The Pump object representing the recirculation pump
+             */
+            Pump* getRecirculator() const;
+
+            /**
              * Specifies the interface for arguments sent to this Equipment's associated function.
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().

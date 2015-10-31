@@ -93,26 +93,4 @@ const bool Ohmbrewer::Temperature::set(const double temp) {
     return true;
 }
 
-/**
- * Constructor.
- * @param temp The temperature in Celsius
- */
-Ohmbrewer::Temperature::Temperature(const double temp) {
-    _targetTemp = temp;
-}
-
-/**
- * Copy Constructor.
- * @param copy The Temperature to copy
- */
-Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
-    _targetTemp = copy.c();
-}
-
-/**
- * Destructor
- */
-Ohmbrewer::Temperature::~Temperature() {
-    // Nothing to do here...
-}
 

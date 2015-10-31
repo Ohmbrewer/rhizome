@@ -101,6 +101,29 @@ namespace Ohmbrewer {
             Probe* getProbe() const;
 
             /**
+             * The last temperature read by the sensor. Currently returns in Celsius.
+             * @returns A pointer to the Temperature object representing the last temperature reading
+             */
+            Temperature* getTemp() const;
+
+            /**
+             * The last time the temperature was read by the sensor
+             * @returns The last temperature reading time
+             */
+            int getLastReadTime() const;
+
+            /**
+             * Sets the last time the temperature was read by the sensor
+             * @param lastReadTime The last temperature reading time
+             */
+            const int setLastReadTime(const int lastReadTime);
+
+            /**
+             * @returns the probe for this sensor
+             */
+            Probe* getProbe() const;
+
+            /**
              * Specifies the interface for arguments sent to this TemperatureSensor's associated function.
              * Parses the supplied string into an array of strings for setting the TemperatureSensor's values.
              * Most likely will be called during update().
