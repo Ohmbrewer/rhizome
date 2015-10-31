@@ -111,7 +111,8 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
     } else {
         displayTemps();
     }
-
+    printMargin(2);
+    print("====== Relays ======");
 //    displayRelays();
     displayHeatingElements();
     displayPumps();
@@ -138,7 +139,7 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
             strcmp((*itr)->getType(), Thermostat::TYPE_NAME) != 0) {
             if(!foundFirst) {
                 // Print the header
-                print("====== Relays ======");
+//                print("====== Relays ======");
                 printMargin(2);
                 foundFirst = true;
             }
@@ -164,7 +165,7 @@ unsigned long Ohmbrewer::Screen::displayHeatingElements() {
         if (strcmp((*itr)->getType(), HeatingElement::TYPE_NAME) == 0) {
             if(!foundFirst) {
                 // Print the header
-                print("======= Heat =======");
+//                print("======= Heat =======");
                 printMargin(2);
                 foundFirst = true;
             }
@@ -190,7 +191,7 @@ unsigned long Ohmbrewer::Screen::displayPumps() {
         if (strcmp((*itr)->getType(), Pump::TYPE_NAME) == 0) {
             if(!foundFirst) {
                 // Print the header
-                print("======= Pumps ======");
+//                print("======= Pumps ======");
                 printMargin(2);
                 foundFirst = true;
             }

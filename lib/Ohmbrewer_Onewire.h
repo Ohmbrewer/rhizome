@@ -4,6 +4,7 @@
 
 #include "Ohmbrewer_Probe.h"
 #include "application.h"
+#include "Ohmbrewer_Screen.h"
 
 
 namespace Ohmbrewer {
@@ -17,7 +18,7 @@ namespace Ohmbrewer {
          */
         Onewire();
 
-        Onewire(char* probeId);
+        Onewire(uint8_t (&probeId)[8]);
 
         /**
          * @returns the Celsius reading from the specified connected DS18b20 probe
@@ -25,17 +26,23 @@ namespace Ohmbrewer {
          */
         double getReading();
 
+        /**
+         * outputs probe IDs and their current temperatures to the screen
+         *
+         * Primarily for use as a manual identification tool for probe IDs
+         */
+        void displayProbeIds(Screen *screen);
 
         /**
          * sets the probe id for this instance
          * @param probe id  Unique probe ID
          */
-        void setProbeId(char* probeId);
+        void setProbeId(uint8_t (&probeId)[8]);
 
         /**
          * @returns _probeID Unique probe ID
          */
-        char* getProbeId();
+        uint8_t* getProbeId();
 
         /**
          * reads current probes connected to busPin
@@ -54,7 +61,7 @@ namespace Ohmbrewer {
         /**
          * Unique ID for the temperature probe [8] char array ID code
          */
-        char* _probeId;
+        uint8_t* _probeId;
 
         /**
          * Digital pin that the data stream is on
