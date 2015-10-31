@@ -2,6 +2,66 @@
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Onewire.h"
 
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
+ */
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
+    _probe = new Onewire();                 //For now all probes are all onewire
+    _lastReading = new Temperature(-69);
+    _lastReadTime = Time.now();
+    registerUpdateFunction();
+}
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
+ * @param uid - the unique id code for the Dallas sensor connected to the bus.
+ */
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin, uint8_t (&uid)[8]) : Ohmbrewer::Equipment(id) {
+    _probe = new Onewire(uid);                 //For now all probes are all onewire
+    _lastReading = new Temperature(-69);
+    _lastReadTime = Time.now();
+    registerUpdateFunction();
+}
+
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
+ * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
+ * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
+ * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
+ */
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+    _probe = new Onewire();
+    _lastReading = new Temperature(-69);
+    _lastReadTime = Time.now();
+    registerUpdateFunction();
+}
+
+/**
+ * Copy Constructor
+ * @param clonee The TemperatureSensor object to copy
+ */
+Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
+    _probe = clonee.getProbe();
+    _lastReading = clonee.getTemp();
+    _lastReadTime = Time.now();
+    registerUpdateFunction();
+}
+
+/**
+ * Destructor
+ */
+Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
+    delete _lastReading;
+    delete _probe;
+}
+
 /**
  * The last temperature read by the sensor. Currently returns in Celsius.
  * @returns A pointer to the Temperature object representing the last temperature reading
@@ -25,54 +85,6 @@ int Ohmbrewer::TemperatureSensor::getLastReadTime() const {
 const int Ohmbrewer::TemperatureSensor::setLastReadTime(const int lastReadTime) {
     _lastReadTime = lastReadTime;
     return 0;
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
- */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
-    _probe = new Onewire();                 //For now all probes are all onewire
-    _lastReading = new Temperature(0);
-    _lastReadTime = Time.now();
-    registerUpdateFunction();
-
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
- * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
- * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
- * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
- */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _probe = new Onewire();
-    _lastReading = new Temperature(0);
-    _lastReadTime = Time.now();
-    registerUpdateFunction();
-
-}
-
-/**
- * Copy Constructor
- * @param clonee The TemperatureSensor object to copy
- */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee) : Ohmbrewer::Equipment(clonee) {
-    _probe = clonee.getProbe();
-    _lastReading = clonee.getTemp();
-    _lastReadTime = Time.now();
-    registerUpdateFunction();
-}
-
-/**
- * Destructor
- */
-Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
-    delete _lastReading;
-    delete _probe;
 }
 
 /**

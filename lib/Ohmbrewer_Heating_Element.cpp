@@ -3,10 +3,11 @@
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param powerPin - The power pin - on/off line. Digital pin number X.
- * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
+ * @param elementPins - controlPin always first in <list>
+ *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+ *  powerPin - The power pin - on/off line. Digital pin number X.
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int powerPin, int controlPin) : Ohmbrewer::Relay(id, powerPin, controlPin) {
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* elementPins) : Ohmbrewer::Relay(id, elementPins) {
 
     registerUpdateFunction();
 }
@@ -14,14 +15,15 @@ Ohmbrewer::HeatingElement::HeatingElement(int id, int powerPin, int controlPin) 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param powerPin - The power pin - on/off line. Digital pin number X.
- * @param controlPin - The Control pin - Data/speed/power level Digital pin number X.
+ * @param elementPins - controlPin always first in <list>
+ *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+ *  powerPin - The power pin - on/off line. Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::HeatingElement::HeatingElement(int id, int powerPin, int controlPin, int stopTime,
-                                          bool state, String currentTask) : Ohmbrewer::Relay(id, powerPin, controlPin, stopTime, state, currentTask) {
+Ohmbrewer::HeatingElement::HeatingElement(int id, std::list<int>* elementPins, int stopTime,
+                                          bool state, String currentTask) : Ohmbrewer::Relay(id, elementPins, stopTime, state, currentTask) {
 
     registerUpdateFunction();
 }
@@ -40,17 +42,6 @@ Ohmbrewer::HeatingElement::HeatingElement(const HeatingElement& clonee) : Ohmbre
  * Destructor
  */
 Ohmbrewer::HeatingElement::~HeatingElement() {
-}
-
-
-/**
- * Performs the Equipment's current task. Expect to use this during loop().
- * This function is called by work().
- * @returns The time taken to run the method
- */
-int Ohmbrewer::HeatingElement::doWork() {
-    // TODO: Implement HeatingElement::doWork
-    return -1;
 }
 
 /**
