@@ -16,6 +16,7 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
+#include "pid.h"
 
 namespace Ohmbrewer {
 
@@ -35,6 +36,71 @@ namespace Ohmbrewer {
             virtual const char* getType() const { return Thermostat::TYPE_NAME; };
 
             /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             */
+            Thermostat(int id, std::list<int>* thermPins);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param targetTemp The new target temperature in Celsius
+             */
+            Thermostat(int id, std::list<int>* thermPins, const double targetTemp);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
+             */
+            Thermostat(int id, std::list<int>* thermPins, int stopTime, bool state, String currentTask);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this piece of Thermostat
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
+             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
+             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
+             * @param targetTemp The new target temperature in Celsius
+             */
+            Thermostat(int id, std::list<int>* thermPins, int stopTime, bool state, String currentTask, const double targetTemp);
+
+            /**
+             * Copy Constructor
+             * @param clonee The Thermostat object to copy
+             */
+            Thermostat(const Thermostat& clonee);
+            
+            /**
+             * Destructor
+             */
+            virtual ~Thermostat();
+
+            /**
+             * logic for initializing the constructors
+             */
+            void initThermostat(int id, std::list<int>* thermPins);
+
+            /**
+             * The Thermostat's temperature sensor
+             * @returns The temperature sensor
+             */
+            TemperatureSensor* getSensor() const;
+
+            /**
+             * Sets the Thermostat's temperature sensor
+             * @param sensor -  The temperature sensor
+             * @returns The time taken to run the method
+             */
+            const int setSensor(TemperatureSensor* sensor);
+
+            /**
              * The desired target temperature. Defaults to Celsius
              * @returns The target temperature in Celsius, as a Temperature object pointer
              */
@@ -52,60 +118,6 @@ namespace Ohmbrewer {
              * @returns The heating element
              */
             HeatingElement* getElement() const;
-
-            /**
-             * The Thermostat's temperature sensor
-             * @returns The temperature sensor
-             */
-            TemperatureSensor* getSensor() const;
-
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Thermostat
-             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
-             */
-            Thermostat(int id, int (&thermPins)[3]);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Thermostat
-             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param targetTemp The new target temperature in Celsius
-             */
-            Thermostat(int id, int (&thermPins)[3], const double targetTemp);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Thermostat
-             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
-             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
-             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
-             */
-            Thermostat(int id, int (&thermPins)[3], int stopTime, bool state, String currentTask);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Thermostat
-             * @param thermPins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
-             * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
-             * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
-             * @param targetTemp The new target temperature in Celsius
-             */
-            Thermostat(int id, int (&thermPins)[3], int stopTime, bool state, String currentTask, const double targetTemp);
-
-            /**
-             * Copy Constructor
-             * @param clonee The Thermostat object to copy
-             */
-            Thermostat(const Thermostat& clonee);
-            
-            /**
-             * Destructor
-             */
-            virtual ~Thermostat();
 
             /**
              * Specifies the interface for arguments sent to this Thermostat's associated function.
@@ -209,6 +221,29 @@ namespace Ohmbrewer {
              * The desired operating temperature
              */
             Temperature* _targetTemp;
+
+            /**
+             * PID instance for the thermostat
+             */
+            PID* _thermPID;
+
+            //Define the aggressive and conservative Tuning Parameters for PID
+            double aggKp=4;
+            double aggKi=0.2;
+            double aggKd=1;
+            double consKp=1;
+            double consKi=0.05;
+            double consKd=0.25;
+
+
+            //Define Variables we'll be connecting to with PID
+            double setPoint;
+            double input;
+            double output;
+
+            //PID windowing variables
+            int windowSize = 5000;
+            unsigned long windowStartTime;
 
     };
 };

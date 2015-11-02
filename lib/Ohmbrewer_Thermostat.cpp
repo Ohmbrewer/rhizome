@@ -3,155 +3,57 @@
 #include "Ohmbrewer_Publisher.h"
 
 
-
 /**
- * The desired target temperature. Defaults to Celsius
- * @returns The target temperature in Celsius, as a Temperature object pointer
- */
-Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
-    return _targetTemp;
-}
-
-/**
- * Sets the target temperature
- * @param targetTemp The new target temperature in Celsius
- * @returns The time taken to run the method
- */
-const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
-    unsigned long start = millis();
-
-    _targetTemp->set(targetTemp);
-
-    return start - millis();
-}
-
-/**
- * The Thermostat's heating element
- * @returns The heating element
- */
-Ohmbrewer::HeatingElement* Ohmbrewer::Thermostat::getElement() const {
-    return _heatingElm;
-}
-
-/**
- * The Thermostat's temperature sensor
- * @returns The temperature sensor
- */
-Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
-    return _tempSensor;
-}
-
-/**
- * Constructor
+ * Constructor - creating a Thermostat will use up 3 equipment IDs
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * TODO add UID?
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3]) : Ohmbrewer::Equipment(id) {
-    int n = sizeof(thermPins) / sizeof(int);
-    if ( n > 2){
-        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
-        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else{
-        //publish error
-
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int id, int[])");
-        pub->publish();
-    }
-
-    _targetTemp = new Temperature(0);
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
+    initThermostat(id, thermPins);
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], const double targetTemp) : Ohmbrewer::Equipment(id) {
-    int n = sizeof(thermPins) / sizeof(int);
-    if ( n > 2){
-        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
-        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int[], double)");
-        pub->publish();
-    }
-    _targetTemp = new Temperature(targetTemp);
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
+    initThermostat(id, thermPins);
+    _targetTemp->fromC(targetTemp);
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    int n = sizeof(thermPins) / sizeof(int);
-    if ( n > 2){
-        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
-        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int[], int, bool, String)");
-        pub->publish();
-    }
-    _targetTemp = new Temperature(0);
+    initThermostat(id, thermPins);
     registerUpdateFunction();
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, int (&thermPins)[3], int stopTime,
+Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask,
                                   const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-
-    int n = sizeof(thermPins) / sizeof(int);
-    if ( n > 2){
-        _heatingElm = new HeatingElement(id+2, thermPins[1], thermPins[2]);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else if (n == 2 ){                     // no switch, only power% (SSR in parallel or always on other leg)
-        _heatingElm = new HeatingElement(id+2, thermPins[1], -1);
-        _tempSensor = new TemperatureSensor(id+1, thermPins[0]);
-    }else{
-        //publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-
-        pMap[String("array_check_thermostat")] = String("improperly formed array - Thermostat(int, int [], int, bool, String, double)");
-        pub->publish();
-    }
-    _targetTemp = new Temperature(targetTemp);
+    initThermostat(id, thermPins);
+    _targetTemp->fromC(targetTemp);
     registerUpdateFunction();
 }
 
@@ -173,6 +75,93 @@ Ohmbrewer::Thermostat::~Thermostat() {
     delete _heatingElm;
     delete _tempSensor;
     delete _targetTemp;
+}
+
+/**
+ * logic for initializing equipment and PID in the constructors
+ * @param id The Sprout ID to use for this piece of Thermostat
+ * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ */
+void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
+    //PID set up
+    _thermPID = new PID(&input, &output, &setPoint, consKp, consKi, consKd, PID::DIRECT);
+    //initialize the variables we're linked to
+    windowStartTime = millis();
+    setPoint = _targetTemp->c();
+    input = _tempSensor->getTemp()->c();
+    //tell the PID to range between 0 and the full window size
+    _thermPID->SetOutputLimits(0, windowSize);
+    //turn the PID on
+    _thermPID->SetMode(PID::AUTOMATIC);
+
+    //initilize equipment components
+    int size = thermPins->size();
+    if ( (size == 2) || (size == 3) ){
+    _tempSensor = new TemperatureSensor(id+1, thermPins->front());
+    thermPins->pop_front();
+    _heatingElm = new HeatingElement(id+3, thermPins);
+    }else{//publish error
+    Ohmbrewer::Publisher::publish_map_t pMap;
+    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+    pMap[String("list_check_thermostat")] = String("improperly formed input - Thermostat(int id, int<list>)");
+    pub->publish();
+    delete pub;
+    }
+    _targetTemp = new Temperature(-69);
+
+}
+
+/**
+ * Overloaded << operator.
+ */
+// friend std::ostream& Ohmbrewer::Thermostat::operator<<( std::ostream& os, Thermostat const& thermostat);
+
+/**
+ * The desired target temperature. Defaults to Celsius
+ * @returns The target temperature in Celsius, as a Temperature object pointer
+ */
+Ohmbrewer::Temperature* Ohmbrewer::Thermostat::getTargetTemp() const {
+    return _targetTemp;
+}
+
+/**
+ * Sets the target temperature
+ * @param targetTemp The new target temperature in Celsius
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
+    unsigned long start = millis();
+    _targetTemp->set(targetTemp);
+    return start - millis();
+}
+
+
+
+/**
+ * The Thermostat's heating element
+ * @returns The heating element
+ */
+Ohmbrewer::HeatingElement* Ohmbrewer::Thermostat::getElement() const {
+    return _heatingElm;
+}
+
+/**
+ * The Thermostat's temperature sensor
+ * @returns The temperature sensor
+ */
+Ohmbrewer::TemperatureSensor* Ohmbrewer::Thermostat::getSensor() const {
+    return _tempSensor;
+}
+
+/**
+ * Sets the Thermostat's temperature sensor
+ * @param sensor -  The temperature sensor
+ * @returns The time taken to run the method
+ */
+const int Ohmbrewer::Thermostat::setSensor(Ohmbrewer::TemperatureSensor* sensor){
+    unsigned long start = millis();
+    _tempSensor = sensor;
+    return start - millis();
 }
 
 /**
@@ -222,9 +211,10 @@ void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipmen
  */
 const int Ohmbrewer::Thermostat::setState(const bool state) {
     unsigned long start = millis();
-
+    _state = state;
     getElement()->setState(state);
     getSensor()->setState(state);
+
 
     return start - millis();
 }
@@ -234,7 +224,7 @@ const int Ohmbrewer::Thermostat::setState(const bool state) {
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::Thermostat::getState() const {
-    return (getElement()->getState() || getSensor()->getState());
+    return (getElement()->getState() || getSensor()->getState() );
 }
 
 /**
@@ -256,11 +246,62 @@ bool Ohmbrewer::Thermostat::isOff() const {
 /**
  * Performs the Thermostat's current task. Expect to use this during loop().
  * This function is called by work().
+ *
+ * The pid is designed to Output an analog value, but the relay can only be On/Off.
+ *
+ * "time proportioning control"  it's essentially a really slow version of PWM.
+ * first we decide on a window size. Then set the pid to adjust its output between 0 and that window size.
+ * lastly, we add some logic that translates the PID output into "Relay On Time" with the remainder of the
+ * window being "Relay Off Time"
+ *
+ * PID Adaptive Tuning
+ * You can change the tuning parameters at any time.  this can be
+ * helpful if we want the controller to be agressive at some
+ * times, and conservative at others.
+ *
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Thermostat::doWork() {
-    // TODO: Implement Thermostat::doWork PID stuff here.
-    return -1;
+    unsigned long start = micros();
+
+    setPoint = _targetTemp->c();        //targetTemp
+    input = _tempSensor->getTemp()->c();//currentTemp
+    double gap = abs(setPoint-input);   //distance away from target temp
+    //SET TUNING PARAMETERS
+    if (gap<10) {  //we're close to targetTemp, use conservative tuning parameters
+        _thermPID->SetTunings(consKp, consKi, consKd);
+    }else {//we're far from targetTemp, use aggressive tuning parameters
+        _thermPID->SetTunings(aggKp, aggKi, aggKd);
+    }
+    //COMPUTATIONS
+    _thermPID->Compute();
+    if (millis() - windowStartTime>windowSize) { //time to shift the Relay Window
+        windowStartTime += windowSize;
+    }
+    //TURN ON
+    if (getState() && gap!=0) {//if we want to turn on the element (thermostat is ON)
+        //TURN ON state and powerPin
+        if (!(_heatingElm->getState())) {//if heating element is off
+            _heatingElm->setState(true);//turn it on
+            if (_heatingElm->getPowerPin() != -1) { // if powerPin enabled
+                digitalWrite(_heatingElm->getPowerPin(), HIGH); //turn it on (only once each time you switch state)
+            }
+        }
+        //RELAY MODULATION
+        if (output < millis() - windowStartTime) {
+            digitalWrite(_heatingElm->getControlPin(), HIGH);
+        } else {
+            digitalWrite(_heatingElm->getControlPin(), LOW);
+        }
+    }
+    //TURN OFF
+    if (gap == 0) {//once reached target temp
+        _heatingElm->setState(false); //turn off element
+        if (_heatingElm->getPowerPin() != -1) { // if powerPin enabled
+            digitalWrite(_heatingElm->getPowerPin(), LOW); //turn it off too
+        }
+    }
+    return micros() - start;
 }
 
 /**
@@ -293,6 +334,9 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     // Add another wee margin
     screen->printMargin(2);
 
+    screen->resetTextSize();
+    screen->resetTextColor();
+
     return micros() - start;
 }
 
@@ -314,7 +358,7 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
         color = screen->CYAN;
     }
 
-    displayTemp(getSensor()->getTemp(), "Current: ", color, screen);
+    displayTemp(getSensor()->getTemp(), "Therm", color, screen);
 
     // Show a warning if the Heating Element is active
     if(getElement()->isOn()) {
@@ -339,7 +383,7 @@ unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *scree
  */
 unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    displayTemp(getTargetTemp(), "Target:  ", screen->YELLOW, screen);
+    displayTemp(getTargetTemp(), "Target", screen->YELLOW, screen);
     screen->println("");
     return micros() - start;
 }
@@ -358,8 +402,11 @@ unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* 
 
     // Print the label
     screen->resetTextColor();
-    screen->print(" "); // We want a little margin
+//    screen->print(" "); // We want a little margin
     screen->print(label);
+    screen->print(" ");
+    screen->writeDegree();
+    screen->print("C: ");
 
     // Print out the target temp
     screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
