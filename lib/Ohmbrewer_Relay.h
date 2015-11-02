@@ -60,7 +60,7 @@ namespace Ohmbrewer {
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Relay(int id, int powerPin, int controlPin, int stopTime, bool state, String currentTask);
+            Relay(int id, int powerPin, int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
