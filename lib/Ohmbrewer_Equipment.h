@@ -143,11 +143,6 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~Equipment();
-            
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Equipment const& equipment);
 
             /**
              * Specifies the interface for arguments sent to this Equipment's associated function.

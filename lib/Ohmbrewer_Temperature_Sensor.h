@@ -45,6 +45,14 @@ namespace Ohmbrewer {
              * Constructor
              * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
+             * @param uid - the unique id code for the Dallas sensor connected to the bus.
+             */
+            TemperatureSensor(int id, int busPin, uint8_t (&uid)[8]);
+
+            /**
+             * Constructor
+             * @param id The Sprout ID to use for this TemperatureSensor
+             * @param pins The list of physical pins this TemperatureSensor is attached to
              * @param stopTime The time at which the TemperatureSensor should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the TemperatureSensor believes it should be processing
@@ -68,11 +76,6 @@ namespace Ohmbrewer {
              * @returns The pin number in use for this piece of Equipment
              */
             int getBusPin() const;
-
-            /**
-             * Overloaded << operator.
-             */
-            // friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
             /**
              * The last temperature read by the sensor. Currently returns in Celsius.

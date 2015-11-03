@@ -39,6 +39,8 @@ set(SOURCE_FILES
     ../../particle-ds18x20/firmware/crc8.h
     ../../particle-ds18x20/firmware/onewire.cpp
     ../../particle-ds18x20/firmware/onewire.h
+    ../../Spark-PID/firmware/pid.cpp
+    ../../Spark-PID/firmware/pid.h
     ../lib/Ohmbrewer_Screen.h
     ../lib/Ohmbrewer_Screen.cpp)
 

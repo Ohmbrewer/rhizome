@@ -39,36 +39,34 @@ namespace Ohmbrewer {
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param tunBus - mash tun temperature pin
-             * @param pumpPins[powerPin ; controlPin ]
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param pumpPin - Single speed pump will only have PowerPin
+             * @param elementPins - controlPin always first in <list>
              */
-            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2]);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param tunBus - mash tun temperature pin
-             * @param pumpPins[powerPin ; controlPin ]
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param pumpPin - Single speed pump will only have PowerPin
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime, bool state, String currentTask);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param tubePins[ temp busPin ; heating powerPin ; heating controlPin ]
-             * @param tunBus - mash tun temperature pin
-             * @param pumpPins[powerPin ; controlPin ]
+             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param pumpPin - Single speed pump will only have PowerPin
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            RIMS(int id, int (&tubePins)[3], int tunBus, int (&pumpPins)[2], int stopTime, bool state, String currentTask, const double targetTemp);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy constructor
@@ -80,11 +78,56 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~RIMS();
-            
+
+
             /**
-             * Overloaded << operator.
+             * Initializes the members of the RIMS class
              */
-            // friend std::ostream& operator<<( std::ostream& os, RIMS const& rims);
+            void initRIMS(int id, std::list<int>* thermPins, int pumpPin);
+
+            /**
+             * The Tube thermostat
+             * @returns The Thermostat object representing the RIMS tube elements
+             */
+            Thermostat* getTube() const;
+
+            /**
+             * The temperature sensor located in the tun
+             * @returns The Temperature Sensor object representing the sensor located in the mash tun
+             */
+            TemperatureSensor* getTunSensor() const;
+
+            /**
+             * The Thermostat's safety temperature sensor
+             * @returns The temperature sensor
+             */
+            TemperatureSensor* getSafetySensor() const;
+
+            /**
+             * Sets the Thermostat's Safety temperature sensor
+             * @param sensor -  The temperature sensor
+             * @returns The time taken to run the method
+             */
+            const int setSafetySensor(TemperatureSensor* sensor);
+
+            /**
+             * The desired safety temperature. Defaults to Celsius
+             * @returns The safety temperature in Celsius
+             */
+            Temperature* getSafetyTemp() const;
+
+            /**
+             * Sets the safety temperature
+             * @param safetyTemp The new safety temperature in Celsius
+             * @returns The time taken to run the method
+             */
+            const int setSafetyTemp(const double safetyTemp);
+
+            /**
+             * The recirculation pump between the tun and the tube
+             * @returns The Pump object representing the recirculation pump
+             */
+            Pump* getRecirculator() const;
 
             /**
              * The Tube thermostat
@@ -162,6 +205,12 @@ namespace Ohmbrewer {
             unsigned long displayTunTemp(Screen *screen);
 
             /**
+             * Prints the temperature information for one sensor onto the touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displaySafetyTemp(Screen *screen);
+
+            /**
              * rints the recirculation pump status onto the touchscreen.
              * @param screen The Rhizome's touchscreen
              * @returns Time it took to run the function
@@ -189,10 +238,21 @@ namespace Ohmbrewer {
              * The tube thermostat
              */
             Thermostat* _tube;
+//            /**
+//             * The temperature sensor in the tun
+//             */
+//            TemperatureSensor* _tunSensor;
+
             /**
-             * The temperature sensor in the tun
+                * The thermostat's safety temperature sensor (RIMS tubeSensor, or Still KettleSensor)
+                */
+            TemperatureSensor* _safetySensor;
+
+            /**
+             * The temperature that the safetySensor should remain below
              */
-            TemperatureSensor* _tunSensor;
+            Temperature* _safetyTemp;
+
             /**
              * The recirculation pump between the tun and the tube
              */

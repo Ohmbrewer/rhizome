@@ -10,10 +10,22 @@
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer::Equipment(id) {
     _probe = new Onewire();                 //For now all probes are all onewire
-    _lastReading = new Temperature(0);
+    _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
     registerUpdateFunction();
+}
 
+/**
+ * Constructor
+ * @param id The Sprout ID to use for this piece of Equipment
+ * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
+ * @param uid - the unique id code for the Dallas sensor connected to the bus.
+ */
+Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin, uint8_t (&uid)[8]) : Ohmbrewer::Equipment(id) {
+    _probe = new Onewire(uid);                 //For now all probes are all onewire
+    _lastReading = new Temperature(-69);
+    _lastReadTime = Time.now();
+    registerUpdateFunction();
 }
 
 /**
@@ -26,10 +38,9 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, int busPin) : Ohmbrewer:
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  int busPin, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     _probe = new Onewire();
-    _lastReading = new Temperature(0);
+    _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
     registerUpdateFunction();
-
 }
 
 /**
@@ -92,11 +103,6 @@ int Ohmbrewer::TemperatureSensor::getBusPin() const{
     return _probe->getPin();
     //TODO will need work once more probe subclasses are added
 }
-
-/**
- * Overloaded << operator.
- */
-// friend std::ostream& operator<<( std::ostream& os, Pump const& pump);
 
 /**
  * Specifies the interface for arguments sent to this TemperatureSensor's associated function.
