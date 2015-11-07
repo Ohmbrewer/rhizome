@@ -1,6 +1,7 @@
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Onewire.h"
 
 
 /**
@@ -97,7 +98,7 @@ void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
     //initilize equipment components
     int size = thermPins->size();
     if ( (size == 2) || (size == 3) ){
-    _tempSensor = new TemperatureSensor(id+1, thermPins->front());
+    _tempSensor = new TemperatureSensor(id+1, new Onewire());
     thermPins->pop_front();
     _heatingElm = new HeatingElement(id+3, thermPins);
     }else{//publish error

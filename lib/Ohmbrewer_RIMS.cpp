@@ -1,6 +1,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Onewire.h"
 
 
 /**
@@ -80,7 +81,7 @@ Ohmbrewer::RIMS::~RIMS() {
 void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
     int size = thermPins->size();
     if ( (size == 2) || (size == 3) ){
-        _safetySensor = new TemperatureSensor(id+2, thermPins->front());  //TODO need UIDS
+        _safetySensor = new TemperatureSensor(id+2, new Onewire());  //TODO need UIDS
         _tube = new Thermostat(id+3, thermPins);
     }else{
         //publish error
