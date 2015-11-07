@@ -1,6 +1,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Onewire.h"
 
 
 /**
@@ -80,7 +81,7 @@ Ohmbrewer::RIMS::~RIMS() {
 void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
     int size = thermPins->size();
     if ( (size == 2) || (size == 3) ){
-        _safetySensor = new TemperatureSensor(id+2, thermPins->front());  //TODO need UIDS
+        _safetySensor = new TemperatureSensor(id+2, new Onewire());  //TODO need UIDS
         _tube = new Thermostat(id+3, thermPins);
     }else{
         //publish error
@@ -245,12 +246,39 @@ bool Ohmbrewer::RIMS::isOff() const {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::RIMS::doWork() {
-    // TODO: Implement RIMS::doWork
-    // enable thermotat?
-    //disable is safetysensor is on alert
-    //call them dowork()
-    //futz with pump a bit too.
-    return -1;
+    unsigned long start = micros();
+
+    //FANCY RIMS, turns the pump off to rest when tun temp is good and safety temp is good.
+    if (getState()) {
+        //IF RIMS ON
+        // make sure R. PUMP is ON if safety temp > tun temp +3(margin)
+        if (getSafetyTemp()->c() > (getTunSensor()->getTemp()->c() + 3) &&
+                !getRecirculator()->getState() ){
+            getRecirculator()->setState(true); // turn on pump
+        }else if ( getRecirculator()->getState() ){
+            getRecirculator()->setState(false); // turn off pump
+        }
+        //if tun temp is less than 2 degrees (margin) of target temp, then: RIMS
+        if (getTunSensor()->getTemp()->c() < (getTube()->getTargetTemp()->c() - 2) ){
+            // safetySensor guard on Therm (if: safety sensor temp > safety setting, then: NO heat )
+            if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
+                    !getTube()->getState() ) {
+                getTube()->setState(true); // turn on therm
+            }
+        }else if ( getTube()->getState() ){
+            getTube()->setState(false);//PID should be able to handle this. TODO test to make sure
+        }
+    }else{
+        //IF RIMS OFF
+        // make sure R. PUMP is OFF
+        getRecirculator()->setState(false);
+        // turn OFF therm
+        getTube()->setState(false);
+    }
+
+    getRecirculator()->work();
+    getTube()->work();
+    return micros() - start;
 }
 
 /**
