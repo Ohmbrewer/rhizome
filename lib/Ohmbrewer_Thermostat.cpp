@@ -302,6 +302,10 @@ int Ohmbrewer::Thermostat::doWork() {
             digitalWrite(_heatingElm->getPowerPin(), LOW); //turn it off too
         }
     }
+    if (!getState()){//if thermostat is turned off then turn off element.
+        getElement()->setState(false);
+        getElement()->work();//reset
+    }
     return micros() - start;
 }
 

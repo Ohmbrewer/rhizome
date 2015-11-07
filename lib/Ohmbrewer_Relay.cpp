@@ -229,12 +229,6 @@ int Ohmbrewer::Relay::doWork() {
         }
     }
 
-
-    //Speed or PID Control
-
-    //TODO: manage controlPin in children
-
-
     return millis()-startTime;
 }
 
