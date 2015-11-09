@@ -39,15 +39,7 @@ namespace Ohmbrewer {
              * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
              */
-            TemperatureSensor(int id, int busPin);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this TemperatureSensor
-             * @param pins The list of physical pins this TemperatureSensor is attached to
-             * @param uid - the unique id code for the Dallas sensor connected to the bus.
-             */
-            TemperatureSensor(int id, int busPin, uint8_t (&uid)[8]);
+            TemperatureSensor(int id, Probe* probe);
 
             /**
              * Constructor
@@ -57,7 +49,7 @@ namespace Ohmbrewer {
              * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the TemperatureSensor believes it should be processing
              */
-            TemperatureSensor(int id, int busPin, int stopTime, bool state, String currentTask);
+            TemperatureSensor(int id, Probe* probe, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
