@@ -6,6 +6,7 @@
 #include "Ohmbrewer_Heating_Element.h"
 #include "Ohmbrewer_Publisher.h"
 #include "Ohmbrewer_Thermostat.h"
+#include "Ohmbrewer_Still.h"
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 #include "onewire.h"

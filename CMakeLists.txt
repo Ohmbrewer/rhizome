@@ -23,6 +23,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Temperature.cpp
     ../lib/Ohmbrewer_RIMS.h
     ../lib/Ohmbrewer_RIMS.cpp
+    ../lib/Ohmbrewer_Still.cpp
+    ../lib/Ohmbrewer_Still.h
     ../lib/Ohmbrewer_Publisher.h
     ../lib/Ohmbrewer_Publisher.cpp
     ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.h

@@ -120,6 +120,31 @@ namespace Ohmbrewer {
             HeatingElement* getElement() const;
 
             /**
+             * The desired target temperature. Defaults to Celsius
+             * @returns The target temperature in Celsius, as a Temperature object pointer
+             */
+            Temperature* getTargetTemp() const;
+
+            /**
+             * Sets the target temperature
+             * @param targetTemp The new target temperature in Celsius
+             * @returns The time taken to run the method
+             */
+            const int setTargetTemp(const double targetTemp);
+
+            /**
+             * The Thermostat's heating element
+             * @returns The heating element
+             */
+            HeatingElement* getElement() const;
+
+            /**
+             * The Thermostat's temperature sensor
+             * @returns The temperature sensor
+             */
+            TemperatureSensor* getSensor() const;
+
+            /**
              * Specifies the interface for arguments sent to this Thermostat's associated function.
              * Parses the supplied string into an array of strings for setting the Thermostat's values.
              * Most likely will be called during update().

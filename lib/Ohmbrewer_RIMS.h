@@ -130,6 +130,24 @@ namespace Ohmbrewer {
             Pump* getRecirculator() const;
 
             /**
+             * The Tube thermostat
+             * @returns The Thermostat object representing the RIMS tube elements
+             */
+            Thermostat* getTube() const;
+
+            /**
+             * The temperature sensor located in the tun
+             * @returns The Temperature Sensor object representing the sensor located in the mash tun
+             */
+            TemperatureSensor* getTunSensor() const;
+
+            /**
+             * The recirculation pump between the tun and the tube
+             * @returns The Pump object representing the recirculation pump
+             */
+            Pump* getRecirculator() const;
+
+            /**
              * Specifies the interface for arguments sent to this Equipment's associated function.
              * Parses the supplied string into an array of strings for setting the Equipment's values.
              * Most likely will be called during update().

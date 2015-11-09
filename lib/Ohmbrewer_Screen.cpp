@@ -108,7 +108,10 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
         displayThermostats();
     } else if(strcmp(_sprouts->front()->getType(), RIMS::TYPE_NAME) == 0) {
         displayRIMS();
-    } else {
+    }
+//    } else if(strcmp(_sprouts->front()->getType(), Still::TYPE_NAME) == 0) {
+//        displayStill(); //TODO add this to be Still
+    else {
         displayTemps();
     }
 
