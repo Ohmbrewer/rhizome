@@ -193,6 +193,13 @@ namespace Ohmbrewer {
             unsigned long displaySafetyTemp(Screen *screen);
 
             /**
+             * Prints the recirculation pump status onto the touchscreen.
+             * @param screen The Rhizome's touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayHeatElmStatus(Screen *screen);
+
+            /**
              * rints the recirculation pump status onto the touchscreen.
              * @param screen The Rhizome's touchscreen
              * @returns Time it took to run the function

@@ -130,7 +130,6 @@ namespace Ohmbrewer {
 
             /**
              * Sets the Thermostat state. True => On, False => Off
-             * This turns *EVERYTHING* on, so watch out. You may want to turn the components on individually instead.
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @returns The time taken to run the method
              */
@@ -162,6 +161,28 @@ namespace Ohmbrewer {
             int doWork();
 
             /**
+            * Controls all the inner workings of the PID functionality
+            * Should be called by _timer
+            *
+            * Controls the heating element Relays manually, overriding the standard relay
+            * functionality
+            *
+            * The pid is designed to Output an analog value, but the relay can only be On/Off.
+            *
+            * "time proportioning control"  it's essentially a really slow version of PWM.
+            * first we decide on a window size. Then set the pid to adjust its output between 0 and that window size.
+            * lastly, we add some logic that translates the PID output into "Relay On Time" with the remainder of the
+            * window being "Relay Off Time"
+            *
+            * PID Adaptive Tuning
+            * You can change the tuning parameters.  this can be
+            * helpful if we want the controller to be agressive at some
+            * times, and conservative at others.
+            *
+            */
+            void doPID();
+
+            /**
              * Draws information to the Rhizome's display.
              * This function is called by display().
              * @param screen The Rhizome's touchscreen
@@ -170,25 +191,18 @@ namespace Ohmbrewer {
             int doDisplay(Screen *screen);
 
             /**
-             * Prints the temperature information for one sensor onto the touchscreen
-             * @returns Time it took to run the function
-             */
-            unsigned long displayCurrentTemp(Screen *screen);
-
-            /**
-             * Prints the temperature information for one sensor onto the touchscreen
-             * @returns Time it took to run the function
-             */
-            unsigned long displayTargetTemp(Screen *screen);
-
-            /**
              * Prints the temperature information for our sensors onto the touchscreen.
-             * @param temp The temperature to display
-             * @param label The text label to print to the left of the temperature
-             * @param color The color of the temperature text
+             * @param screen The Rhizome's touchscreen
              * @returns Time it took to run the function
              */
-            unsigned long displayTemp(const Temperature *temp, char* label, uint16_t color, Screen *screen);
+            unsigned long displayThermTemp(Screen *screen);
+
+            /**
+             * Draws information to the Rhizome's display.
+             * @param screen The Rhizome's touchscreen
+             * @returns The time taken to run the method
+             */
+            int displayRelay(Screen *screen);
 
             /**
              * Publishes updates to Ohmbrewer, etc.
@@ -227,6 +241,21 @@ namespace Ohmbrewer {
              */
             PID* _thermPID;
 
+            /**
+             * boolean to signify if timer should be disabled
+             */
+//            bool _standby;
+
+            /**
+             * Timer to control PID functionality
+             */
+//            Timer* _timer;
+
+//            /**
+//             * Settings for the PID algorithm
+//             */
+//            Settings* _settings;
+//TODO break these out into something #35
             //Define the aggressive and conservative Tuning Parameters for PID
             double aggKp=4;
             double aggKi=0.2;

@@ -92,6 +92,12 @@ namespace Ohmbrewer {
              * Prints the status information for our current relays onto the touchscreen
              * @returns Time it took to run the function
              */
+            unsigned long displayManualRelays();
+
+            /**
+             * Prints the status information for our current relays onto the touchscreen
+             * @returns Time it took to run the function
+             */
             unsigned long displayRelays();
 
             /**

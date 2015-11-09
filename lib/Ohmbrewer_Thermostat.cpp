@@ -110,12 +110,10 @@ void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
     }
     _targetTemp = new Temperature(-69);
 
-}
+    Timer _timer(5000, doPID);
+//    _timer = &timer;
 
-/**
- * Overloaded << operator.
- */
-// friend std::ostream& Ohmbrewer::Thermostat::operator<<( std::ostream& os, Thermostat const& thermostat);
+}
 
 /**
  * The desired target temperature. Defaults to Celsius
@@ -135,8 +133,6 @@ const int Ohmbrewer::Thermostat::setTargetTemp(const double targetTemp) {
     _targetTemp->set(targetTemp);
     return start - millis();
 }
-
-
 
 /**
  * The Thermostat's heating element
@@ -206,16 +202,14 @@ void Ohmbrewer::Thermostat::parseArgs(const String &argsStr, Ohmbrewer::Equipmen
 
 /**
  * Sets the Thermostat state. True => On, False => Off
- * This turns *EVERYTHING* on, so watch out. You may want to turn the components on individually instead.
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @returns The time taken to run the method
  */
 const int Ohmbrewer::Thermostat::setState(const bool state) {
     unsigned long start = millis();
     _state = state;
-    getElement()->setState(state);
-    getSensor()->setState(state);
-
+//    getElement()->setState(state);
+//    getSensor()->setState(state);
 
     return start - millis();
 }
@@ -225,7 +219,8 @@ const int Ohmbrewer::Thermostat::setState(const bool state) {
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::Thermostat::getState() const {
-    return (getElement()->getState() || getSensor()->getState() );
+    return _state;
+    //return (getElement()->getState() || getSensor()->getState() );
 }
 
 /**
@@ -248,6 +243,37 @@ bool Ohmbrewer::Thermostat::isOff() const {
  * Performs the Thermostat's current task. Expect to use this during loop().
  * This function is called by work().
  *
+ *
+ * @returns The time taken to run the method
+ */
+int Ohmbrewer::Thermostat::doWork() {
+    unsigned long start = micros();
+
+    if (getState()){
+        //enable timer
+        _timer.start();
+//        doPID();
+    }else{
+        //Shut down procedure
+        //if thermostat is turned off then turn off element too.
+        getElement()->setState(false);
+        getElement()->work();//reset element
+        //stop Timer
+        _timer.stop();
+        //if PID is off then update temp sensor
+        getSensor()->work();
+    }
+
+    return micros() - start;
+}
+
+/**
+ * Controls all the inner workings of the PID functionality
+ * Should be called by _timer
+ *
+ * Controls the heating element Relays manually, overriding the standard relay
+ * functionality
+ *
  * The pid is designed to Output an analog value, but the relay can only be On/Off.
  *
  * "time proportioning control"  it's essentially a really slow version of PWM.
@@ -256,17 +282,16 @@ bool Ohmbrewer::Thermostat::isOff() const {
  * window being "Relay Off Time"
  *
  * PID Adaptive Tuning
- * You can change the tuning parameters at any time.  this can be
+ * You can change the tuning parameters.  this can be
  * helpful if we want the controller to be agressive at some
  * times, and conservative at others.
  *
- * @returns The time taken to run the method
  */
-int Ohmbrewer::Thermostat::doWork() {
-    unsigned long start = micros();
+void Ohmbrewer::Thermostat::doPID(){
+    getSensor()->work();
 
-    setPoint = _targetTemp->c();        //targetTemp
-    input = _tempSensor->getTemp()->c();//currentTemp
+    setPoint = getTargetTemp()->c();        //targetTemp
+    input = getSensor()->getTemp()->c();//currentTemp
     double gap = abs(setPoint-input);   //distance away from target temp
     //SET TUNING PARAMETERS
     if (gap<10) {  //we're close to targetTemp, use conservative tuning parameters
@@ -282,31 +307,26 @@ int Ohmbrewer::Thermostat::doWork() {
     //TURN ON
     if (getState() && gap!=0) {//if we want to turn on the element (thermostat is ON)
         //TURN ON state and powerPin
-        if (!(_heatingElm->getState())) {//if heating element is off
-            _heatingElm->setState(true);//turn it on
-            if (_heatingElm->getPowerPin() != -1) { // if powerPin enabled
-                digitalWrite(_heatingElm->getPowerPin(), HIGH); //turn it on (only once each time you switch state)
+        if (!(getElement()->getState())) {//if heating element is off
+            getElement()->setState(true);//turn it on
+            if (getElement()->getPowerPin() != -1) { // if powerPin enabled
+                digitalWrite(getElement()->getPowerPin(), HIGH); //turn it on (only once each time you switch state)
             }
         }
         //RELAY MODULATION
         if (output < millis() - windowStartTime) {
-            digitalWrite(_heatingElm->getControlPin(), HIGH);
+            digitalWrite(getElement()->getControlPin(), HIGH);
         } else {
-            digitalWrite(_heatingElm->getControlPin(), LOW);
+            digitalWrite(getElement()->getControlPin(), LOW);
         }
     }
     //TURN OFF
-    if (gap == 0) {//once reached target temp
-        _heatingElm->setState(false); //turn off element
-        if (_heatingElm->getPowerPin() != -1) { // if powerPin enabled
-            digitalWrite(_heatingElm->getPowerPin(), LOW); //turn it off too
+    if (gap == 0 || getTargetTemp()->c() <= getSensor()->getTemp()->c() ) {//once reached target temp
+        getElement()->setState(false); //turn off element
+        if (getElement()->getPowerPin() != -1) { // if powerPin enabled
+            digitalWrite(getElement()->getPowerPin(), LOW); //turn it off too
         }
     }
-    if (!getState()){//if thermostat is turned off then turn off element.
-        getElement()->setState(false);
-        getElement()->work();//reset
-    }
-    return micros() - start;
 }
 
 /**
@@ -321,25 +341,21 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     screen->resetTextColor();
 
     // Print the section title
-    screen->print("== Therm. #");
+    screen->print("== Thermostat #");
     screen->print(getID());
-    screen->print(" (");
-    screen->writeDegree(); // Degree symbol
-    screen->print("C) ==");
+    screen->println(" ==");
 
     // Add a wee margin
     screen->printMargin(2);
 
-    // Print out the current temp
-    displayCurrentTemp(screen);
-
-    // Print out the target temp
-    displayTargetTemp(screen);
-
+    //print out the therm info
+    displayThermTemp(screen);
+    screen->printMargin(2);         //if we are hurting for space this can go
+    displayRelay(screen);
     // Add another wee margin
     screen->printMargin(2);
-
-    screen->resetTextSize();
+//
+//    screen->resetTextSize();
     screen->resetTextColor();
 
     return micros() - start;
@@ -349,75 +365,63 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
  * Prints the temperature information for our sensors onto the touchscreen.
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Thermostat::displayThermTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-
+    //"Temp °C:  88.0  90.0"
+    //         current target
     // If current == target, we'll default to yellow, 'cause we're golden...
     uint16_t color = screen->YELLOW;
 
     if(getSensor()->getTemp()->c() > getTargetTemp()->c()) {
-        // Too hot
+        // above target temp
         color = screen->RED;
     } else if(getSensor()->getTemp()->c() < getTargetTemp()->c()) {
-        // Too cold
+        // below target temp
         color = screen->CYAN;
     }
-
-    displayTemp(getSensor()->getTemp(), "Therm", color, screen);
-
-    // Show a warning if the Heating Element is active
-    if(getElement()->isOn()) {
-        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->print(" ON");
-    } else {
-        screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
-        screen->print(" ");
-        screen->writeBlock();
-        screen->writeBlock();
-    }
-    screen->resetTextColor();
-
-    screen->println("");
-
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen) {
-    unsigned long start = micros();
-    displayTemp(getTargetTemp(), "Target", screen->YELLOW, screen);
-    screen->println("");
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @param temp The temperature to display
- * @param label The text label to print to the left of the temperature
- * @param color The color of the temperature text
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
-    unsigned long start = micros();
-    char tempStr [10];
-    temp->toStrC(tempStr);
-
-    // Print the label
-    screen->resetTextColor();
-//    screen->print(" "); // We want a little margin
-    screen->print(label);
-    screen->print(" ");
+    //Label
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+    screen->print("Temp ");
     screen->writeDegree();
-    screen->print("C: ");
-
-    // Print out the target temp
-    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
-    screen->print(tempStr);
+    screen->print("C:");
+    //Temps
+    getSensor()->getTemp()->displayTempC(color, screen);
+    screen->print(" "); //margin
+    getTargetTemp()->displayTempC(screen->YELLOW, screen);
 
     screen->resetTextColor();
+
+    screen->println("");
+
+    return micros() - start;
+}
+
+/**
+ * Draws information to the Rhizome's display.
+ * This function is called by display().
+ * @returns The time taken to run the method
+ */
+int Ohmbrewer::Thermostat::displayRelay(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char relay_id[2];
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+
+    // Print a fancy identifier
+    screen->print("Heat[");
+
+    // Print the state
+    if (getElement()->getState()){
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->print("ON!");
+    } else {
+        screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
+        screen->print("OFF");
+    }
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+    screen->print("]");
+
+    // TODO add? screen->print(" Cool [");
+    screen->println("");
 
     return micros() - start;
 }

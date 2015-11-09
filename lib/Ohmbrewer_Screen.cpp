@@ -104,20 +104,64 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     // Show the various data readouts
     // FIXME: This ain't quite right... These assume that Thermostats and RIMS would always be the first Sprouts entry.
-    if(strcmp(_sprouts->front()->getType(), Thermostat::TYPE_NAME) == 0) {
-        displayThermostats();
-    } else if(strcmp(_sprouts->front()->getType(), RIMS::TYPE_NAME) == 0) {
+    // fixme... current support they are, but in future change this to a for loop to find them and print them first.
+    if(strcmp(_sprouts->front()->getType(), RIMS::TYPE_NAME) == 0) {
         displayRIMS();
+        printMargin(2);
+    } else if(strcmp(_sprouts->front()->getType(), Thermostat::TYPE_NAME) == 0) {
+        displayThermostats();
+        printMargin(2);
     } else {
-        displayTemps();
+        //displayTemps();
     }
 
-//    displayRelays();
-    displayHeatingElements();
-    displayPumps();
+    displayManualRelays();
 
     // 500 seems like a good refresh delay
     delay(500);
+
+    return micros() - start;
+}
+
+/**
+ * Prints the status information for our current relays onto the touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::displayManualRelays() {
+    unsigned long start = micros();
+
+    resetTextSizeAndColor();
+    print("--------------------");
+
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out temperature probes
+        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) == 0) {
+            setTextColor(CYAN, DEFAULT_BG_COLOR);
+            print("Temp ");
+            writeDegree();
+            print("C ");
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out PUMPS
+        if (strcmp((*itr)->getType(), Pump::TYPE_NAME) == 0) {
+            setTextColor(CYAN, DEFAULT_BG_COLOR);
+            print("Pump    ");
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out relays
+        if (strcmp((*itr)->getType(), Relay::TYPE_NAME) == 0) {
+            setTextColor(CYAN, DEFAULT_BG_COLOR);
+            print("Relay    ");
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    //No Heating elements are supported this way, only manual relays. ... safer
+
+    printMargin(2);
 
     return micros() - start;
 }
