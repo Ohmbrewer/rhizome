@@ -112,13 +112,44 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
         displayTemps();
     }
     printMargin(2);
-    print("====== Relays ======");
-//    displayRelays();
-    displayHeatingElements();
-    displayPumps();
+    print("====== Others ======");
+    displayManualRelays();
+
+//    print("====== Relays ======");
+////    displayRelays();
+//    displayHeatingElements();
+//    displayPumps();
 
     // 500 seems like a good refresh delay
     delay(500);
+
+    return micros() - start;
+}
+
+/**
+ * Prints the status information for our current relays onto the touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::displayManualRelays() {
+    unsigned long start = micros();
+    bool foundFirst = false;
+
+    resetTextSizeAndColor();
+//TODO insert LOGIC
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+//        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) != 0 &&
+//            strcmp((*itr)->getType(), RIMS::TYPE_NAME) != 0 &&
+//            strcmp((*itr)->getType(), Thermostat::TYPE_NAME) != 0) {
+//            if(!foundFirst) {
+//                // Print the header
+////                print("====== Relays ======");
+//                printMargin(2);
+//                foundFirst = true;
+//            }
+//            ((Ohmbrewer::Relay*)(*itr))->display(this);
+//        }
+    }
+    printMargin(2);
 
     return micros() - start;
 }

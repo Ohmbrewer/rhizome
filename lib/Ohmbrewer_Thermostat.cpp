@@ -321,26 +321,66 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     screen->resetTextColor();
 
     // Print the section title
-    screen->print("== Therm. #");
+    screen->print("== Thermostat #");
     screen->print(getID());
-    screen->print(" (");
-    screen->writeDegree(); // Degree symbol
-    screen->print("C) ==");
+//    screen->print(" (");
+//    screen->writeDegree(); // Degree symbol
+//    screen->print("C) ==");
+    screen->print(" ==");
 
     // Add a wee margin
     screen->printMargin(2);
 
-    // Print out the current temp
-    displayCurrentTemp(screen);
+//    // Print out the current temp
+//    displayCurrentTemp(screen);
+//
+//    // Print out the target temp
+//    displayTargetTemp(screen);
 
-    // Print out the target temp
-    displayTargetTemp(screen);
+    displayThermTemp(screen);
 
     // Add another wee margin
     screen->printMargin(2);
 
     screen->resetTextSize();
     screen->resetTextColor();
+
+    return micros() - start;
+}
+
+/**
+ * Prints the temperature information for our sensors onto the touchscreen.
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Thermostat::displayThermTemp(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    //"Temp °C:  88.0  90.0"
+    // If current == target, we'll default to yellow, 'cause we're golden...
+    uint16_t color = screen->YELLOW;
+
+    if(getSensor()->getTemp()->c() > getTargetTemp()->c()) {
+        // Too hot
+        color = screen->RED;
+    } else if(getSensor()->getTemp()->c() < getTargetTemp()->c()) {
+        // Too cold
+        color = screen->CYAN;
+    }
+
+    displayTemp(getSensor()->getTemp(), "Temp", color, screen);
+
+    // Show a warning if the Heating Element is active
+    if(getElement()->isOn()) {
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->print(" ON");
+    } else {
+        screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
+        screen->print(" ");
+        screen->writeBlock();
+        screen->writeBlock();
+    }
+    screen->resetTextColor();
+
+    screen->println("");
 
     return micros() - start;
 }
