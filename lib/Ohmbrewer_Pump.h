@@ -69,13 +69,6 @@ namespace Ohmbrewer {
             virtual ~Pump();
 
             /**
-             * Performs the Equipment's current task. Expect to use this during loop().
-             * This function is called by work().
-             * @returns The time taken to run the method
-             */
-            int doWork();
-
-            /**
              * Draws information to the Rhizome's display.
              * This function is called by display().
              * @param screen The Rhizome's touchscreen

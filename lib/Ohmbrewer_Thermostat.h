@@ -86,38 +86,6 @@ namespace Ohmbrewer {
              * logic for initializing the constructors
              */
             void initThermostat(int id, std::list<int>* thermPins);
-            
-            /**
-             * The Thermostat's temperature sensor
-             * @returns The temperature sensor
-             */
-            TemperatureSensor* getSensor() const;
-
-            /**
-             * Sets the Thermostat's temperature sensor
-             * @param sensor -  The temperature sensor
-             * @returns The time taken to run the method
-             */
-            const int setSensor(TemperatureSensor* sensor);
-
-            /**
-             * The desired target temperature. Defaults to Celsius
-             * @returns The target temperature in Celsius, as a Temperature object pointer
-             */
-            Temperature* getTargetTemp() const;
-
-            /**
-             * Sets the target temperature
-             * @param targetTemp The new target temperature in Celsius
-             * @returns The time taken to run the method
-             */
-            const int setTargetTemp(const double targetTemp);
-
-            /**
-             * The Thermostat's heating element
-             * @returns The heating element
-             */
-            HeatingElement* getElement() const;
 
             /**
              * The Thermostat's temperature sensor
@@ -259,21 +227,22 @@ namespace Ohmbrewer {
              */
             PID* _thermPID;
 
+            //Define the aggressive and conservative Tuning Parameters for PID
+            double aggKp=4;
+            double aggKi=0.2;
+            double aggKd=1;
+            double consKp=1;
+            double consKi=0.05;
+            double consKd=0.25;
+
+
             //Define Variables we'll be connecting to with PID
             double setPoint;
             double input;
             double output;
 
-            //Define the aggressive and conservative Tuning Parameters for PID
-            static const double aggKp=4;
-            static const double aggKi=0.2;
-            static const double aggKd=1;
-            static const double consKp=1;
-            static const double consKi=0.05;
-            static const double consKd=0.25;
-
             //PID windowing variables
-            static const int windowSize = 5000;
+            int windowSize = 5000;
             unsigned long windowStartTime;
 
     };
