@@ -185,6 +185,8 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     return micros() - start;
 }
 
+
+
 /**
  * Publishes updates to Ohmbrewer, etc.
  * This function is called by update().

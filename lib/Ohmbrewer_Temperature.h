@@ -85,6 +85,13 @@ namespace Ohmbrewer {
              */
             const bool set(const double temp);
 
+            /**
+             * Prints the temperature information for temp in yellow onto the touchscreen.
+             * @param screen The Rhizome's touchscreen
+             * @returns Time it took to run the function
+             */
+            unsigned long displayTargetTempC(Temperature* temp, Screen *screen);
+
     protected:
             /**
              * The temperature in Celsius

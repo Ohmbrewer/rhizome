@@ -242,8 +242,7 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
     char relay_id[2];
 
     // Print a fancy identifier
-    screen->print("ID#");
-    screen->print(" [");
+    screen->print("[");
     screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
 
     sprintf(relay_id,"%d", _id);
@@ -254,10 +253,10 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
 
     // Print the state
     if (_state){
-        screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
-        screen->println(" ON ");
-    } else {
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->println(" ON!");
+    } else {
+        screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
         screen->println(" OFF");
     }
 

@@ -48,7 +48,6 @@ Ohmbrewer::Pump::~Pump() {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::Pump::doDisplay(Ohmbrewer::Screen *screen) {
-    screen->print("Pump");
     return Relay::doDisplay(screen);
 }
 

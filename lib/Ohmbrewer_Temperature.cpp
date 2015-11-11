@@ -1,4 +1,5 @@
 #include "Ohmbrewer_Temperature.h"
+#include "Ohmbrewer_Screen.h"
 
 
 /**
@@ -55,6 +56,8 @@ double Ohmbrewer::Temperature::get() const {
  */
 void Ohmbrewer::Temperature::toStrC(char* buffer, unsigned int width, unsigned precision) const {
     sprintf(buffer, "%*.*f", width, precision, c());
+    //sprintf(buffer, "%*.f", width, precision, c());
+    //TODO reformat for printing to only print 1 decimal.
 }
 
 /**
@@ -93,4 +96,22 @@ const bool Ohmbrewer::Temperature::set(const double temp) {
     return true;
 }
 
+/**
+ * Prints the temperature information for temp in yellow onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Temperature::displayTargetTempC(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char tempStr [10];
+    //print target temp in Yellow
+    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+
+    toStrC(tempStr);
+
+    screen->print(tempStr);
+    screen->resetTextColor();
+
+    return micros() - start;
+}
 

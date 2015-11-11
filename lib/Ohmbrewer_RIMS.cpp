@@ -321,7 +321,11 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
  */
 unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    // If current == target, we'll default to yellow, 'cause we're golden...
+    //target, we'll default to yellow,
+    //Tun °C:   70.0  68.0
+    //       current target
+
+
     uint16_t color = screen->YELLOW;
 
     if(getTunSensor()->getTemp()->c() > getTube()->getTargetTemp()->c()) {
@@ -333,8 +337,9 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
     }
 
     getTube()->displayTemp(getTunSensor()->getTemp(), "Tun", color, screen);
-
-    screen->resetTextColor();
+    screen->print(" ");
+    //print out target temp in yellow
+    getSafetyTemp()->displayTargetTempC(screen);
     screen->println("");
 
     return micros() - start;
@@ -346,7 +351,8 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
  */
 unsigned long Ohmbrewer::RIMS::displaySafetyTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
-    // If current == target, we'll default to yellow, 'cause we're golden...
+    //  target, we'll default to yellow
+    // Tube °C:  88.0  90.0
     uint16_t color = screen->YELLOW;
 
     if(getSafetySensor()->getTemp()->c() >= getSafetyTemp()->c()) {
@@ -375,19 +381,20 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
 
     // Print the label
     screen->resetTextColor();
-    screen->print(" R. Pump: "); // We want a little margin
+    screen->print(" Pump ["); // We want a little margin
 
     // Print the state
     if (getRecirculator()->getState()){
-        screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
-        screen->print("ON ");
-    } else {
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->print("ON!");
+    } else {
+        screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
         screen->print("OFF");
     }
 
-    screen->printMargin(2);
     screen->resetTextColor();
+    screen->print("]");
+    screen->printMargin(2);
 
     return micros() - start;
 }

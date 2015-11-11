@@ -51,7 +51,6 @@ Ohmbrewer::HeatingElement::~HeatingElement() {
  * @returns The time taken to run the method
  */
 int Ohmbrewer::HeatingElement::doDisplay(Ohmbrewer::Screen *screen) {
-    screen->print("HeatE.");
     return Relay::doDisplay(screen);
 }
 

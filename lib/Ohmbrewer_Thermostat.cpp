@@ -338,7 +338,7 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
 //    displayTargetTemp(screen);
 
     displayThermTemp(screen);
-
+    displayRelay(screen);
     // Add another wee margin
     screen->printMargin(2);
 
@@ -367,19 +367,40 @@ unsigned long Ohmbrewer::Thermostat::displayThermTemp(Ohmbrewer::Screen *screen)
     }
 
     displayTemp(getSensor()->getTemp(), "Temp", color, screen);
+    screen->print(" "); //margin
+    getTargetTemp()->displayTargetTempC(screen);
 
-    // Show a warning if the Heating Element is active
-    if(getElement()->isOn()) {
-        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->print(" ON");
-    } else {
-        screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
-        screen->print(" ");
-        screen->writeBlock();
-        screen->writeBlock();
-    }
     screen->resetTextColor();
 
+    screen->println("");
+
+    return micros() - start;
+}
+
+/**
+ * Draws information to the Rhizome's display.
+ * This function is called by display().
+ * @returns The time taken to run the method
+ */
+int Ohmbrewer::Thermostat::displayRelay(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+    char relay_id[2];
+
+    // Print a fancy identifier
+    screen->print("Heat [");
+
+    // Print the state
+    if (_state){
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->println(" ON!");
+    } else {
+        screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
+        screen->println(" OFF");
+    }
+    screen->resetTextColor();
+    screen->print("]");
+
+    // TODO add? screen->print(" Cool [");
     screen->println("");
 
     return micros() - start;
