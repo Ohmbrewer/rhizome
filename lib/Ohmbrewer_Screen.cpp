@@ -135,20 +135,56 @@ unsigned long Ohmbrewer::Screen::displayManualRelays() {
     bool foundFirst = false;
 
     resetTextSizeAndColor();
-//TODO insert LOGIC
+
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out PUMPS
+        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) != 0) {
+            if(!foundFirst) {
+                // Print the header
+                print("Temp ");
+                foundFirst = true;
+            }
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out PUMPS
+        if (strcmp((*itr)->getType(), Pump::TYPE_NAME) != 0) {
+            if(!foundFirst) {
+                // Print the header
+                print("Pump ");
+                foundFirst = true;
+            }
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        //print out PUMPS
+        if (strcmp((*itr)->getType(), Relay::TYPE_NAME) != 0) {
+            if(!foundFirst) {
+                // Print the header
+                print("Relay ");
+                foundFirst = true;
+            }
+            ((Ohmbrewer::Relay*)(*itr))->display(this);
+        }
+    }
+    //No Heating elements are supported this way, only manual relays. ... safer
+
+
+
 //        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) != 0 &&
 //            strcmp((*itr)->getType(), RIMS::TYPE_NAME) != 0 &&
 //            strcmp((*itr)->getType(), Thermostat::TYPE_NAME) != 0) {
 //            if(!foundFirst) {
 //                // Print the header
-////                print("====== Relays ======");
+////                print("------ Others ------");
 //                printMargin(2);
 //                foundFirst = true;
 //            }
 //            ((Ohmbrewer::Relay*)(*itr))->display(this);
 //        }
-    }
+
     printMargin(2);
 
     return micros() - start;

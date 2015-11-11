@@ -7,6 +7,8 @@
 #define OHMBREWER_TEMPERATURE_H
 
 #include "application.h"
+#include "Ohmbrewer_Screen.h"
+
 
 namespace Ohmbrewer {
 
@@ -85,18 +87,26 @@ namespace Ohmbrewer {
              */
             const bool set(const double temp);
 
+//            /**
+//             * Prints the temperature information for temp in yellow onto the touchscreen.
+//             * @param screen The Rhizome's touchscreen
+//             * @returns Time it took to run the function
+//             */
+//            unsigned long displayTargetTempC(Temperature* temp, Screen *screen);
+
             /**
-             * Prints the temperature information for temp in yellow onto the touchscreen.
+             * Prints the temperature information for our sensors onto the touchscreen.
+             * @param color The color of the temperature text
              * @param screen The Rhizome's touchscreen
              * @returns Time it took to run the function
              */
-            unsigned long displayTargetTempC(Temperature* temp, Screen *screen);
+            unsigned long displayTempC(uint16_t color, Screen *screen);
 
     protected:
             /**
              * The temperature in Celsius
              */
-            double _targetTemp;
+            double _temp;
     };
 };
 

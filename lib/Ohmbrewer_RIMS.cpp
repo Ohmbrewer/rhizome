@@ -305,10 +305,10 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
     displayTunTemp(screen);
 
     displaySafetyTemp(screen);
-    // Print out the target temp
-    getTube()->displayTargetTemp(screen);
 
-    // Print the pump status
+
+    // Print the HE and pump status
+    displayHeatElmStatus(screen);
     displayRecircStatus(screen);
 
     return micros() - start;
@@ -336,11 +336,18 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
         color = screen->CYAN;
     }
 
-    getTube()->displayTemp(getTunSensor()->getTemp(), "Tun", color, screen);
+    screen->print("Tun ");
+    screen->writeDegree();
+    screen->print("C: ");
+    //current temp
+    getTunSensor()->getTemp()->displayTempC(color, screen);
+
     screen->print(" ");
     //print out target temp in yellow
-    getSafetyTemp()->displayTargetTempC(screen);
+    getTube()->getTargetTemp()->displayTempC(screen->YELLOW, screen);
     screen->println("");
+
+    screen->resetTextColor();
 
     return micros() - start;
 }
@@ -362,11 +369,46 @@ unsigned long Ohmbrewer::RIMS::displaySafetyTemp(Ohmbrewer::Screen *screen) {
         // Too cold ... ie ok
         color = screen->CYAN;
     }
+    screen->print("Tube ");
+    screen->writeDegree();
+    screen->print("C: ");
+    //current temp
+    getSafetySensor()->getTemp()->displayTempC(color, screen);
 
-    getTube()->displayTemp(getSafetySensor()->getTemp(), "Tube", color, screen);
+    screen->print(" ");
+    //print out safety target temp in yellow
+    getSafetyTemp()->displayTempC(screen->YELLOW, screen);
+    screen->println("");
 
     screen->resetTextColor();
-    screen->println("");
+
+    return micros() - start;
+}
+
+/**
+ * Prints the recirculation pump status onto the touchscreen.
+ * @param screen The Rhizome's touchscreen
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::RIMS::displayHeatElmStatus(Ohmbrewer::Screen *screen) {
+    unsigned long start = micros();
+
+    // Print the label
+    screen->resetTextColor();
+    screen->print(" Heat ["); // We want a little margin
+
+    // Print the state
+    if (getTube()->getElement()->getState()){
+        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+        screen->print("ON!");
+    } else {
+        screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
+        screen->print("OFF");
+    }
+
+    screen->resetTextColor();
+    screen->print("]");
+    screen->printMargin(2);
 
     return micros() - start;
 }

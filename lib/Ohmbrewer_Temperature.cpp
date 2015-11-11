@@ -1,5 +1,4 @@
 #include "Ohmbrewer_Temperature.h"
-#include "Ohmbrewer_Screen.h"
 
 
 /**
@@ -7,7 +6,7 @@
  * @param temp The temperature in Celsius
  */
 Ohmbrewer::Temperature::Temperature(const double temp) {
-    _targetTemp = temp;
+    _temp = temp;
 }
 
 /**
@@ -15,7 +14,7 @@ Ohmbrewer::Temperature::Temperature(const double temp) {
  * @param copy The Temperature to copy
  */
 Ohmbrewer::Temperature::Temperature(const Temperature& copy) {
-    _targetTemp = copy.c();
+    _temp = copy.c();
 }
 
 /**
@@ -46,7 +45,7 @@ double Ohmbrewer::Temperature::c() const {
  * @returns The temperature in Celsius
  */
 double Ohmbrewer::Temperature::get() const {
-    return _targetTemp;
+    return _temp;
 }
 
 /**
@@ -74,7 +73,7 @@ void Ohmbrewer::Temperature::toStrF(char* buffer, unsigned int width, unsigned p
  * @param temp The temperature in Fahrenheit
  */
 const bool Ohmbrewer::Temperature::fromF(const double temp) {
-    _targetTemp = (temp - 32)/1.8;
+    _temp = (temp - 32)/1.8;
     return true;
 }
 
@@ -83,7 +82,7 @@ const bool Ohmbrewer::Temperature::fromF(const double temp) {
  * @param temp The temperature in Celsius
  */
 const bool Ohmbrewer::Temperature::fromC(const double temp) {
-    _targetTemp = temp;
+    _temp = temp;
     return true;
 }
 
@@ -92,24 +91,45 @@ const bool Ohmbrewer::Temperature::fromC(const double temp) {
  * @param temp The temperature in Celsius
  */
 const bool Ohmbrewer::Temperature::set(const double temp) {
-    _targetTemp = temp;
+    _temp = temp;
     return true;
 }
 
+///**
+// * Prints the temperature information for temp in yellow onto the touchscreen.
+// * @param screen The Rhizome's touchscreen
+// * @returns Time it took to run the function
+// */
+//unsigned long Ohmbrewer::Temperature::displayTargetTempC(Ohmbrewer::Screen *screen) {
+//    unsigned long start = micros();
+//    char tempStr [10];
+//    //print target temp in Yellow
+//    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
+//
+//    toStrC(tempStr);
+//
+//    screen->print(tempStr);
+//    screen->resetTextColor();
+//
+//    return micros() - start;
+//}
+
+
 /**
- * Prints the temperature information for temp in yellow onto the touchscreen.
+ * Prints the temperature information for our sensors onto the touchscreen.
+ * @param color The color of the temperature text
  * @param screen The Rhizome's touchscreen
  * @returns Time it took to run the function
  */
-unsigned long Ohmbrewer::Temperature::displayTargetTempC(Ohmbrewer::Screen *screen) {
+unsigned long Ohmbrewer::Temperature::displayTempC(uint16_t color, Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char tempStr [10];
-    //print target temp in Yellow
-    screen->setTextColor(screen->YELLOW, screen->DEFAULT_BG_COLOR);
-
     toStrC(tempStr);
 
+    // Print out the target temp
+    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
     screen->print(tempStr);
+
     screen->resetTextColor();
 
     return micros() - start;

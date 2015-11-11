@@ -323,20 +323,12 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     // Print the section title
     screen->print("== Thermostat #");
     screen->print(getID());
-//    screen->print(" (");
-//    screen->writeDegree(); // Degree symbol
-//    screen->print("C) ==");
     screen->print(" ==");
 
     // Add a wee margin
     screen->printMargin(2);
 
-//    // Print out the current temp
-//    displayCurrentTemp(screen);
-//
-//    // Print out the target temp
-//    displayTargetTemp(screen);
-
+    //print out the therm info
     displayThermTemp(screen);
     displayRelay(screen);
     // Add another wee margin
@@ -355,20 +347,25 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
 unsigned long Ohmbrewer::Thermostat::displayThermTemp(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     //"Temp °C:  88.0  90.0"
+    //         current target
     // If current == target, we'll default to yellow, 'cause we're golden...
     uint16_t color = screen->YELLOW;
 
     if(getSensor()->getTemp()->c() > getTargetTemp()->c()) {
-        // Too hot
+        // above target temp
         color = screen->RED;
     } else if(getSensor()->getTemp()->c() < getTargetTemp()->c()) {
-        // Too cold
+        // below target temp
         color = screen->CYAN;
     }
-
-    displayTemp(getSensor()->getTemp(), "Temp", color, screen);
+    //Label
+    screen->print("Temp ");
+    screen->writeDegree();
+    screen->print("C: ");
+    //Temps
+    getSensor()->getTemp()->displayTempC(color, screen);
     screen->print(" "); //margin
-    getTargetTemp()->displayTargetTempC(screen);
+    getTargetTemp()->displayTempC(screen->YELLOW, screen);
 
     screen->resetTextColor();
 
@@ -406,82 +403,71 @@ int Ohmbrewer::Thermostat::displayRelay(Ohmbrewer::Screen *screen) {
     return micros() - start;
 }
 
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *screen) {
-    unsigned long start = micros();
-
-    // If current == target, we'll default to yellow, 'cause we're golden...
-    uint16_t color = screen->YELLOW;
-
-    if(getSensor()->getTemp()->c() > getTargetTemp()->c()) {
-        // Too hot
-        color = screen->RED;
-    } else if(getSensor()->getTemp()->c() < getTargetTemp()->c()) {
-        // Too cold
-        color = screen->CYAN;
-    }
-
-    displayTemp(getSensor()->getTemp(), "Therm", color, screen);
-
-    // Show a warning if the Heating Element is active
-    if(getElement()->isOn()) {
-        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->print(" ON");
-    } else {
-        screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
-        screen->print(" ");
-        screen->writeBlock();
-        screen->writeBlock();
-    }
-    screen->resetTextColor();
-
-    screen->println("");
-
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Thermostat::displayTargetTemp(Ohmbrewer::Screen *screen) {
-    unsigned long start = micros();
-    displayTemp(getTargetTemp(), "Target", screen->YELLOW, screen);
-    screen->println("");
-    return micros() - start;
-}
-
-/**
- * Prints the temperature information for our sensors onto the touchscreen.
- * @param temp The temperature to display
- * @param label The text label to print to the left of the temperature
- * @param color The color of the temperature text
- * @returns Time it took to run the function
- */
-unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
-    unsigned long start = micros();
-    char tempStr [10];
-    temp->toStrC(tempStr);
-
-    // Print the label
-    screen->resetTextColor();
-//    screen->print(" "); // We want a little margin
-    screen->print(label);
-    screen->print(" ");
-    screen->writeDegree();
-    screen->print("C: ");
-
-    // Print out the target temp
-    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
-    screen->print(tempStr);
-
-    screen->resetTextColor();
-
-    return micros() - start;
-}
+///**
+// * Prints the temperature information for our sensors onto the touchscreen.
+// * @returns Time it took to run the function
+// */
+//unsigned long Ohmbrewer::Thermostat::displayCurrentTemp(Ohmbrewer::Screen *screen) {
+//    unsigned long start = micros();
+//
+//    // If current == target, we'll default to yellow, 'cause we're golden...
+//    uint16_t color = screen->YELLOW;
+//
+//    if(getSensor()->getTemp()->c() > getTargetTemp()->c()) {
+//        // Too hot
+//        color = screen->RED;
+//    } else if(getSensor()->getTemp()->c() < getTargetTemp()->c()) {
+//        // Too cold
+//        color = screen->CYAN;
+//    }
+//
+//    displayTemp(getSensor()->getTemp(), "Therm", color, screen);
+//
+//    // Show a warning if the Heating Element is active
+//    if(getElement()->isOn()) {
+//        screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
+//        screen->print(" ON");
+//    } else {
+//        screen->setTextColor(screen->BLACK, screen->DEFAULT_BG_COLOR);
+//        screen->print(" ");
+//        screen->writeBlock();
+//        screen->writeBlock();
+//    }
+//    screen->resetTextColor();
+//
+//    screen->println("");
+//
+//    return micros() - start;
+//}
+//
+///**
+// * Prints the temperature information for our sensors onto the touchscreen.
+// * @param temp The temperature to display
+// * @param label The text label to print to the left of the temperature
+// * @param color The color of the temperature text
+// * @returns Time it took to run the function
+// */
+//unsigned long Ohmbrewer::Thermostat::displayTemp(const Temperature *temp, char* label, uint16_t color, Ohmbrewer::Screen *screen) {
+//    unsigned long start = micros();
+//    char tempStr [10];
+//    temp->toStrC(tempStr);
+//
+//    // Print the label
+//    screen->resetTextColor();
+////    screen->print(" "); // We want a little margin
+//    screen->print(label);
+//    screen->print(" ");
+//    screen->writeDegree();
+//    screen->print("C: ");
+//
+//    // Print out the target temp
+//    screen->setTextColor(color, screen->DEFAULT_BG_COLOR);
+//    screen->print(tempStr);
+//
+//    screen->resetTextColor();
+//
+//    return micros() - start;
+//}
 
 /**
  * Publishes updates to Ohmbrewer, etc.
