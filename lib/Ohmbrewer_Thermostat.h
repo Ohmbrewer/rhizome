@@ -183,30 +183,6 @@ namespace Ohmbrewer {
              */
             int displayRelay(Screen *screen);
 
-//            /**
-//             * Prints the temperature information for one sensor onto the touchscreen
-//             * @param screen The Rhizome's touchscreen
-//             * @returns Time it took to run the function
-//             */
-//            unsigned long displayCurrentTemp(Screen *screen);
-//
-//            /**
-//             * Prints the temperature information for one sensor onto the touchscreen
-//             * @param screen The Rhizome's touchscreen
-//             * @returns Time it took to run the function
-//             */
-//            unsigned long displayTargetTemp(Screen *screen);
-//
-//            /**
-//             * Prints the temperature information for our sensors onto the touchscreen.
-//             * @param temp The temperature to display
-//             * @param label The text label to print to the left of the temperature
-//             * @param color The color of the temperature text
-//             * @param screen The Rhizome's touchscreen
-//             * @returns Time it took to run the function
-//             */
-//            unsigned long displayTemp(const Temperature *temp, char* label, uint16_t color, Screen *screen);
-
             /**
              * Publishes updates to Ohmbrewer, etc.
              * This function is called by update().

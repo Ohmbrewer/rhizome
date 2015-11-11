@@ -241,6 +241,7 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
     char relay_id[2];
 
+    screen->resetTextColor();
     // Print a fancy identifier
     screen->print("[");
     screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
@@ -249,15 +250,15 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
     screen->print(relay_id);
 
     screen->resetTextColor();
-    screen->print("]:");
+    screen->print("]:   ");
 
     // Print the state
     if (_state){
         screen->setTextColor(screen->RED, screen->DEFAULT_BG_COLOR);
-        screen->println(" ON!");
+        screen->println("ON!");
     } else {
         screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
-        screen->println(" OFF");
+        screen->println("OFF");
     }
 
     screen->resetTextColor();

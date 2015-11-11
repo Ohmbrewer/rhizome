@@ -306,10 +306,12 @@ int Ohmbrewer::RIMS::doDisplay(Ohmbrewer::Screen *screen) {
 
     displaySafetyTemp(screen);
 
-
+    screen->printMargin(2);
     // Print the HE and pump status
     displayHeatElmStatus(screen);
+    screen->print(" ");
     displayRecircStatus(screen);
+    screen->printMargin(2);
 
     return micros() - start;
 }
@@ -335,7 +337,7 @@ unsigned long Ohmbrewer::RIMS::displayTunTemp(Ohmbrewer::Screen *screen) {
         // Too cold
         color = screen->CYAN;
     }
-
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->print("Tun ");
     screen->writeDegree();
     screen->print("C: ");
@@ -369,9 +371,10 @@ unsigned long Ohmbrewer::RIMS::displaySafetyTemp(Ohmbrewer::Screen *screen) {
         // Too cold ... ie ok
         color = screen->CYAN;
     }
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->print("Tube ");
     screen->writeDegree();
-    screen->print("C: ");
+    screen->print("C:");
     //current temp
     getSafetySensor()->getTemp()->displayTempC(color, screen);
 
@@ -394,8 +397,8 @@ unsigned long Ohmbrewer::RIMS::displayHeatElmStatus(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
 
     // Print the label
-    screen->resetTextColor();
-    screen->print(" Heat ["); // We want a little margin
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+    screen->print("Heat["); // We want a little margin
 
     // Print the state
     if (getTube()->getElement()->getState()){
@@ -406,9 +409,8 @@ unsigned long Ohmbrewer::RIMS::displayHeatElmStatus(Ohmbrewer::Screen *screen) {
         screen->print("OFF");
     }
 
-    screen->resetTextColor();
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->print("]");
-    screen->printMargin(2);
 
     return micros() - start;
 }
@@ -422,8 +424,8 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
     unsigned long start = micros();
 
     // Print the label
-    screen->resetTextColor();
-    screen->print(" Pump ["); // We want a little margin
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
+    screen->print("Pump["); // We want a little margin
 
     // Print the state
     if (getRecirculator()->getState()){
@@ -433,10 +435,8 @@ unsigned long Ohmbrewer::RIMS::displayRecircStatus(Ohmbrewer::Screen *screen) {
         screen->setTextColor(screen->GREEN, screen->DEFAULT_BG_COLOR);
         screen->print("OFF");
     }
-
-    screen->resetTextColor();
+    screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->print("]");
-    screen->printMargin(2);
 
     return micros() - start;
 }

@@ -167,8 +167,9 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     sprintf(relay_id,"%d", _id);
     getTemp()->toStrC(tempStr);
 
+    screen->resetTextColor();
     // Print a fancy identifier
-    screen->print(" [");
+    screen->print("[");
 
     screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
     screen->print(relay_id);

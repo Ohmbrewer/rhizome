@@ -58,7 +58,7 @@ namespace Ohmbrewer {
              * @param width Formatter width, defaults to 2
              * @param precision Formatter precision, defaults to 2
              */
-            void toStrC(char* buffer, unsigned int width = 6, unsigned precision = 2) const;
+            void toStrC(char* buffer, unsigned int width = 5, unsigned precision = 1) const;
 
             /**
              * Fills a provided C-string buffer with the temperature, formatted for display.
