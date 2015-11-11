@@ -1,4 +1,6 @@
 #include "Ohmbrewer_Pump.h"
+#include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * Constructor

@@ -1,4 +1,5 @@
 #include "Ohmbrewer_Heating_Element.h"
+#include "Ohmbrewer_Screen.h"
 
 /**
  * Constructor
