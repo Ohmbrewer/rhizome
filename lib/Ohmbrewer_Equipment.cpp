@@ -100,8 +100,7 @@ const int Ohmbrewer::Equipment::setCurrentTask(String currentTask) {
  * @returns The Particle event stream the Equipment expects to publish to.
  */
 String Ohmbrewer::Equipment::getStream() const {
-    String stream = String("/");
-    stream.concat(this->getType());
+    String stream = String(this->getType());
     stream.concat("/");
     stream.concat(this->getID());
     return stream;

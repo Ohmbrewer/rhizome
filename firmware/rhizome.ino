@@ -29,21 +29,26 @@
  */
 std::deque< Ohmbrewer::Equipment* > sprouts;
 
-//initializer Pin list
-//std::list<int> thermPins (1, 0);
-
 /**
  * The touchscreen object. Handles the display for the Rhizome.
  */
 Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
 
 /**
+ * A timer for doing things every 15 seconds. Used by the sproutList below.
+ */
+Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
+
+/**
  * The managed list of sprouts
  * @todo Refactor how we handle Sprouts/SproutList so that the deque is encapsulated and Screen takes the list object
  */
-Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen);
+Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen, &periodicUpdateTimer);
 
 unsigned long lastUpdate = millis();
+
+//initializer Pin list
+//std::list<int> thermPins (1, 0);
 
 // EX: Using a Publisher object. Other parts are marked with a (*). You'll probably want to use a different update
 //     rate (more like 30s instead of 10s) below.
@@ -93,7 +98,7 @@ void setup() {
 //    ((Ohmbrewer::Thermostat*)sprouts.front())->setState(true); // Turn everything on.
 //    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(62.7);
 
-//TURN ON screen
+    // Turn on screen
     screen.initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)
 }
@@ -122,4 +127,15 @@ void loop() {
 
     //refresh the display
     screen.refreshDisplay();
+}
+
+/* ========================================================================= */
+/*  Other Global Functions                                                   */
+/* ========================================================================= */
+
+/**
+ * Delegator function that allows us to call the managed method for publishing periodic updates.
+ */
+void doPeriodicUpdates() {
+    sproutList.publishPeriodicUpdates();
 }

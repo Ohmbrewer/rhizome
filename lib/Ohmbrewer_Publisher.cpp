@@ -47,6 +47,44 @@ Ohmbrewer::Publisher::Publisher(String *stream, publish_map_t *data) {
 }
 
 /**
+ * Constructor that initializes the data map internally.
+ * @param stream The Particle cloud event stream to publish to
+ */
+Ohmbrewer::Publisher::Publisher(String *stream) {
+    _stream = stream;
+    _data = new publish_map_t;
+}
+
+/**
+ * Constructor that adds the provided key/value pair to the Publisher's stream map.
+ * @param key A single key for data to publish as a JSON.
+ * @param value A single value for data to publish as a JSON.
+ */
+Ohmbrewer::Publisher::Publisher(String *stream, String key, String value) {
+    _stream = stream;
+    _data = new publish_map_t;
+    (*_data)[key] = value;
+}
+
+/**
+ * Constructor
+ * @param stream The Particle cloud event stream to publish to
+ * @param data A map of data to publish as a JSON.
+ * @return Whether the key/value pair was added successfully.
+ */
+bool Ohmbrewer::Publisher::add(String key, String value) {
+    (*_data)[key] = value;
+    return true;
+}
+
+/**
+ * Clears the internal data map
+ */
+void Ohmbrewer::Publisher::clear() {
+    (*_data).clear();
+}
+
+/**
  * Destructor
  */
 Ohmbrewer::Publisher::~Publisher() {

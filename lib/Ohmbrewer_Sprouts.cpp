@@ -14,12 +14,13 @@
  * @param sprouts A pointer to a pre-constructed deque object. Sprouts takes over responsibility of memory management for it.
  * @param screen A pointer to the Screen object. Sprouts does not handle its memory management.
  */
-Ohmbrewer::Sprouts::Sprouts( std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen) {
+Ohmbrewer::Sprouts::Sprouts( std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen, Timer *put) {
     _sprouts = sprouts;
     _screen = screen;
-    Spark.function("add", &Sprouts::addSprout, this);
-    Spark.function("update", &Sprouts::updateSprout, this);
-    Spark.function("remove", &Sprouts::removeSprout, this);
+    _periodicUpdateTimer = put;
+    Particle.function("add", &Sprouts::addSprout, this);
+    Particle.function("update", &Sprouts::updateSprout, this);
+    Particle.function("remove", &Sprouts::removeSprout, this);
 }
 
 /**
@@ -27,6 +28,7 @@ Ohmbrewer::Sprouts::Sprouts( std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbr
  */
 Ohmbrewer::Sprouts::~Sprouts() {
     delete _sprouts;
+    delete _periodicUpdateTimer;
 }
 
 /**
@@ -99,6 +101,11 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
     // Simply return an error code if it failed
     if(errorCode != 0) {
         return errorCode;
+    }
+
+    if(_sprouts->size() == 1) {
+        // We should only have to start the update timer if this is the first Sprout
+        _periodicUpdateTimer->start();
     }
 
     // Otherwise, refresh the screen and return success.
@@ -205,6 +212,12 @@ int Ohmbrewer::Sprouts::removeSprout(String argsStr) {
             _sprouts->erase(itr);
             delete params;
             _screen->initScreen(); // Gotta do this to clear artifacts from the screen
+
+            if(_sprouts->size() == 0) {
+                // No use in running the update timer if we have no Sprouts
+                _periodicUpdateTimer->stop();
+            }
+
             return id; // Success!
         }
     }
@@ -212,6 +225,32 @@ int Ohmbrewer::Sprouts::removeSprout(String argsStr) {
     // Clear out that dynamically allocated buffer
     delete params;
     return -2; // Fail!
+}
+
+/**
+ * Publishes any periodic updates that need to be published.
+ * @see _periodicUpdateTimer
+ */
+void Ohmbrewer::Sprouts::publishPeriodicUpdates() {
+
+    // Publish all the Temperature Sensor updates
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) == 0) {
+            ((TemperatureSensor*)(*itr))->publishSensorReading();
+            continue;
+        }
+        if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
+            ((Thermostat*)(*itr))->getSensor()->publishSensorReading();
+            continue;
+        }
+        if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
+            ((RIMS*)(*itr))->getTunSensor()->publishSensorReading();
+            ((RIMS*)(*itr))->getSafetySensor()->publishSensorReading();
+        }
+    }
+
+    _periodicUpdateTimer->reset();
+    return;
 }
 
 /**
