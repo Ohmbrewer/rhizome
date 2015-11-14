@@ -17,6 +17,7 @@
 #include "Ohmbrewer_Temperature.h"
 #include "application.h"
 #include "pid.h"
+#include "Ohmbrewer_PID_Profile.h"
 
 namespace Ohmbrewer {
 
@@ -220,21 +221,23 @@ namespace Ohmbrewer {
              */
             PID* _thermPID;
 
-            //Define the aggressive and conservative Tuning Parameters for PID
-            double aggKp=4;
-            double aggKi=0.2;
-            double aggKd=1;
-            double consKp=1;
-            double consKi=0.05;
-            double consKd=0.25;
+            /**
+             * Aggressive Tuning Parameters profile for the PID
+             */
+            PIDProfile agg  = PIDProfile(4, 0.2, 1);
+
+            /**
+             * Conservative Tuning Parameters profile for the PID
+             */
+            PIDProfile cons = PIDProfile(1, 0.05, 0.25);
 
 
-            //Define Variables we'll be connecting to with PID
+            // Define Variables we'll be connecting to with PID
             double setPoint;
             double input;
             double output;
 
-            //PID windowing variables
+            // PID windowing variables
             int windowSize = 5000;
             unsigned long windowStartTime;
 

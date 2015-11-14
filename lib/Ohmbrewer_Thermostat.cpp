@@ -105,7 +105,9 @@ void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
     _targetTemp = new Temperature(-69);
 
     // PID set up
-    _thermPID = new PID(&input, &output, &setPoint, consKp, consKi, consKd, PID::DIRECT);
+    _thermPID = new PID(&input, &output, &setPoint,
+                        cons.kP(), cons.kI(), cons.kD(),
+                        PID::DIRECT);
 
     // Initialize the variables we're linked to
     windowStartTime = millis();
@@ -278,9 +280,9 @@ int Ohmbrewer::Thermostat::doWork() {
     double gap = abs(setPoint-input);   //distance away from target temp
     //SET TUNING PARAMETERS
     if (gap<10) {  //we're close to targetTemp, use conservative tuning parameters
-        _thermPID->SetTunings(consKp, consKi, consKd);
+        _thermPID->SetTunings(cons.kP(), cons.kI(), cons.kD());
     }else {//we're far from targetTemp, use aggressive tuning parameters
-        _thermPID->SetTunings(aggKp, aggKi, aggKd);
+        _thermPID->SetTunings(agg.kP(), agg.kI(), agg.kD());
     }
     //COMPUTATIONS
     _thermPID->Compute();

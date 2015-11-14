@@ -42,7 +42,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Screen.h
     ../lib/Ohmbrewer_Screen.cpp
     ../lib/Ohmbrewer_Sprouts.h
-    ../lib/Ohmbrewer_Sprouts.cpp)
+    ../lib/Ohmbrewer_Sprouts.cpp
+    ../lib/Ohmbrewer_PID_Profile.h)
 
 if(DEVICE_TYPE)
     # You can specify which device to compile for, if desired...
