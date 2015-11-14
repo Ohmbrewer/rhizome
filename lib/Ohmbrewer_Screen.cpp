@@ -21,9 +21,18 @@ Ohmbrewer::Screen::Screen(uint8_t CS,
  * Initializes the display screen
  */
 void Ohmbrewer::Screen::initScreen() {
-
     begin();
+    reinitScreen();
+}
+
+/**
+ * Reinitializes the display screen
+ */
+void Ohmbrewer::Screen::reinitScreen() {
+    // Erase everything
     fillScreen(DEFAULT_BG_COLOR);
+
+    // Draw the buttons that are always there
     drawButtons();
 
     // Reset the cursor
@@ -42,9 +51,6 @@ unsigned long Ohmbrewer::Screen::displayHeader() {
     setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
     setTextSize(3);
     println("  OHMBREWER");
-
-    // Add a bottom margin
-    printMargin(2);
 
     return micros() - start;
 }
@@ -102,20 +108,37 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    // Show the various data readouts
-    // FIXME: This ain't quite right... These assume that Thermostats and RIMS would always be the first Sprouts entry.
-    // fixme... current support they are, but in future change this to a for loop to find them and print them first.
-    if(strcmp(_sprouts->front()->getType(), RIMS::TYPE_NAME) == 0) {
-        displayRIMS();
-        printMargin(2);
-    } else if(strcmp(_sprouts->front()->getType(), Thermostat::TYPE_NAME) == 0) {
-        displayThermostats();
-        printMargin(2);
+    displayRIMS();
+    displayThermostats();
+
+    // We want to show a different border for the Manual Relays section if there were any Thermostats or RIMS
+    int thermostats = 0;
+    int rims = 0;
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
+            thermostats++;
+        }
+        if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
+            rims++;
+        }
+    }
+
+    if((thermostats + rims) > 2) {
+        // Don't print the header line
+    } else if((thermostats + rims) > 0) {
+        // We've got 1-2 Thermostats or RIMS, so print a thin line
+        print("--------------------");
     } else {
-        //displayTemps();
+        // There aren't any Thermostats or RIMS, so print a fat line
+        print("====================");
     }
 
     displayManualRelays();
+//    // These are the old, single type displays, for easy debugging.
+//    displayTemps();
+//    displayRelays();
+//    displayHeatingElements();
+//    displayPumps();
 
     // 500 seems like a good refresh delay
     delay(500);
@@ -131,7 +154,6 @@ unsigned long Ohmbrewer::Screen::displayManualRelays() {
     unsigned long start = micros();
 
     resetTextSizeAndColor();
-    print("--------------------");
 
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         //print out temperature probes
@@ -189,7 +211,9 @@ unsigned long Ohmbrewer::Screen::displayRelays() {
             ((Ohmbrewer::Relay*)(*itr))->display(this);
         }
     }
-    printMargin(2);
+    if(foundFirst) {
+        printMargin(2);
+    }
 
     return micros() - start;
 }
@@ -215,7 +239,9 @@ unsigned long Ohmbrewer::Screen::displayHeatingElements() {
             ((Ohmbrewer::HeatingElement*)(*itr))->display(this);
         }
     }
-    printMargin(2);
+    if(foundFirst) {
+        printMargin(2);
+    }
 
     return micros() - start;
 }
@@ -241,7 +267,9 @@ unsigned long Ohmbrewer::Screen::displayPumps() {
             ((Ohmbrewer::Pump*)(*itr))->display(this);
         }
     }
-    printMargin(2);
+    if(foundFirst) {
+        printMargin(2);
+    }
 
     return micros() - start;
 }
@@ -269,8 +297,9 @@ unsigned long Ohmbrewer::Screen::displayTemps() {
             ((Ohmbrewer::TemperatureSensor*)(*itr))->display(this);
         }
     }
-    printMargin(2);
-
+    if(foundFirst) {
+        printMargin(2);
+    }
     return micros() - start;
 }
 
@@ -280,16 +309,17 @@ unsigned long Ohmbrewer::Screen::displayTemps() {
  */
 unsigned long Ohmbrewer::Screen::displayThermostats() {
     unsigned long start = micros();
+    bool foundFirst = false;
 
     resetTextSizeAndColor();
 
-    printMargin(2);
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
             ((Ohmbrewer::Thermostat*)(*itr))->display(this);
+            printMargin(2);
+            printMargin(2);
         }
     }
-    printMargin(2);
 
     return micros() - start;
 }
@@ -300,16 +330,17 @@ unsigned long Ohmbrewer::Screen::displayThermostats() {
  */
 unsigned long Ohmbrewer::Screen::displayRIMS() {
     unsigned long start = micros();
+    bool foundFirst = false;
 
     resetTextSizeAndColor();
 
-    printMargin(2);
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
             ((Ohmbrewer::RIMS*)(*itr))->display(this);
+            printMargin(2);
+            printMargin(2);
         }
     }
-    printMargin(2);
 
     return micros() - start;
 }
