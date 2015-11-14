@@ -7,7 +7,7 @@
  */
 Ohmbrewer::Pump::Pump(int id, int pumpPin) : Ohmbrewer::Relay(id, pumpPin) {
 
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**FIXME
@@ -21,7 +21,7 @@ Ohmbrewer::Pump::Pump(int id, int pumpPin) : Ohmbrewer::Relay(id, pumpPin) {
 Ohmbrewer::Pump::Pump(int id, int pumpPin, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Relay(id, pumpPin, stopTime, state, currentTask) {
 
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -30,7 +30,7 @@ Ohmbrewer::Pump::Pump(int id, int pumpPin, int stopTime,
  */
 Ohmbrewer::Pump::Pump(const Pump& clonee) : Ohmbrewer::Relay(clonee) {
     // This has probably already been set, but maybe clonee is a more complicated child class...
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**

@@ -12,7 +12,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, Probe* probe) : Ohmbrewe
     _probe = probe;                 //For now all probes are all onewire
     _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -27,7 +27,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  Probe* probe, int stopT
     _probe = probe;
     _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -38,7 +38,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
     _probe = clonee.getProbe();
     _lastReading = clonee.getTemp();
     _lastReadTime = Time.now();
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**

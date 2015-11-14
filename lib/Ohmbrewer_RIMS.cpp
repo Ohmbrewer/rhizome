@@ -15,7 +15,7 @@
 Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin ) : Ohmbrewer::Equipment(id) {
     //TODO currently only one probe at a time working.
     initRIMS(id, thermPins, pumpPin);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -30,7 +30,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin ) : Ohmbrew
 Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initRIMS(id, thermPins, pumpPin);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -47,7 +47,7 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTi
                       bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initRIMS(id, thermPins, pumpPin);
     getTube()->setTargetTemp(targetTemp);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -59,7 +59,7 @@ Ohmbrewer::RIMS::RIMS(const Ohmbrewer::RIMS& clonee) : Ohmbrewer::Equipment(clon
     _tube = clonee.getTube();
     _recirc = clonee.getRecirculator();
 
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -167,9 +167,9 @@ void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::arg
 
     if(argsStr.length() > 0) {
         // FIXME These should probably be converted into private const variables
-        String tunSensorKey = String("tun_sensor_state");
+        String safetySensorKey = String("safety_sensor_state");
         String rPumpKey = String("r_pump_state");
-        String tubeKey = String("tube_params");
+        String thermKey = String("therm_params");
         char* params = new char[argsStr.length() + 1];
         strcpy(params, argsStr.c_str());
 
@@ -179,18 +179,18 @@ void Ohmbrewer::RIMS::parseArgs(const String &argsStr, Ohmbrewer::Equipment::arg
 
         // Save them to the map
         if(tunSensorState.length() > 0) {
-            result[tunSensorKey] = tunSensorState;
+            result[safetySensorKey] = tunSensorState;
         }
         if(rPumpState.length() > 0) {
             result[rPumpKey] = rPumpState;
         }
 
-        result[tubeKey] = argsStr.substring(tunSensorState.length() + rPumpState.length() + 2);
+        result[thermKey] = argsStr.substring(tunSensorState.length() + rPumpState.length() + 2);
 
         // Serial.println("Got these additional RIMS results: ");
         // Serial.println(tunSensorState);
         // Serial.println(rPumpState);
-        // Serial.println(result[tubeKey]);
+        // Serial.println(result[thermKey]);
 
         // Clear out that dynamically allocated buffer
         delete params;
@@ -453,19 +453,19 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
 
     // If there are any remaining parameters
     if(args.length() > 0) {
-        String tunSensorKey = String("tun_sensor_state");
+        String safetySensorKey = String("safety_sensor_state");
         String rPumpKey = String("r_pump_state");
-        String tubeKey = String("tube_params");
+        String thermKey = String("therm_params");
 
         parseArgs(args, argsMap);
 
         // The remaining settings are optional/convenience parameters
-        if(argsMap.count(tunSensorKey) != 0) {
-            if(argsMap[tunSensorKey].equalsIgnoreCase("ON")) {
-                getTunSensor()->setState(true);
-            } else if(argsMap[tunSensorKey].equalsIgnoreCase("OFF")) {
-                getTunSensor()->setState(false);
-            } else if(argsMap[tunSensorKey].equalsIgnoreCase("--")) {
+        if(argsMap.count(safetySensorKey) != 0) {
+            if(argsMap[safetySensorKey].equalsIgnoreCase("ON")) {
+                getSafetySensor()->setState(true);
+            } else if(argsMap[safetySensorKey].equalsIgnoreCase("OFF")) {
+                getSafetySensor()->setState(false);
+            } else if(argsMap[safetySensorKey].equalsIgnoreCase("--")) {
                 // Do nothing. Intentional.
             } else {
                 // Do nothing. TODO: Should probably raise an error code...
@@ -485,9 +485,9 @@ int Ohmbrewer::RIMS::doUpdate(String &args, Ohmbrewer::Equipment::args_map_t &ar
         }
 
 
-        if(argsMap.count(tubeKey) != 0) {
+        if(argsMap.count(thermKey) != 0) {
             // Pass the remaining parameters down to the Tube (a Thermostat)
-            getTube()->doUpdate(argsMap[tubeKey], argsMap);
+            getTube()->doUpdate(argsMap[thermKey], argsMap);
         }
 
     }

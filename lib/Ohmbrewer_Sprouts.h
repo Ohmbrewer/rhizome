@@ -60,6 +60,29 @@ namespace Ohmbrewer {
         int addSprout(String argsStr);
 
         /**
+         * Updates Equipment by routing/delegating to the Equipment subclass's update() method.
+         *
+         * The argument string for this function must match the following format:
+         * TYPE,ID,UPDATE_STRING
+         * where
+         * TYPE matches the TYPE_NAME for the desired Equipment
+         * ID matches the ID of the desired Equipment
+         * UPDATE_STRING is a comma-delimited string that matches the format expected by the desired Equipment's class
+         *
+         * Both the ID and the UPDATE_STRING will be passed onto the update() method, but ID is validated within
+         * this method before update() is called as one more check against Hard Faults.
+         *
+         * @param argsStr The argument string passed via the Particle Cloud.
+         * @returns Equipment ID if successful,
+         *          (negative) error codes if unsuccessful:
+         *          -1 : Invalid Equipment Type
+         *          -2 : Invalid ID
+         *          -3 : Specified Equipment was not found in the list
+         *          -4 : Update failed
+         */
+        int updateSprout(String argsStr);
+
+        /**
          * Dynamically removes Equipment to the Rhizome.
          *
          * The argument string for this function must match the following format:

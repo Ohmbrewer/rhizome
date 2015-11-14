@@ -12,7 +12,7 @@
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -24,7 +24,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -38,7 +38,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const doubl
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -55,7 +55,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTim
                                   const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -66,7 +66,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
