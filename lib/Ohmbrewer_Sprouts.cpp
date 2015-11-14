@@ -18,6 +18,7 @@ Ohmbrewer::Sprouts::Sprouts( std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbr
     _sprouts = sprouts;
     _screen = screen;
     Spark.function("add", &Sprouts::addSprout, this);
+    Spark.function("update", &Sprouts::updateSprout, this);
     Spark.function("remove", &Sprouts::removeSprout, this);
 }
 
@@ -87,6 +88,9 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
         errorCode = addThermostat(id, params);
     } else if(type.equalsIgnoreCase(Ohmbrewer::RIMS::TYPE_NAME)) {
         errorCode = addRIMS(id, params);
+    } else {
+        // Trying to add an unrecognized Equipment Type.
+        errorCode = -5;
     }
 
     // Clear out that dynamically allocated buffer
@@ -100,6 +104,72 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
     // Otherwise, refresh the screen and return success.
     _screen->initScreen();
     return id; // Success!
+}
+
+/**
+ * Updates Equipment by routing/delegating to the Equipment subclass's update() method.
+ *
+ * The argument string for this function must match the following format:
+ * TYPE,ID,UPDATE_STRING
+ * where
+ * TYPE matches the TYPE_NAME for the desired Equipment
+ * ID matches the ID of the desired Equipment
+ * UPDATE_STRING is a comma-delimited string that matches the format expected by the desired Equipment's class
+ *
+ * Both the ID and the UPDATE_STRING will be passed onto the update() method, but ID is validated within
+ * this method before update() is called as one more check against Hard Faults.
+ *
+ * @param argsStr The argument string passed via the Particle Cloud.
+ * @returns Equipment ID if successful,
+ *          (negative) error codes if unsuccessful:
+ *          -1 : Invalid Equipment Type
+ *          -2 : Invalid ID
+ *          -3 : Specified Equipment was not found in the list
+ *          -4 : Update failed
+ */
+int Ohmbrewer::Sprouts::updateSprout(String argsStr) {
+    char* params = new char[argsStr.length() + 1];
+    strcpy(params, argsStr.c_str());
+
+    // Parse the parameters
+    String type    = String(strtok(params, ","));
+    String idStr   = String(strtok(NULL, ","));
+    int id = idStr.toInt();
+
+    // Type should be valid
+    if(!type.equalsIgnoreCase(Ohmbrewer::TemperatureSensor::TYPE_NAME) &&
+       !type.equalsIgnoreCase(Ohmbrewer::Pump::TYPE_NAME) &&
+       !type.equalsIgnoreCase(Ohmbrewer::HeatingElement::TYPE_NAME) &&
+       !type.equalsIgnoreCase(Ohmbrewer::Thermostat::TYPE_NAME) &&
+       !type.equalsIgnoreCase(Ohmbrewer::RIMS::TYPE_NAME)) {
+        delete params;
+        return -1; // Fail! Bad Type.
+    } else {
+        // Ok, we like this Type. Let's remove it (and the comma) from the args string
+        // so it doesn't get in the way of further processing.
+        argsStr.remove(0, type.length() + 1);
+    }
+
+    // If toInt() fails due to a bad parse, it gives 0.
+    if(isFakeZero(idStr)) {
+        delete params;
+        return -2; // Fail! Bad ID.
+    }
+
+    std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
+    for (itr; itr != _sprouts->end(); itr++) {
+        if (((*itr)->getID() == id) && (type.equalsIgnoreCase((*itr)->getType()))) {
+            // Update the equipment, removing the Type Name from the string that's passed in
+            (*itr)->update(argsStr);
+
+            delete params; // Clean up
+            return id; // Success!
+        }
+    }
+
+    // Clear out that dynamically allocated buffer
+    delete params;
+    return -3; // Fail! Not Found!
 }
 
 /**
