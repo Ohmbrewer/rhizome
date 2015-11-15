@@ -41,6 +41,33 @@ namespace Ohmbrewer {
              * @param data A map of data to publish as a JSON.
              */
             Publisher(String *stream, publish_map_t *data);
+
+            /**
+             * Constructor that initializes the data map internally.
+             * @param stream The Particle cloud event stream to publish to
+             */
+            Publisher(String *stream);
+
+            /**
+             * Constructor
+             * @param stream The Particle cloud event stream to publish to
+             * @param key A single key for data to publish as a JSON.
+             * @param value A single value for data to publish as a JSON.
+             */
+            Publisher(String *stream, String key, String value);
+
+            /**
+             * Adds the provided key/value pair to the Publisher's stream map.
+             * @param key A single key for data to publish as a JSON.
+             * @param value A single value for data to publish as a JSON.
+             * @return Whether the key/value pair was added successfully.
+             */
+            bool add(String key, String value);
+
+            /**
+             * Clears the internal data map
+             */
+            void clear();
             
             /**
              * Destructor
