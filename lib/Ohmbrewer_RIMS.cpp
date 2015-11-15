@@ -264,9 +264,29 @@ int Ohmbrewer::RIMS::doWork() {
             if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
                     !getTube()->getState() ) {
                 getTube()->setState(true); // turn on therm
+
+                // Notify Ohmbrewer that the Thermostat has been turned on.
+                Publisher pub = Publisher(new String(getStream()),
+                                          String("thermostat"),
+                                          String("ON"));
+                pub.add(String("last_read_time"),
+                        String(getTube()->getSensor()->getLastReadTime()));
+                pub.add(String("temperature"),
+                        String(getTube()->getSensor()->getTemp()->c()));
+                pub.publish();
             }
         }else if ( getTube()->getState() ){
             getTube()->setState(false);//PID should be able to handle this. TODO test to make sure
+
+            // Notify Ohmbrewer that the Thermostat has been turned off.
+            Publisher pub = Publisher(new String(getStream()),
+                                      String("thermostat"),
+                                      String("OFF"));
+            pub.add(String("last_read_time"),
+                    String(getTube()->getSensor()->getLastReadTime()));
+            pub.add(String("temperature"),
+                    String(getTube()->getSensor()->getTemp()->c()));
+            pub.publish();
         }
     }else{
         //IF RIMS OFF
