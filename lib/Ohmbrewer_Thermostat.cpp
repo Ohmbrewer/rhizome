@@ -12,7 +12,7 @@
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -24,7 +24,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -38,7 +38,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const doubl
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -55,7 +55,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTim
                                   const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -66,7 +66,7 @@ Ohmbrewer::Thermostat::Thermostat(const Ohmbrewer::Thermostat& clonee) : Ohmbrew
     _heatingElm = clonee.getElement();
     _tempSensor = clonee.getSensor();
     _targetTemp = clonee.getTargetTemp();
-    registerUpdateFunction();
+//    registerUpdateFunction();
 }
 
 /**
@@ -84,31 +84,41 @@ Ohmbrewer::Thermostat::~Thermostat() {
  * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  */
 void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
-    //PID set up
-    _thermPID = new PID(&input, &output, &setPoint, consKp, consKi, consKd, PID::DIRECT);
-    //initialize the variables we're linked to
+
+    // Initialize equipment components
+    int size = thermPins->size();
+    if ( (size == 2) || (size == 3) ){
+        _tempSensor = new TemperatureSensor(id+1, new Onewire());
+        thermPins->pop_front();
+        _heatingElm = new HeatingElement(id+3, thermPins);
+    } else {
+        // Publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher pub(new String("error_log"), &pMap);
+        pMap[String("list_check_thermostat")] = String("improperly formed input - Thermostat(int id, int<list>)");
+        pub.publish();
+
+        // Disable and GTFO
+        setState(false);
+        return;
+    }
+    _targetTemp = new Temperature(-69);
+
+    // PID set up
+    _thermPID = new PID(&input, &output, &setPoint,
+                        cons.kP(), cons.kI(), cons.kD(),
+                        PID::DIRECT);
+
+    // Initialize the variables we're linked to
     windowStartTime = millis();
     setPoint = _targetTemp->c();
     input = _tempSensor->getTemp()->c();
-    //tell the PID to range between 0 and the full window size
-    _thermPID->SetOutputLimits(0, windowSize);
-    //turn the PID on
-    _thermPID->SetMode(PID::AUTOMATIC);
 
-    //initilize equipment components
-    int size = thermPins->size();
-    if ( (size == 2) || (size == 3) ){
-    _tempSensor = new TemperatureSensor(id+1, new Onewire());
-    thermPins->pop_front();
-    _heatingElm = new HeatingElement(id+3, thermPins);
-    }else{//publish error
-    Ohmbrewer::Publisher::publish_map_t pMap;
-    Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-    pMap[String("list_check_thermostat")] = String("improperly formed input - Thermostat(int id, int<list>)");
-    pub->publish();
-    delete pub;
-    }
-    _targetTemp = new Temperature(-69);
+    // Tell the PID to range between 0 and the full window size
+    _thermPID->SetOutputLimits(0, windowSize);
+
+    // Turn the PID on
+    _thermPID->SetMode(PID::AUTOMATIC);
 
     Timer _timer(5000, doPID);
 //    _timer = &timer;
@@ -295,9 +305,9 @@ void Ohmbrewer::Thermostat::doPID(){
     double gap = abs(setPoint-input);   //distance away from target temp
     //SET TUNING PARAMETERS
     if (gap<10) {  //we're close to targetTemp, use conservative tuning parameters
-        _thermPID->SetTunings(consKp, consKi, consKd);
+        _thermPID->SetTunings(cons.kP(), cons.kI(), cons.kD());
     }else {//we're far from targetTemp, use aggressive tuning parameters
-        _thermPID->SetTunings(aggKp, aggKi, aggKd);
+        _thermPID->SetTunings(agg.kP(), agg.kI(), agg.kD());
     }
     //COMPUTATIONS
     _thermPID->Compute();
@@ -343,7 +353,7 @@ int Ohmbrewer::Thermostat::doDisplay(Ohmbrewer::Screen *screen) {
     // Print the section title
     screen->print("== Thermostat #");
     screen->print(getID());
-    screen->println(" ==");
+    screen->print("  ==");
 
     // Add a wee margin
     screen->printMargin(2);

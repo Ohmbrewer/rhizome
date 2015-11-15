@@ -9,13 +9,15 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 #include "onewire.h"
+#include "Ohmbrewer_Sprouts.h"
+// #include "Ohmbrewer_Publisher.h" // (*)
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
 #undef min
 #undef max
 #undef swap
 #include <deque>
-//#include <list>
+#include <list>
 
 /* ========================================================================= */
 /*  Global Vars                                                              */
@@ -27,12 +29,6 @@
  */
 std::deque< Ohmbrewer::Equipment* > sprouts;
 
-/**
- * This is simply a map of which pins are currently accounted for. We'll want to
- * update it within the Sprout management functions.
- */
-int inUse[6] = {0,0,0,0,0,0};
-
 //initializer Pin list
 std::list<int> thermPins (1, 0);
 std::list<int> thermPins2 (1, 0);
@@ -41,6 +37,12 @@ std::list<int> thermPins2 (1, 0);
  * The touchscreen object. Handles the display for the Rhizome.
  */
 Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
+
+/**
+ * The managed list of sprouts
+ * @todo Refactor how we handle Sprouts/SproutList so that the deque is encapsulated and Screen takes the list object
+ */
+Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen);
 
 unsigned long lastUpdate = millis();
 
@@ -104,7 +106,7 @@ void setup() {
  * The meat of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
-    //probe ID finder command (switch this for the other below commands to enable)
+//    //probe ID finder command (switch this for the other below commands to enable)
 //    ((Ohmbrewer::Onewire*)(((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->getProbe()))
 //            ->displayProbeIds(&screen);
 
@@ -121,6 +123,7 @@ void loop() {
 //                                           ->getElement()
 //                                           ->toggleState();
 //
+//        navi->publish(); // (*)
 //        lastUpdate = millis();
 //    }
 //    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->work(); //Temp patch to make sensor read in Tun temp
@@ -128,20 +131,3 @@ void loop() {
     //refresh the display
     screen.refreshDisplay();
 }
-
-
-///**
-// * Prints the status information for our current relays onto the touchscreen
-// * @returns Time it took to run the function
-// */
-//Ohmbrewer::Equipment* getSprout(const char* typeName, const int id) {
-//    std::deque<Ohmbrewer::Equipment*>::iterator itr = sprouts.begin();
-//
-//    for (itr; itr != sprouts.end(); itr++) {
-//        if (((*itr)->getID() == id) && (strcmp((*itr)->getType(), typeName) == 0)) {
-//            return *itr;
-//        }
-//    }
-//
-//    return *itr;
-//}

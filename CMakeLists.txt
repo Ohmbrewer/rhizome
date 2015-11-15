@@ -9,6 +9,7 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Heating_Element.cpp
     ../lib/Ohmbrewer_Onewire.cpp
     ../lib/Ohmbrewer_Onewire.h
+    ../lib/Ohmbrewer_PID_Profile.h
     ../lib/Ohmbrewer_Probe.cpp
     ../lib/Ohmbrewer_Probe.h
     ../lib/Ohmbrewer_Publisher.h
@@ -21,6 +22,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_RIMS.cpp
     ../lib/Ohmbrewer_Screen.h
     ../lib/Ohmbrewer_Screen.cpp
+    ../lib/Ohmbrewer_Sprouts.h
+    ../lib/Ohmbrewer_Sprouts.cpp
     ../lib/Ohmbrewer_Temperature_Sensor.h
     ../lib/Ohmbrewer_Temperature_Sensor.cpp
     ../lib/Ohmbrewer_Thermostat.h

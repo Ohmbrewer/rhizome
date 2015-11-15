@@ -72,6 +72,11 @@ namespace Ohmbrewer {
             void initScreen();
 
             /**
+             * Reinitializes the display screen
+             */
+            void reinitScreen();
+
+            /**
              * Prints the "Ohmbrewer" title onto the touchscreen
              * @returns Time it took to run the function
              */
