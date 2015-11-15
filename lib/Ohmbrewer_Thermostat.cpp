@@ -311,6 +311,16 @@ int Ohmbrewer::Thermostat::doWork() {
         if (_heatingElm->getPowerPin() != -1) { // if powerPin enabled
             digitalWrite(_heatingElm->getPowerPin(), LOW); //turn it off too
         }
+
+        // Notify Ohmbrewer that the target temperature has been reached.
+        Publisher pub = Publisher(new String(getStream()),
+                                  String("msg"),
+                                  String("Target Temperature Reached."));
+        pub.add(String("last_read_time"),
+                String(getSensor()->getLastReadTime()));
+        pub.add(String("temperature"),
+                String(getSensor()->getTemp()->c()));
+        pub.publish();
     }
     if (!getState()){//if thermostat is turned off then turn off element.
         getElement()->setState(false);
