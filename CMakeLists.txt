@@ -24,12 +24,12 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Screen.cpp
     ../lib/Ohmbrewer_Sprouts.h
     ../lib/Ohmbrewer_Sprouts.cpp
+    ../lib/Ohmbrewer_Temperature.h
+    ../lib/Ohmbrewer_Temperature.cpp
     ../lib/Ohmbrewer_Temperature_Sensor.h
     ../lib/Ohmbrewer_Temperature_Sensor.cpp
     ../lib/Ohmbrewer_Thermostat.h
     ../lib/Ohmbrewer_Thermostat.cpp
-    ../lib/Ohmbrewer_Temperature.h
-    ../lib/Ohmbrewer_Temperature.cpp
 #external libraries
     ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.h
     ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.cpp

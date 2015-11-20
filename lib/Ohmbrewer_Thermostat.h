@@ -250,7 +250,7 @@ namespace Ohmbrewer {
             /**
              * Timer to control PID functionality
              */
-//            Timer* _timer;
+            Timer* _timer;
 
             /**
              * Conservative Tuning Parameters profile for the PID

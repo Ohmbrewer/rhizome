@@ -83,6 +83,8 @@ void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
     if ( (size == 2) || (size == 3) ){
         _safetySensor = new TemperatureSensor(id+2, new Onewire());  //TODO need UIDS
         _tube = new Thermostat(id+3, thermPins);
+        //init therm timer?
+        //set therm timer?
     }else{
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;

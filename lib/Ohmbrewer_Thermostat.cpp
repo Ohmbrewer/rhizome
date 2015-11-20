@@ -12,6 +12,7 @@
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
+//    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
@@ -24,6 +25,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
+//    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
@@ -38,6 +40,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const doubl
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
+//    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
@@ -55,6 +58,7 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTim
                                   const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     initThermostat(id, thermPins);
     _targetTemp->fromC(targetTemp);
+//    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
@@ -76,6 +80,7 @@ Ohmbrewer::Thermostat::~Thermostat() {
     delete _heatingElm;
     delete _tempSensor;
     delete _targetTemp;
+    //delete _timer;
 }
 
 /**
@@ -120,8 +125,8 @@ void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
     // Turn the PID on
     _thermPID->SetMode(PID::AUTOMATIC);
 
-    Timer _timer(5000, doPID);
-//    _timer = &timer;
+    //Timer timer(5000, doPID);
+    //_timer = &timer;
 
 }
 
@@ -261,15 +266,15 @@ int Ohmbrewer::Thermostat::doWork() {
 
     if (getState()){
         //enable timer
-        _timer.start();
-//        doPID();
+//        _timer->start();
+        doPID();
     }else{
         //Shut down procedure
         //if thermostat is turned off then turn off element too.
         getElement()->setState(false);
         getElement()->work();//reset element
         //stop Timer
-        _timer.stop();
+//        _timer->stop();
         //if PID is off then update temp sensor
         getSensor()->work();
     }
