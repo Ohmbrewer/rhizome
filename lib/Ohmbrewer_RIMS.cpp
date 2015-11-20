@@ -258,25 +258,23 @@ int Ohmbrewer::RIMS::doWork() {
         if (getSafetySensor()->getTemp()->c() > (getTunSensor()->getTemp()->c() + 3) &&
                 !(getRecirculator()->getState()) ){
             getRecirculator()->setState(true); // turn on pump
-        }else if ( getRecirculator()->getState() ){
+        }else if ( getSafetySensor()->getTemp()->c() <= (getTunSensor()->getTemp()->c() + 3) &&
+                getRecirculator()->getState() ){
             getRecirculator()->setState(false); // turn off pump
         }
-        //if tun temp is less than 2 degrees (margin) of target temp, then: RIMS
-//        if (getTunSensor()->getTemp()->c() < (getTube()->getTargetTemp()->c() - 2) ){// tun temp < target temp
 
-            // safetySensor guard on Therm (if: tube temp > safety setting, then: NO heat )
-            if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
-                    !getTube()->getState() ) { //safety temp > tube temp(safe) and therm==OFF
-                //tube temperature < safetyTemp
-                getTube()->setState(true); // turn on therm
-                //getTube()->work(); //init the timer
-            }else if ( getTube()->getState() ) {// tube temp >= safety temp and therm == ON
-                //shut therm off
-                getTube()->setState(false);//PID should be able to handle this. TODO test to make sure
-                //TODO or with timers simiply stop the timer
-            }
-//        }
-
+        // safetySensor guard on Therm (if: tube temp > safety setting, then: NO heat )
+        if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
+                !getTube()->getState() ) { //safety temp > tube temp(safe) and therm==OFF
+            //tube temperature < safetyTemp
+            getTube()->setState(true); // turn on therm
+            //getTube()->work(); //init the timer
+        }else if ( getSafetyTemp()->c() <= getSafetySensor()->getTemp()->c() &&
+                getTube()->getState() ) {// tube temp >= safety temp and therm == ON
+            //shut therm off
+            getTube()->setState(false);//PID should be able to handle this.
+            //TODO  with timers simply stop the timer
+        }
     }else{//IF RIMS OFF
 
         // make sure R. PUMP is OFF
