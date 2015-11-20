@@ -131,7 +131,6 @@ namespace Ohmbrewer {
 
             /**
              * Sets the Thermostat state. True => On, False => Off
-             * This turns *EVERYTHING* on, so watch out. You may want to turn the components on individually instead.
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @returns The time taken to run the method
              */
@@ -161,6 +160,28 @@ namespace Ohmbrewer {
              * @returns The time taken to run the method
              */
             int doWork();
+
+            /**
+            * Controls all the inner workings of the PID functionality
+            * Should be called by _timer
+            *
+            * Controls the heating element Relays manually, overriding the standard relay
+            * functionality
+            *
+            * The pid is designed to Output an analog value, but the relay can only be On/Off.
+            *
+            * "time proportioning control"  it's essentially a really slow version of PWM.
+            * first we decide on a window size. Then set the pid to adjust its output between 0 and that window size.
+            * lastly, we add some logic that translates the PID output into "Relay On Time" with the remainder of the
+            * window being "Relay Off Time"
+            *
+            * PID Adaptive Tuning
+            * You can change the tuning parameters.  this can be
+            * helpful if we want the controller to be agressive at some
+            * times, and conservative at others.
+            *
+            */
+            void doPID();
 
             /**
              * Draws information to the Rhizome's display.
@@ -225,6 +246,11 @@ namespace Ohmbrewer {
              * Aggressive Tuning Parameters profile for the PID
              */
             PIDProfile agg  = PIDProfile(4, 0.2, 1);
+
+            /**
+             * Timer to control PID functionality
+             */
+            Timer* _timer;
 
             /**
              * Conservative Tuning Parameters profile for the PID

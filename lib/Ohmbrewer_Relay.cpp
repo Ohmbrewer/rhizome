@@ -4,7 +4,7 @@
 
 
 /**
- * Constructor
+ * Constructor - PUMP
  * @param id The Sprout ID to use for this piece of Equipment
  * @param powerPin - Single speed pump will only have PowerPin - on/off line. Digital pin number X.
 
@@ -12,11 +12,12 @@
 Ohmbrewer::Relay::Relay(int id, int powerPin) : Ohmbrewer::Equipment(id) {
 
     _powerPin = powerPin;
+    pinMode(powerPin, OUTPUT);
     _controlPin = -1;
 }
 
 /**
- * Constructor
+ * Constructor - PUMP
  * @param id The Sprout ID to use for this piece of Equipment
  * @param powerPin - Single speed pump will only have PowerPin - on/off line. Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
@@ -26,6 +27,7 @@ Ohmbrewer::Relay::Relay(int id, int powerPin) : Ohmbrewer::Equipment(id) {
 Ohmbrewer::Relay::Relay(int id, int powerPin, int stopTime,
                         bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
     _powerPin = powerPin;
+    pinMode(powerPin, OUTPUT);
     _controlPin = -1;
 }
 
@@ -37,24 +39,7 @@ Ohmbrewer::Relay::Relay(int id, int powerPin, int stopTime,
  *  powerPin - The power pin - on/off line. Digital pin number X.
  */
 Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins) : Ohmbrewer::Equipment(id) {
-    int size = relayPins->size();
-    int powerPin = -1;
-    int controlPin = -1;
-    if  (size == 2){ // switch and relay
-        controlPin = relayPins->front();
-        powerPin = relayPins->back();
-    }else if (size == 1){ //relay only
-        controlPin = relayPins->front();
-    }else {//publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-        pMap[String("list_check_relay")] = String("improperly formed input - Relay(int, int<list>)");
-        pub->publish();
-        delete pub;
-    }
-    //will be set to -1 for error checking if not enabled
-    _powerPin = powerPin;
-    _controlPin = controlPin;
+    initRelay(relayPins);
 }
 
 /**
@@ -69,25 +54,8 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins) : Ohmbrewer::Equipmen
  */
 Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins, int stopTime,
                         bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    int size = relayPins->size();
-    int powerPin = -1;
-    int controlPin = -1;
-    if  (size == 2){ // switch and relay
-        controlPin = relayPins->front();
-        powerPin = relayPins->back();
-    }else if (size == 1){ //relay only
-        controlPin = relayPins->front();
-    }else {//publish error
-        Ohmbrewer::Publisher::publish_map_t pMap;
-        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
-        pMap[String("list_check_relay")] = String("improperly formed input - Relay(int, int<list>)");
-        pub->publish();
-        delete pub;
-    }
-    //will be set to -1 for error checking if not enabled
-    _powerPin = powerPin;
-    _controlPin = controlPin;
-
+    initRelay(relayPins);
+    _state = state;
 }
 
 /**
@@ -107,6 +75,38 @@ Ohmbrewer::Relay::Relay(const Relay& clonee) : Ohmbrewer::Equipment(clonee) {
  */
 Ohmbrewer::Relay::~Relay() {
     // Nothing to do here...
+}
+
+/**
+ * @param relayPins - controlPin always first in <list>
+ *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+ *  powerPin - The power pin - on/off line. Digital pin number X.
+ */
+void Ohmbrewer::Relay::initRelay(std::list<int>* relayPins) {
+    int size = relayPins->size();
+    int powerPin = -1;
+    int controlPin = -1;
+    if  (size == 2){ // switch and relay
+        controlPin = relayPins->front();
+        powerPin = relayPins->back();
+    }else if (size == 1){ //relay only
+        controlPin = relayPins->front();
+    }else {//publish error
+        Ohmbrewer::Publisher::publish_map_t pMap;
+        Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);
+        pMap[String("list_check_relay")] = String("improperly formed input - Relay(int, int<list>)");
+        pub->publish();
+        delete pub;
+    }
+    //will be set to -1 for error checking if not enabled, enable pins for output
+    if (powerPin != -1) {
+        _powerPin = powerPin;
+        pinMode(powerPin, OUTPUT);
+    }
+    if (controlPin != -1) {
+        _controlPin = controlPin;
+        pinMode(controlPin, OUTPUT);
+    }
 }
 
 /**

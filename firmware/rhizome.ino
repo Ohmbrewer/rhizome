@@ -29,6 +29,10 @@
  */
 std::deque< Ohmbrewer::Equipment* > sprouts;
 
+//initializer Pin list
+std::list<int> thermPins (1, 0);
+std::list<int> thermPins2 (1, 0);
+
 /**
  * The touchscreen object. Handles the display for the Rhizome.
  */
@@ -47,9 +51,6 @@ Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen, &periodicU
 
 unsigned long lastUpdate = millis();
 
-//initializer Pin list
-//std::list<int> thermPins (1, 0);
-
 // EX: Using a Publisher object. Other parts are marked with a (*). You'll probably want to use a different update
 //     rate (more like 30s instead of 10s) below.
 //Ohmbrewer::Publisher::publish_map_t pMap;
@@ -63,9 +64,11 @@ unsigned long lastUpdate = millis();
  */
 void setup() {
 //    Serial.begin(9600); // Enable serial for debugging messages
-//    String fakeTask = "fake";
-//    thermPins.push_back(2); //control pin (relay pin)
-//    thermPins.push_back(3); //power pin (switch pin)
+    String fakeTask = "fake";
+    thermPins.push_back(2); //control pin (relay pin)
+    thermPins.push_back(3); //power pin (switch pin)
+    thermPins2.push_back(4); //control pin (relay pin)
+    thermPins2.push_back(5); //power pin (switch pin)
 
     ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
 
@@ -74,13 +77,14 @@ void setup() {
 // EX 1: Temperature Sensors
 //    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 8, new Ohmbrewer::Onewire() ));
 //    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
-
+//
 //    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 9, new Ohmbrewer::Onewire() ));
 //    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(-20);
 
 // EX 2: A Thermostat
-//    sprouts.push_front(new Ohmbrewer::Thermostat( 1, &thermPins, 100 ));
-//    ((Ohmbrewer::Thermostat*)sprouts.front())->getElement()->setState(true);
+    sprouts.push_front(new Ohmbrewer::Thermostat( 1, &thermPins, 25 ));
+    sprouts.push_front(new Ohmbrewer::Thermostat( 4, &thermPins2, 45 ));
+    //((Ohmbrewer::Thermostat*)sprouts.front())->getElement()->setState(true);
 
 // EX 3: Pumps & Heating Elements
 //    sprouts.push_back(new Ohmbrewer::Pump( 1, 1, 0, true, fakeTask ));
@@ -112,7 +116,11 @@ void loop() {
 //            ->displayProbeIds(&screen);
 
 //Thermostat
-//    ((Ohmbrewer::Thermostat*)sprouts.front())->getSensor()->work();
+    //((Ohmbrewer::Thermostat*)sprouts.front())->getSensor()->work();
+    ((Ohmbrewer::Thermostat*)sprouts.front())->setState(true);
+    ((Ohmbrewer::Thermostat*)sprouts.front())->work();
+    ((Ohmbrewer::Thermostat*)sprouts.back())->setState(true);
+    ((Ohmbrewer::Thermostat*)sprouts.back())->work();
 
 //    if((millis() - lastUpdate) > 10000) {
 //        // Toggle the last relay every 10 seconds, for illustration.
