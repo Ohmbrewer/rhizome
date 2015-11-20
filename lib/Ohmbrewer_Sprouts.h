@@ -28,7 +28,7 @@ namespace Ohmbrewer {
          * @param sprouts A pointer to a pre-constructed deque object. Sprouts takes over responsibility of memory management for it.
          * @param screen A pointer to the Screen object. Sprouts does not handle its memory management.
          */
-        Sprouts(std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen);
+        Sprouts(std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen, Timer *put);
 
         /**
          * Destructor. Kills the internal deque.
@@ -96,18 +96,30 @@ namespace Ohmbrewer {
          */
         int removeSprout(String argsStr);
 
+        /**
+         * Publishes any periodic updates that need to be published.
+         * @see _periodicUpdateTimer
+         */
+        void publishPeriodicUpdates();
+
     protected:
 
-            /**
-             * Each Sprout is a logical collection of physical pins/relays that are connected
-             * to a single piece of Equipment.
-             */
-            std::deque< Equipment* >* _sprouts;
+        /**
+         * Each Sprout is a logical collection of physical pins/relays that are connected
+         * to a single piece of Equipment.
+         */
+        std::deque< Equipment* >* _sprouts;
 
-            /**
-             * The touchscreen object. Handles the display for the Rhizome.
-             */
-            Screen *_screen;
+        /**
+         * The touchscreen object. Handles the display for the Rhizome.
+         */
+        Screen *_screen;
+
+        /**
+         * The system-wide Timer for periodic updates. Kicks off every 15 seconds.
+         */
+        Timer* _periodicUpdateTimer;
+
 
     private:
 

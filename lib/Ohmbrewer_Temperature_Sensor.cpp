@@ -1,6 +1,7 @@
 #include "Ohmbrewer_Temperature_Sensor.h"
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Onewire.h"
+#include "Ohmbrewer_Publisher.h"
 
 
 /**
@@ -207,9 +208,16 @@ int Ohmbrewer::TemperatureSensor::doUpdate(String &args, Ohmbrewer::Equipment::a
  * @param pins The list of physical pins that the TemperatureSensor is connected to.
  */
 void Ohmbrewer::TemperatureSensor::whichPins(std::list<int>* pins) {
-
     pins->push_back(_probe->getPin());
+}
 
-
+/**
+ * Publishes the latest reading
+ */
+void Ohmbrewer::TemperatureSensor::publishSensorReading() {
+    Publisher pub = Publisher(new String(getStream()),
+                              String("temperature"),
+                              String(getTemp()->c()));
+    pub.publish();
 }
 

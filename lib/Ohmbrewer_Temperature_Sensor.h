@@ -157,6 +157,11 @@ namespace Ohmbrewer {
              */
             void whichPins(std::list<int>* pins);
 
+            /**
+             * Publishes the latest reading to the Particle event stream.
+             */
+            void publishSensorReading();
+
         protected:
             /**
              * Last temperature read by the sensor

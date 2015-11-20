@@ -39,10 +39,15 @@ std::list<int> thermPins2 (1, 0);
 Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
 
 /**
+ * A timer for doing things every 15 seconds. Used by the sproutList below.
+ */
+Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
+
+/**
  * The managed list of sprouts
  * @todo Refactor how we handle Sprouts/SproutList so that the deque is encapsulated and Screen takes the list object
  */
-Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen);
+Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen, &periodicUpdateTimer);
 
 unsigned long lastUpdate = millis();
 
@@ -97,7 +102,7 @@ void setup() {
 //    ((Ohmbrewer::Thermostat*)sprouts.front())->setState(true); // Turn everything on.
 //    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(62.7);
 
-//TURN ON screen
+    // Turn on screen
     screen.initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)
 }
@@ -130,4 +135,15 @@ void loop() {
 
     //refresh the display
     screen.refreshDisplay();
+}
+
+/* ========================================================================= */
+/*  Other Global Functions                                                   */
+/* ========================================================================= */
+
+/**
+ * Delegator function that allows us to call the managed method for publishing periodic updates.
+ */
+void doPeriodicUpdates() {
+    sproutList.publishPeriodicUpdates();
 }
