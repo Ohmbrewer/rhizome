@@ -111,6 +111,8 @@ void setup() {
  * The meat of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
+
+    sproutList.work();
 //    //probe ID finder command (switch this for the other below commands to enable)
 //    ((Ohmbrewer::Onewire*)(((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->getProbe()))
 //            ->displayProbeIds(&screen);

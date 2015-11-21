@@ -102,6 +102,12 @@ namespace Ohmbrewer {
          */
         void publishPeriodicUpdates();
 
+        /**
+         * Called in loop, iterates through the the spouts equipment list
+         * and calls work() on each equipment stored in the sprouts list
+         */
+        void work();
+
     protected:
 
         /**

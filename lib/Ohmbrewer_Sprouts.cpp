@@ -254,6 +254,16 @@ void Ohmbrewer::Sprouts::publishPeriodicUpdates() {
 }
 
 /**
+ * Called in loop, iterates through the the spouts equipment list
+ * and calls work() on each equipment stored in the sprouts list
+ */
+void Ohmbrewer::Sprouts::work() {
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        (*itr)->work();
+    }
+}
+
+/**
  * Determines if the supplied string failed Particle's toInt() conversion.
  * @param raw String to examine
  * @returns Whether the string failed the conversion
