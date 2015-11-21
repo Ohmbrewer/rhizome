@@ -83,6 +83,8 @@ void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
     if ( (size == 2) || (size == 3) ){
         _safetySensor = new TemperatureSensor(id+2, new Onewire());  //TODO need UIDS
         _tube = new Thermostat(id+3, thermPins);
+        //init therm timer?
+        //set therm timer?
     }else{
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
@@ -220,8 +222,9 @@ const int Ohmbrewer::RIMS::setState(const bool state) {
  * @returns True => On, False => Off
  */
 bool Ohmbrewer::RIMS::getState() const {
-    return ( getRecirculator()->getState() || getTunSensor()->getState() || getTube()->getState()
-             || getSafetySensor()->getState() );
+    return _state;
+//    return ( getRecirculator()->getState() || getTunSensor()->getState() || getTube()->getState()
+//             || getSafetySensor()->getState() );
 }
 
 /**
@@ -249,34 +252,38 @@ int Ohmbrewer::RIMS::doWork() {
     unsigned long start = micros();
 
     //FANCY RIMS, turns the pump off to rest when tun temp is good and safety temp is good.
-    if (getState()) {
-        //IF RIMS ON
-        // make sure R. PUMP is ON if safety temp > tun temp +3(margin)
-        if (getSafetyTemp()->c() > (getTunSensor()->getTemp()->c() + 3) &&
-                !getRecirculator()->getState() ){
+    if (getState()) {//IF RIMS ON
+
+        // make sure R. PUMP is ON if tube temp > tun temp +3(margin)
+        if (getSafetySensor()->getTemp()->c() > (getTunSensor()->getTemp()->c() + 3) &&
+                !(getRecirculator()->getState()) ){
             getRecirculator()->setState(true); // turn on pump
-        }else if ( getRecirculator()->getState() ){
+        }else if ( getSafetySensor()->getTemp()->c() <= (getTunSensor()->getTemp()->c() + 3) &&
+                getRecirculator()->getState() ){
             getRecirculator()->setState(false); // turn off pump
         }
-        //if tun temp is less than 2 degrees (margin) of target temp, then: RIMS
-        if (getTunSensor()->getTemp()->c() < (getTube()->getTargetTemp()->c() - 2) ){
-            // safetySensor guard on Therm (if: safety sensor temp > safety setting, then: NO heat )
-            if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
-                    !getTube()->getState() ) {
-                getTube()->setState(true); // turn on therm
 
-                // Notify Ohmbrewer that the Thermostat has been turned on.
-                Publisher pub = Publisher(new String(getStream()),
-                                          String("thermostat"),
-                                          String("ON"));
-                pub.add(String("last_read_time"),
-                        String(getTube()->getSensor()->getLastReadTime()));
-                pub.add(String("temperature"),
-                        String(getTube()->getSensor()->getTemp()->c()));
-                pub.publish();
-            }
-        }else if ( getTube()->getState() ){
-            getTube()->setState(false);//PID should be able to handle this. TODO test to make sure
+        // safetySensor guard on Therm (if: tube temp > safety setting, then: NO heat )
+        if ( getSafetyTemp()->c() > getSafetySensor()->getTemp()->c() &&
+                !getTube()->getState() ) { //safety temp > tube temp(safe) and therm==OFF
+            //tube temperature < safetyTemp
+            getTube()->setState(true); // turn on therm
+
+            // Notify Ohmbrewer that the Thermostat has been turned on.
+            Publisher pub = Publisher(new String(getStream()),
+                                      String("thermostat"),
+                                      String("ON"));
+            pub.add(String("last_read_time"),
+                    String(getTube()->getSensor()->getLastReadTime()));
+            pub.add(String("temperature"),
+                    String(getTube()->getSensor()->getTemp()->c()));
+            pub.publish();
+
+        }else if ( getSafetyTemp()->c() <= getSafetySensor()->getTemp()->c() &&
+                getTube()->getState() ) {// tube temp >= safety temp and therm == ON
+            //shut therm off
+            getTube()->setState(false);//PID should be able to handle this.
+            //TODO  with timers simply stop the timer
 
             // Notify Ohmbrewer that the Thermostat has been turned off.
             Publisher pub = Publisher(new String(getStream()),
@@ -288,14 +295,15 @@ int Ohmbrewer::RIMS::doWork() {
                     String(getTube()->getSensor()->getTemp()->c()));
             pub.publish();
         }
-    }else{
-        //IF RIMS OFF
+    }else{//IF RIMS OFF
+
         // make sure R. PUMP is OFF
         getRecirculator()->setState(false);
         // turn OFF therm
         getTube()->setState(false);
     }
-
+        
+    getSafetySensor()->work();
     getRecirculator()->work();
     getTube()->work();
     return micros() - start;

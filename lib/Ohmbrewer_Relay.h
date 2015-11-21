@@ -86,6 +86,13 @@ namespace Ohmbrewer {
             virtual ~Relay();
 
             /**
+             * @param relayPins - controlPin always first in <list>
+             *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
+             *  powerPin - The power pin - on/off line. Digital pin number X.
+             */
+            void initRelay(std::list<int>* relayPins);
+
+            /**
              * The power pin - on/off line
              * hardware destinations (hardware switches - DPDT, main power)
              * @returns The pin number in use for this piece of Equipment
