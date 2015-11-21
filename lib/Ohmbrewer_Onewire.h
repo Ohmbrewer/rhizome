@@ -18,7 +18,7 @@ namespace Ohmbrewer {
          */
         Onewire();
 
-        Onewire(uint8_t (&probeId)[8]);
+        Onewire(int probeIndex);
 
         /**
          * @returns the Celsius reading from the specified connected DS18b20 probe
@@ -33,16 +33,27 @@ namespace Ohmbrewer {
          */
         void displayProbeIds(Screen *screen);
 
-        /**
-         * sets the probe id for this instance
-         * @param probe id  Unique probe ID
-         */
-        void setProbeId(uint8_t (&probeId)[8]);
+//        /**
+//         * sets the probe id for this instance
+//         * @param probe id  Unique probe ID
+//         */
+//        void setProbeId(unsigned int probeId);
+//
+//        /**
+//         * @returns _probeID Unique probe ID
+//         */
+//        unsigned int getProbeId();
 
         /**
-         * @returns _probeID Unique probe ID
+         * sets the probe index in Sensors[] for this instance
+         * @param probe id  Unique index ID.
          */
-        uint8_t* getProbeId();
+        void setProbeIndex(int index);
+
+        /**
+         * @returns _probeIndex Unique (onewire) probe index ID
+         */
+        int getProbeIndex();
 
         /**
          * reads current probes connected to busPin
@@ -58,10 +69,16 @@ namespace Ohmbrewer {
 
     protected:
 
+//        /**TODO may still want this in the future.
+//         * Unique ID for the temperature probe [8] char array ID code
+//         */
+//        unsigned int _probeId;
+
         /**
-         * Unique ID for the temperature probe [8] char array ID code
+         * Unique index for the temperature probe in teh sensor array.
+         * must be less than numSensors attached
          */
-        uint8_t* _probeId;
+        int _probeIndex;
 
         /**
          * Digital pin that the data stream is on

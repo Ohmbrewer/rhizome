@@ -11,6 +11,11 @@ then flash to your Core/Photon using ```particle flash DEVICEID firmware.bin```
 
 Note that if you do this, you'll need to have CMake. If you're using CLion, CMake should be bundled within the IDE directory somewhere.
 
+#Adding Temperature Sensors (One Wire protocol)
+It is recommended that to add a probe, connect all probes you will be using and then run the displayProbeIds() function located in Ohmbrewer::Onewire.
+make note of which probes are located at which index location, you may also wish to record the probe ID (may be useful in future releases).
+NOTE: if you change the probes attached or the number of probes attached the index value MAY change. So any time the configuration is changed, double check by rerunning the above protocol.
+
 # REST API
 The Rhizome supports a number of RESTful operations to support management and operation of Equipment and Equipment Groupings attached to it. These operations are accessible via the [Particle CLI](https://github.com/spark/particle-cli) and curl as specified in the [Particle.function](https://docs.particle.io/reference/firmware/photon/#particle-function-) documentation. They're also provide the interface [Ohmbrewer](https://github.com/Ohmbrewer/ohmbrewer) uses to manage and control the Rhizome.
 
@@ -33,15 +38,18 @@ The available functions and their argument patterns are as follows. Please note 
       
         | Type               | Pins                                                    |
         |--------------------|---------------------------------------------------------|
-        | Temperature Sensor | Bus Pin                                                 |
+        | Temperature Sensor | Index†                                                  |
         | Relay              | Power Pin                                               |
         | Pump               | Power Pin                                               |
         | Heating Element    | Control Pin, Power Pin*                                 |
-        | Thermostat         | Sensor Bus Pin, Element Control Pin, Element Power Pin* |
-        | RIMS               | Sensor Bus Pin†, Thermostat Control Pin, Thermostat Power Pin*, Recirculation Pump Power Pin |
+        | Thermostat         | Sensor Index†, Element Control Pin, Element Power Pin*  |
+        | RIMS               | Therm Sensor Index†,Thermostat Control Pin, Thermostat Power Pin*,
+                                    Recirculation Pump Power Pin, Safety Sensor Index† |
+
       * In the event that a Heating Element only uses one pin, please provide -1 for the Power Pin. This applies to any Power Pin marked with a (*) above.
-      * Currently, we expect all Temperature Sensors to be OneWire probes. This is why you only specify one Sensor Bus Pin for RIMS (marked with †) - we use the same pin for all Temperature Sensors.
+      * † Currently, we expect all Temperature Sensors to be OneWire probes. we use the same pin for all Temperature Sensors.
       * Note that currently we do not provide a way to *actually* change the Bus Pin (we always assume it's D0). This may change in the future. Until then, we won't do anything with any of the provided Bus Pins.
+      * Note that all index locations are One Wire index locations on the onewire sensors list.
       * Also note that currently we do not support adding bare Relays. That may change in future releases, so the expect API is included above.
   * Expected result:
     * Success: Particle.function returns the ID number.
@@ -57,13 +65,14 @@ The available functions and their argument patterns are as follows. Please note 
   * Format: TYPE,ID,CURRENT_TASK,STOP_TIME{,OTHER}
     * TYPE: The Equipment type (see **add** above)
     * ID: The ID of the desired Equipment
-    * CURRENT_TASK: The Task ID for the current operation, typically from Ohmbrewer.
+    * CURRENT_TASK: The Task ID for the current operation, typically from Ohmbrewer. (string)
+    * STATE: state of the equipment.
     * STOP_TIME: Some time in the future at which to switch the Equipment to the OFF state. This should be provided as an Integer value representing the time in Unix time / Epoch time.
     * OTHER: Zero or more additional arguments. These arguments are generally optional.
       
         | Type       | Additional arguments                                               |
         |------------|--------------------------------------------------------------------|
-        | Thermostat | Sensor state, Element state                                        |
+        | Thermostat | target Temp, Sensor state, Element state                           |
         | RIMS       | Safety Sensor state, Pump state{, Thermostat arguments (as above)} |
       * All states should be either ```ON``` or ```OFF```
       * If you wish to skip a given argument but provide a later argument, you must provide ```--```. For example, to set the state of a Thermostat's Element to ON without changing it's Sensor's state, the argument string would be ```therm,1,someuuid,999999,--,ON```
