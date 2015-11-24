@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.3)
 project(rhizome)
 option(DEVICE_TYPE photon)
 set(SOURCE_FILES
+#firmware files
     ../firmware/rhizome.ino
+    #../firmware/rhizome_testing.ino
+#Ohmbrewer libraries
     ../lib/Ohmbrewer_Equipment.h
     ../lib/Ohmbrewer_Equipment.cpp
     ../lib/Ohmbrewer_Heating_Element.h
