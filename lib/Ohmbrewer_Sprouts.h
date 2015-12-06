@@ -153,10 +153,10 @@ namespace Ohmbrewer {
         /**
          * Parses a given string of characters into the pins for a Temperature Sensor
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
-         * @param busPin The bus pin
+         * @param index The onewire sensor index (-1 if unused / non onewire)
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int parseTemperatureSensorPins(char* params, int &busPin);
+        int parseOnewireSensorPins(char* params, int &index);
 
         /**
          * Adds a Temperature Sensor based on the next chunk of parsed data.
@@ -201,7 +201,7 @@ namespace Ohmbrewer {
         /**
          * Parses a given string of characters into the pins for a Thermostat
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
-         * @param thermPins The thermostat pins
+         * @param thermPins The thermostat pins [tempbus, OW probe index, controlpin, powerpin]
          * @return Error or success code, according to the requirements specified by addSprout
          */
         int parseThermostatPins(char* params, std::list<int> &thermPins);
@@ -219,9 +219,10 @@ namespace Ohmbrewer {
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @param thermPins The thermostat pins
          * @param pumpPin The pump pin
+         * @param safetyIndex The onewire index for the safety sensor
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int parseRIMSPins(char* params, std::list<int> &thmPins, int &pumpPin);
+        int parseRIMSPins(char* params, std::list<int> &thmPins, int &pumpPin, int &safetyIndex);
 
         /**
          * Adds a RIMS based on the next chunk of parsed data.

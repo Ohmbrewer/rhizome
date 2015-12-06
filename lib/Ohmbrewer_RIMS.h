@@ -39,34 +39,36 @@ namespace Ohmbrewer {
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param thermPins list with formatting of: [ temp busPin ; onewire index ;  heating controlPin ; heating powerPin ]
              * @param pumpPin - Single speed pump will only have PowerPin
-             * @param elementPins - controlPin always first in <list>
+             * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
              */
-            RIMS(int id, std::list<int>* thermPins, int pumpPin);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param thermPins list with formatting of: [ temp busPin ; onewire index ;  heating controlPin ; heating powerPin ]
              * @param pumpPin - Single speed pump will only have PowerPin
+             * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime, bool state, String currentTask);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex, int stopTime, bool state, String currentTask);
 
             /**
              * Constructor
              * @param id The Sprout ID to use for this piece of Equipment
-             * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+             * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
              * @param pumpPin - Single speed pump will only have PowerPin
+             * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              * @param targetTemp The new target temperature in Celsius
              */
-            RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime, bool state, String currentTask, const double targetTemp);
+            RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex, int stopTime, bool state, String currentTask, const double targetTemp);
 
             /**
              * Copy constructor
@@ -83,7 +85,7 @@ namespace Ohmbrewer {
             /**
              * Initializes the members of the RIMS class
              */
-            void initRIMS(int id, std::list<int>* thermPins, int pumpPin);
+            void initRIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex);
 
             /**
              * The Tube thermostat

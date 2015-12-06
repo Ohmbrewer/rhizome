@@ -9,12 +9,11 @@
  * @param id The Sprout ID to use for this piece of Equipment
  * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param pumpPin - Single speed pump will only have PowerPin
+ * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
  * @param elementPins - controlPin always first in <list>
- * TODO add UID?
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin ) : Ohmbrewer::Equipment(id) {
-    //TODO currently only one probe at a time working.
-    initRIMS(id, thermPins, pumpPin);
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex ) : Ohmbrewer::Equipment(id) {
+    initRIMS(id, thermPins, pumpPin, safetyIndex);
 //    registerUpdateFunction();
 }
 
@@ -23,13 +22,14 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin ) : Ohmbrew
  * @param id The Sprout ID to use for this piece of Equipment
  * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param pumpPin - Single speed pump will only have PowerPin
+ * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex, int stopTime,
                       bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    initRIMS(id, thermPins, pumpPin);
+    initRIMS(id, thermPins, pumpPin, safetyIndex);
 //    registerUpdateFunction();
 }
 
@@ -38,14 +38,15 @@ Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTi
  * @param id The Sprout ID to use for this piece of Equipment
  * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
  * @param pumpPin - Single speed pump will only have PowerPin
+ * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int stopTime,
+Ohmbrewer::RIMS::RIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex, int stopTime,
                       bool state, String currentTask, const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    initRIMS(id, thermPins, pumpPin);
+    initRIMS(id, thermPins, pumpPin, safetyIndex);
     getTube()->setTargetTemp(targetTemp);
 //    registerUpdateFunction();
 }
@@ -75,17 +76,20 @@ Ohmbrewer::RIMS::~RIMS() {
 /**
  * Initializes the members of the RIMS class
  * @param id The Sprout ID to use for this piece of Equipment
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * @param pumpPin - Single speed pump will only have PowerPin
+ * @param safetyIndex - onewire index of the probe attached for safetySensor (RIMS tube)
  */
-void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin){
+void Ohmbrewer::RIMS::initRIMS(int id, std::list<int>* thermPins, int pumpPin, int safetyIndex){
     int size = thermPins->size();
-    if ( (size == 2) || (size == 3) ){
-        _safetySensor = new TemperatureSensor(id+2, new Onewire());  //TODO need UIDS
+    if ( (size == 4) ){
+
+        //busPin unused for now
+        _safetySensor = new TemperatureSensor(id+2, new Onewire(safetyIndex));
         _tube = new Thermostat(id+3, thermPins);
         //init therm timer?
         //set therm timer?
-    }else{
+    }else{//incorrect number of pins supplied
         //publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
         Ohmbrewer::Publisher* pub = new Ohmbrewer::Publisher(new String("error_log"), &pMap);

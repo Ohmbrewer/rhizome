@@ -7,8 +7,8 @@
 /**
  * Constructor - creating a Thermostat will use up 3 equipment IDs
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
- * TODO add UID?
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
+ * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
     initThermostat(id, thermPins);
@@ -19,7 +19,8 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
+ * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param targetTemp The new target temperature in Celsius
  */
 Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
@@ -32,7 +33,8 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const doubl
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
+ * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
@@ -47,7 +49,8 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTim
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
+ * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
@@ -86,17 +89,21 @@ Ohmbrewer::Thermostat::~Thermostat() {
 /**
  * logic for initializing equipment and PID in the constructors
  * @param id The Sprout ID to use for this piece of Thermostat
- * @param thermPins list with formatting of: [ temp busPin ;  heating controlPin ; heating powerPin ]
+ * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
+ * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  */
 void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
 
     // Initialize equipment components
     int size = thermPins->size();
-    if ( (size == 2) || (size == 3) ){
-        _tempSensor = new TemperatureSensor(id+1, new Onewire());
+    if ( (size == 4) ) {
+
+        thermPins->pop_front();//remove busPIN - unused for now.
+        int index = thermPins->front();
+        _tempSensor = new TemperatureSensor(id + 1, new Onewire(index));
         thermPins->pop_front();
         _heatingElm = new HeatingElement(id+3, thermPins);
-    } else {
+    } else {//not correct number on PINS
         // Publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
         Ohmbrewer::Publisher pub(new String("error_log"), &pMap);

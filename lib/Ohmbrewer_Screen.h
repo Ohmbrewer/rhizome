@@ -13,7 +13,8 @@ namespace Ohmbrewer {
 
     class Equipment;
 
-    // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
+    // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities
+    // (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
     class Screen : public Adafruit_ILI9341 {
 
         public:
@@ -34,6 +35,11 @@ namespace Ohmbrewer {
             static const uint16_t WHITE = ILI9341_WHITE;
             static const uint16_t YELLOW = ILI9341_YELLOW;
             static const uint16_t CYAN = ILI9341_CYAN;
+
+            /**
+             * CONSTRUCTOR
+             */
+            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts);
 
             /**
              * Resets the foreground and background text colors to the defaults above.
@@ -142,7 +148,6 @@ namespace Ohmbrewer {
              */
             unsigned long displayStatusUpdate(char *statusUpdate);
 
-            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts);
 
         private:
             /**

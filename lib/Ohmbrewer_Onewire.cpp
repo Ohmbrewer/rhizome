@@ -11,11 +11,12 @@
  */
 Ohmbrewer::Onewire::Onewire() : Ohmbrewer::Probe(){
 //    ow_setPin(D0);    //set globally
+    _probeIndex = -1; //highly unlikely to have this index... , testing for now.
 }
 
-Ohmbrewer::Onewire::Onewire(uint8_t (&probeId)[8]) : Ohmbrewer::Probe(){
+Ohmbrewer::Onewire::Onewire(int probeIndex) : Ohmbrewer::Probe(){
 //    ow_setPin(D0);
-    _probeId = probeId;
+    _probeIndex = probeIndex;
 }
 
 /**
@@ -29,7 +30,7 @@ double Ohmbrewer::Onewire::getReading(){
 
     uint8_t subzero, cel, celFracBits;        //local vars
 //    char msg[100];
-    double tempC;
+    double tempC = -69;
     //log("Starting measurement");
     //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
     DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
@@ -43,55 +44,66 @@ double Ohmbrewer::Onewire::getReading(){
      * This section is where we can filter for the desired probe UID and only report that one. for now we will simply
      * state that there is only one and use sensors[0] as the probe reading.
      */
-
-    if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
-        char sign = (subzero) ? '-' : '+';
-        int frac = celFracBits*DS18X20_FRACCONV;
-        tempC = (double)cel;
-        if (sign == '-'){
-            tempC = tempC * -1;
+    if (_probeIndex == -1) {
+        if (DS18X20_read_meas(&sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK) {
+            char sign = (subzero) ? '-' : '+';
+            int frac = celFracBits * DS18X20_FRACCONV;
+            tempC = (double) cel;
+            if (sign == '-') {
+                tempC = tempC * -1;
+            }
+            tempC = tempC + (.0001 * (double) frac);
+            //getTemp()->fromC(tempC);
         }
-        tempC = tempC + (.0001*(double)frac);
-        //getTemp()->fromC(tempC);
-    }else{tempC=-69;}
+    }else {//_probeIndex is set
+        //if _probeIndex < numSensors (good to go) else you stupid.
 
-    ///////////////Code below replaces above block when infrastructure is ready/////////////////
-/*
-    // filters for a desired probe.
-    for (uint8_t i=0; i<numSensors; i++){
-        //current probe ID
-        char probeId[8] = {
-				sensors[(i*OW_ROMCODE_SIZE)+0],
-				sensors[(i*OW_ROMCODE_SIZE)+1],
-				sensors[(i*OW_ROMCODE_SIZE)+2],
-				sensors[(i*OW_ROMCODE_SIZE)+3],
-				sensors[(i*OW_ROMCODE_SIZE)+4],
-				sensors[(i*OW_ROMCODE_SIZE)+5],
-				sensors[(i*OW_ROMCODE_SIZE)+6],
-				sensors[(i*OW_ROMCODE_SIZE)+7]};
+        //read sensors[_probeIndex * OW_ROMCODE_SIZE]
 
-        if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
-        {
-            // if current probe matches the probe we are looking for
-            if ( strcmp(_probeId, probeId) ){ //TODO does this work for a hex value?
-                if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
-                    char sign = (subzero) ? '-' : '+';
-                    int frac = celFracBits*DS18X20_FRACCONV;
-                    tempC = (double)cel;
-                    tempC = tempC + (.0001*(double)frac);
-                    //getTemp()->fromC(tempC);
-                }
-                else {
-                    if (i == numSensors - 1) {
-                        sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID?
-                        //log(msg);
-                        //TempC = -69;
+
+        if (_probeIndex < numSensors){
+            if (sensors[_probeIndex * OW_ROMCODE_SIZE + 0] == 0x10 ||
+                sensors[_probeIndex * OW_ROMCODE_SIZE + 0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
+            {
+        // filters for a desired probe.
+//        for (uint8_t i = 0; i < numSensors; i++) {
+//            //current probe ID
+//            char probeId[8] = {
+//                    sensors[(i * OW_ROMCODE_SIZE) + 0],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 1],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 2],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 3],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 4],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 5],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 6],
+//                    sensors[(i * OW_ROMCODE_SIZE) + 7]};
+
+//            if (sensors[i * OW_ROMCODE_SIZE + 0] == 0x10 ||
+//                sensors[i * OW_ROMCODE_SIZE + 0] == 0x28) //0x10=DS18S20, 0x28=DS18B20
+//            {
+                // if current probe matches the probe we are looking for
+
+//                if ( _probeId == (unsigned int)probeId ) {
+                    if (DS18X20_read_meas(&sensors[ _probeIndex * OW_ROMCODE_SIZE ], &subzero,
+                                          &cel, &celFracBits) == DS18X20_OK) {
+                        //char sign = (subzero) ? '-' : '+';
+                        int frac = celFracBits * DS18X20_FRACCONV;
+                        tempC = (double) cel;
+                        tempC = tempC + (.0001 * (double) frac);
+                        //getTemp()->fromC(tempC);
                     }
-                }
+//                    else {
+//                        if (i == numSensors - 1) {
+//                            //sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID?
+//                            //log(msg);
+//                            tempC = -69.69;//double error :)
+//                        }
+//                    }
+//                }
             }
         }
     }
-*/
+
 
 
     return tempC;
@@ -108,14 +120,17 @@ double Ohmbrewer::Onewire::getReading(){
  */
 void Ohmbrewer::Onewire::displayProbeIds(Ohmbrewer::Screen *screen){
     //header
+    screen->displayHeader();
+
     screen->resetTextSize();
     screen->resetTextColor();
+    screen->println("-------------------");
     // Print the section title
-    screen->print("PROBE ID# : TEMP");
+    screen->println("PROBE ID# : TEMP");
 //    screen->println("");
     screen->printMargin(2);
 
-
+    char msg[100];
     uint8_t sensors[80];
     uint8_t subzero, cel, celFracBits;        //local vars
     double tempC;
@@ -124,7 +139,7 @@ void Ohmbrewer::Onewire::displayProbeIds(Ohmbrewer::Screen *screen){
     //If your code has other tasks, you can store the timestamp instead and return when a second has passed.
     delay(1000);
     uint8_t numSensors = ow_search_sensors(10, sensors);
-    screen->displayHeader();
+
     for (uint8_t i=0; i<numSensors; i++){
         //current probe ID
         char probeId[8] = {
@@ -139,32 +154,48 @@ void Ohmbrewer::Onewire::displayProbeIds(Ohmbrewer::Screen *screen){
 
         if (sensors[i*OW_ROMCODE_SIZE+0] == 0x10 || sensors[i*OW_ROMCODE_SIZE+0] == 0x28){ //0x10=DS18S20, 0x28=DS18B20
            //for each probe print probe and temp to screen
-            if ( DS18X20_read_meas( &sensors[0], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
-                //char sign = (subzero) ? '-' : '+';
+            if ( DS18X20_read_meas( &sensors[i*OW_ROMCODE_SIZE], &subzero, &cel, &celFracBits) == DS18X20_OK ) {
+                char sign = (subzero) ? '-' : '+';
                 int frac = celFracBits*DS18X20_FRACCONV;
                 tempC = (double)cel;
                 tempC = tempC + (.0001*(double)frac);
 
-                //print the ID and temp TODO fix me! hex value?
-                screen->print(probeId);
-//                screen->print(probeId[0]);
-//                screen->print(probeId[1]);
-//                screen->print(probeId[2]);
-//                screen->print(probeId[3]);
-//                screen->print(probeId[4]);
-//                screen->print(probeId[5]);
-//                screen->print(probeId[6]);
-//                screen->print(probeId[7]);
-                screen->print(":");
-                screen->println(tempC);
+                //print the ID and temp
+
+                sprintf(msg, "ID:  %02X%02X%02X%02X%02X%02X%02X%02X   "
+                                "Temperature:   %c%d.%04d",
+                        sensors[(i*OW_ROMCODE_SIZE)+0],
+                        sensors[(i*OW_ROMCODE_SIZE)+1],
+                        sensors[(i*OW_ROMCODE_SIZE)+2],
+                        sensors[(i*OW_ROMCODE_SIZE)+3],
+                        sensors[(i*OW_ROMCODE_SIZE)+4],
+                        sensors[(i*OW_ROMCODE_SIZE)+5],
+                        sensors[(i*OW_ROMCODE_SIZE)+6],
+                        sensors[(i*OW_ROMCODE_SIZE)+7],
+                        sign,
+                        cel,
+                        frac
+                );
+                screen->println(msg);
+//                screen->print((unsigned int)probeId);
+//                screen->print((char)(probeId[0]));
+//                screen->print((char)probeId[1]);
+//                screen->print((char)probeId[2]);
+//                screen->print((char)probeId[3]);
+//                screen->print((char)probeId[4]);
+//                screen->print((char)probeId[5]);
+//                screen->print((char)probeId[6]);
+//                screen->print((char)probeId[7]);
+//                screen->print(" : ");
+//                screen->println(tempC);
 
             }
-            else {
+            else {//not sure this block is actually needed
                 if (i == numSensors - 1) {
                     //error
                     tempC = -69;
                     screen->print(probeId);
-                    screen->print(":");
+                    screen->print(" : ");
                     screen->println(tempC);
                 }
             }
@@ -172,19 +203,34 @@ void Ohmbrewer::Onewire::displayProbeIds(Ohmbrewer::Screen *screen){
     }
 }
 
+///**
+// * sets the probe id for this instance
+// * @param probe id  Unique probe ID
+// */
+//void Ohmbrewer::Onewire::setProbeId(unsigned int probeId){
+//    _probeId = probeId;
+//}
+//
+///**
+// * @returns _probeID Unique probe ID
+// */
+//unsigned int Ohmbrewer::Onewire::getProbeId(){
+//    return _probeId;
+//}
+
 /**
- * sets the probe id for this instance
- * @param probe id  Unique probe ID
+ * sets the probe index in Sensors[] for this instance
+ * @param probe id  Unique index ID.
  */
-void Ohmbrewer::Onewire::setProbeId(uint8_t (&probeId)[8]){
-    _probeId = probeId;
+void Ohmbrewer::Onewire::setProbeIndex(int index){
+    _probeIndex = index;
 }
 
 /**
- * @returns _probeID Unique probe ID
+ * @returns _probeIndex Unique (onewire) probe index ID
  */
-uint8_t* Ohmbrewer::Onewire::getProbeId(){
-    return _probeId;
+int Ohmbrewer::Onewire::getProbeIndex(){
+    return _probeIndex;
 }
 
 /**

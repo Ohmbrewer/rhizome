@@ -9,6 +9,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 
+
 /**
  * Constructor
  * @param sprouts A pointer to a pre-constructed deque object. Sprouts takes over responsibility of memory management for it.
@@ -314,16 +315,16 @@ bool Ohmbrewer::Sprouts::arePinsInUse(std::list<int>* newPins) {
 /**
  * Parses a given string of characters into the pins for a Temperature Sensor
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
- * @param busPin The bus pin
+ * @param index The onewire sensor index (-1 if unused / non onewire)
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseTemperatureSensorPins(char* params, int &busPin) {
-    String pin = String(strtok(NULL, ","));
+int Ohmbrewer::Sprouts::parseOnewireSensorPins(char *params, int &index) {
+    String ind = String(strtok(NULL, ","));
 
-    if(pin == NULL) {
+    if(ind == NULL) {
         return -4;
     }
-    busPin = pin.toInt();
+    index = ind.toInt();
 
     return 0;
 }
@@ -335,13 +336,11 @@ int Ohmbrewer::Sprouts::parseTemperatureSensorPins(char* params, int &busPin) {
   * @return Error or success code, according to the requirements specified by addSprout
   */
 int Ohmbrewer::Sprouts::addTemperatureSensor(int id, char* params) {
-    int busPin;
-    int errorCode = parseTemperatureSensorPins(params, busPin);
+    int index;
+    int errorCode = parseOnewireSensorPins(params, index);
 
     if(errorCode == 0) {
-        // TODO: Implement a way to pass the OneWire address in.
-        // For now, we'll ignore the bus pin value (simply take it in since it's expected)
-        _sprouts->push_back(new Ohmbrewer::TemperatureSensor( id, new Ohmbrewer::Onewire() ));
+        _sprouts->push_back(new Ohmbrewer::TemperatureSensor( id, new Ohmbrewer::Onewire(index) ));
     }
 
     return errorCode;
@@ -407,11 +406,11 @@ int Ohmbrewer::Sprouts::parseHeatingElementPins(char* params, std::list<int> &el
         return -1;
     }
 
-    // Verify that the pins are not in use
     elementPins.push_back(controlPin.toInt());
     if(powerPin != NULL && powerPin.toInt() > -1) {
         elementPins.push_back(powerPin.toInt());
     }
+    // Verify that the pins are not in use
     if(arePinsInUse(&elementPins)) {
         return -3;
     }
@@ -439,14 +438,14 @@ int Ohmbrewer::Sprouts::addHeatingElement(int id, char* params) {
 /**
  * Parses a given string of characters into the pins for a Thermostat
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
- * @param thermPins The thermostat pins
+ * @param thermPins The thermostat pins [tempbus, OW probe index, controlpin, powerpin]
  * @return Error or success code, according to the requirements specified by addSprout
  */
 int Ohmbrewer::Sprouts::parseThermostatPins(char* params, std::list<int> &thermPins) {
-    int sensorBus = -1;
+    int index = -1;
     int errorCode = 0;
 
-    errorCode = parseTemperatureSensorPins(params, sensorBus);
+    errorCode = parseOnewireSensorPins(params, index);
     if(errorCode != 0) {
         return errorCode;
     }
@@ -456,7 +455,8 @@ int Ohmbrewer::Sprouts::parseThermostatPins(char* params, std::list<int> &thermP
         return errorCode;
     }
 
-    thermPins.push_front(sensorBus);
+    thermPins.push_front(index);
+    thermPins.push_front(0);//Bus Pin
     return 0;
 }
 
@@ -482,9 +482,10 @@ int Ohmbrewer::Sprouts::addThermostat(int id, char* params) {
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @param thermPins The thermostat pins
  * @param pumpPin The pump pin
+ * @param safetyIndex The onewire index for the safety sensor
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, int &pumpPin) {
+int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, int &pumpPin, int &safetyIndex) {
     int errorCode = 0;
 
     errorCode = parseThermostatPins(params, thermPins);
@@ -493,6 +494,15 @@ int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, i
     }
 
     errorCode = parsePumpPins(params, pumpPin);
+    if(errorCode != 0) {
+        return errorCode;
+    }
+
+    errorCode = parseOnewireSensorPins(params, safetyIndex);
+    if(errorCode != 0) {
+        return errorCode;
+    }
+
     return errorCode;
 }
 
@@ -504,11 +514,12 @@ int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, i
  */
 int Ohmbrewer::Sprouts::addRIMS(int id, char* params) {
     int pumpPin;
+    int safetyIndex;
     std::list<int> thermPins;
-    int errorCode = parseRIMSPins(params, thermPins, pumpPin);
+    int errorCode = parseRIMSPins(params, thermPins, pumpPin, safetyIndex);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::RIMS( id, &thermPins, pumpPin ));
+        _sprouts->push_back(new Ohmbrewer::RIMS( id, &thermPins, pumpPin, safetyIndex ));
     }
 
     return errorCode;

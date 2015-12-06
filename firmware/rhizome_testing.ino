@@ -70,6 +70,7 @@ unsigned long lastUpdate = millis();
 void setup() {
 //    Serial.begin(9600); // Enable serial for debugging messages
     String fakeTask = "fake";
+//    thermPins.push_back(0); //onewire index
 //    thermPins.push_back(2); //control pin (relay pin)
 //    thermPins.push_back(3); //power pin (switch pin)
 //    thermPins2.push_back(4); //control pin (relay pin)
