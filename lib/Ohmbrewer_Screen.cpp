@@ -7,6 +7,7 @@
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_RIMS.h"
 
+
 /**
  * Constructor
  */
@@ -15,6 +16,14 @@ Ohmbrewer::Screen::Screen(uint8_t CS,
                           uint8_t RST,
                           std::deque< Ohmbrewer::Equipment* >* sprouts) : Adafruit_ILI9341(CS, RS, RST) {
     _sprouts = sprouts;
+    /** 
+    *  For better pressure precision, we need to know the resistance
+    *  between X+ and X- Use any multimeter to read it
+    *  Using value of 285 ohms across the X plate
+    */  
+    ts = new TouchScreen(XP, YP, XM, YM, 285);
+    menu = new Ohmbrewer::Menu_WiFi(this);
+    wiFiMenuUp = false;
 }
 
 /**
@@ -360,3 +369,87 @@ unsigned long Ohmbrewer::Screen::displayStatusUpdate(char *statusUpdate) {
 
     return micros() - start;
 }
+
+/**
+ * Checks for a touch event and triggers actions 
+ *  if the the touch was on a screen "button".
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::captureButtonPress() {
+    unsigned long start = micros();
+    char printx [10];
+    char printy [10];
+    char status [40];
+    
+    // a point object holds x y and z coordinates
+    TSPoint p = ts->getPoint();
+    //According to Particle forums, the read below is necessary to get touch to work on Photon
+    ts->readTouchY();
+
+  
+    // we have some minimum pressure we consider 'valid'
+    // pressure of 0 means no pressing!
+    if (p.z < MINPRESSURE || p.z > MAXPRESSURE) {
+        displayStatusUpdate("                                        ");
+        return micros() - start;
+    }
+    
+    // Get out of here if no one is touching
+    if (p.z < 0) {
+        displayStatusUpdate("                                        ");
+        return micros() - start;
+    }
+    
+    // Scale from ~0->1000 to tft.width using the calibration #'s
+    p.x = map(p.x, TS_MINX, TS_MAXX, 0, width()) - 35; // This -35 is a dirty hack. We need to fix the scaling to get this working without it.
+    p.y = map(p.y, TS_MINY, TS_MAXY, 0, height());
+    
+    // Each of these should pad out with spaces on the right
+    sprintf(printx, "x is %-5d", p.x);
+    sprintf(printy, "y is %-5d", p.y);
+    
+    String statusUpdate = String(printx);
+    statusUpdate.concat(printy);
+    
+    if (p.y >= BUTTONTOP) {
+
+        if (p.x > 0 && p.x <= BUTTONSIZE) {
+            // +                 12345678901234567890
+            menu->plusPressed();
+            statusUpdate.concat("Pressing +!         ");
+        } else if (p.x > BUTTONSIZE && p.x <= BUTTONSIZE*2) {
+            // -
+            menu->minusPressed();
+            statusUpdate.concat("Pressing -!         ");
+        } else if (p.x > BUTTONSIZE*2 && p.x <= BUTTONSIZE*3) {
+        
+            // Menu
+            if(!wiFiMenuUp) {
+                wiFiMenuUp = true;
+                menu->displayMenu();      
+            } else {
+                wiFiMenuUp = false;
+                reinitScreen();
+            }
+            statusUpdate.concat("Pressing Menu!      ");
+        } else if (p.x > BUTTONSIZE*3 && p.x <= BUTTONSIZE*4) {
+            // Select
+            menu->selectPressed();
+            statusUpdate.concat("Pressing Select!    ");
+        } else {
+            // Nothing. Weird.
+            statusUpdate.concat("                    ");
+        }
+        
+        // Barf it onto the display...
+        statusUpdate.toCharArray(status, 40);
+        displayStatusUpdate(status);
+    }
+    
+    //Serial.print("X = "); Serial.print(p.x);
+    //Serial.print("\tY = "); Serial.print(p.y);
+    //Serial.print("\tPressure = "); Serial.println(p.z);
+    
+    return micros() - start;
+}
+

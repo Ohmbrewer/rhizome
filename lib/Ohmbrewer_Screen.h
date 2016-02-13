@@ -5,9 +5,18 @@
 #undef min
 #undef max
 #undef swap
+
+//Below definitions are for the touch screen
+#define XP A1
+#define YP A0
+#define XM A7
+#define YM A2
+
 #include <deque>
 #include "Adafruit_ILI9341.h"
 #include "application.h"
+#include "Touch_4Wire.h"
+#include "Ohmbrewer_Menu_WiFi.h"
 
 namespace Ohmbrewer {
 
@@ -35,6 +44,15 @@ namespace Ohmbrewer {
             static const uint16_t WHITE = ILI9341_WHITE;
             static const uint16_t YELLOW = ILI9341_YELLOW;
             static const uint16_t CYAN = ILI9341_CYAN;
+
+
+            // This is calibration data for the raw touch data to the screen coordinates
+            static const int      TS_MINX = 500;
+            static const int      TS_MINY = 300;
+            static const int      TS_MAXX = 3650;
+            static const int      TS_MAXY = 3650;
+            static const int      MINPRESSURE = 50;
+            static const int      MAXPRESSURE = 4000;
 
             /**
              * CONSTRUCTOR
@@ -147,6 +165,19 @@ namespace Ohmbrewer {
              * @returns Time it took to run the function
              */
             unsigned long displayStatusUpdate(char *statusUpdate);
+            
+            /**
+             * Checks for a touch event and triggers actions 
+             *  if the the touch was on a screen "button".
+             * @returns Time it took to run the function
+             */
+            unsigned long captureButtonPress();
+            
+            /**
+             * Accessor for WiFi Setting from WiFi Menu
+             * @returns Boolean representing whether WiFi should be connected or not
+             */
+            bool getWiFiSetting();
 
 
         private:
@@ -154,6 +185,22 @@ namespace Ohmbrewer {
              * Pointer to the global Sprouts list
              */
             std::deque< Ohmbrewer::Equipment* >* _sprouts;
+            
+            /** 
+            *  The touchscreen object used to check for taps
+            *    on the screen
+                        */
+            TouchScreen * ts;
+            
+            /**
+             * Pointer to the menu structure
+             */            
+            Ohmbrewer::Menu * menu;
+            
+            //variable to keep track of whether the WiFi Menu is open or not
+            //TODO: replace with data structure to keep track of menu location
+            bool wiFiMenuUp;
+
     };
 
 }

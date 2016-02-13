@@ -10,6 +10,10 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Equipment.cpp
     ../lib/Ohmbrewer_Heating_Element.h
     ../lib/Ohmbrewer_Heating_Element.cpp
+    ../lib/Ohmbrewer_Menu.h
+    ../lib/Ohmbrewer_Menu.cpp
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.h    
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.cpp
     ../lib/Ohmbrewer_Onewire.cpp
     ../lib/Ohmbrewer_Onewire.h
     ../lib/Ohmbrewer_PID_Profile.h
@@ -48,6 +52,8 @@ set(SOURCE_FILES
     ../../particle-ds18x20/firmware/onewire.h
     ../../Spark-PID/firmware/pid.cpp
     ../../Spark-PID/firmware/pid.h
+    ../../Touch_4Wire/firmware/Touch_4Wire.cpp
+    ../../Touch_4Wire/firmware/Touch_4Wire.h
 )
 
 if(DEVICE_TYPE)
