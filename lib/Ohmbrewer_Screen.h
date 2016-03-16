@@ -16,11 +16,13 @@
 #include "Adafruit_ILI9341.h"
 #include "application.h"
 #include "Touch_4Wire.h"
-#include "Ohmbrewer_Menu_WiFi.h"
+#include "Ohmbrewer_Runtime_Settings.h"
+#include "Ohmbrewer_Menu.h"
 
 namespace Ohmbrewer {
 
     class Equipment;
+    class Menu;
 
     // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities
     // (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
@@ -51,13 +53,13 @@ namespace Ohmbrewer {
             static const int      TS_MINY = 300;
             static const int      TS_MAXX = 3650;
             static const int      TS_MAXY = 3650;
-            static const int      MINPRESSURE = 50;
             static const int      MAXPRESSURE = 4000;
+            static const int      MINPRESSURE = 50;
 
             /**
              * CONSTRUCTOR
              */
-            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts);
+            Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts, Ohmbrewer::RuntimeSettings *settings);
 
             /**
              * Resets the foreground and background text colors to the defaults above.
@@ -172,34 +174,44 @@ namespace Ohmbrewer {
              * @returns Time it took to run the function
              */
             unsigned long captureButtonPress();
-            
-            /**
-             * Accessor for WiFi Setting from WiFi Menu
-             * @returns Boolean representing whether WiFi should be connected or not
-             */
-            bool getWiFiSetting();
 
+            /**
+             * Moves the Current Menu pointer
+             * @param nextMenu The menu to move to
+             */
+            void setCurrentMenu(Menu* nextMenu);
+
+            /**
+             * Moves the Current Menu pointer
+             * @param nextMenu The menu to move to
+             */
+            Menu* getCurrentMenu() const;
 
         private:
             /**
              * Pointer to the global Sprouts list
              */
-            std::deque< Ohmbrewer::Equipment* >* _sprouts;
+            std::deque< Equipment* >* _sprouts;
+
+            /**
+             * Pointer to the global Sprouts list
+             */
+            RuntimeSettings* _settings;
             
             /** 
-            *  The touchscreen object used to check for taps
-            *    on the screen
-                        */
-            TouchScreen * ts;
+             *  The touchscreen object used to check for taps on the screen
+             */
+            TouchScreen* _ts;
             
             /**
-             * Pointer to the menu structure
+             * Pointer to the current menu
              */            
-            Ohmbrewer::Menu * menu;
-            
-            //variable to keep track of whether the WiFi Menu is open or not
-            //TODO: replace with data structure to keep track of menu location
-            bool wiFiMenuUp;
+            Menu* _currentMenu;
+
+            /**
+             * Pointer to the home menu, for quickly jumping to home
+             */
+            Menu* _homeMenu;
 
     };
 

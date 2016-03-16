@@ -18,6 +18,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 #include "Ohmbrewer_Sprouts.h"
+#include "Ohmbrewer_Runtime_Settings.h"
 //external libraries
 #include "onewire.h"
 
@@ -36,8 +37,11 @@
 // to a single piece of Equipment.
 std::deque< Ohmbrewer::Equipment* > sprouts;
 
+// Various settings used during the run
+Ohmbrewer::RuntimeSettings settings = Ohmbrewer::RuntimeSettings();
+
 // The touchscreen object. Handles the display for the Rhizome.
-Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
+Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts, &settings);
 
 // A timer for doing things every 15 seconds. Used by the sproutList below.
 Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
@@ -64,9 +68,9 @@ void setup() {
 	screen.initScreen();
 	
 	//Turn on for debugging
-	//Serial.begin(9600);
+	Serial.begin(9600);
 	
-	delay(1000);
+//	delay(1000);
 }
 
 /**
@@ -90,13 +94,13 @@ void loop() {
  */
 void doPeriodicUpdates() {
 	//Do not attempt to publish updates if disconnected from the cloud
-		if(!Particle.connected()){
-				//TODO: Define WiFi Address location properly
-				if(EEPROM.read(1) == 0x01){
-				//WiFi is not connected and should be - attempt to connect
-				Particle.connect();
-		}
+    if(!Particle.connected()){
+        // TODO: Define WiFi Address location properly
+        if(EEPROM.read(1) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_OFF){
+            //WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
 	} else {
-		sproutList.publishPeriodicUpdates();
-	}
+        sproutList.publishPeriodicUpdates();
+    }
 }
