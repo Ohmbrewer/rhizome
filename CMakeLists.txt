@@ -12,6 +12,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Heating_Element.cpp
     ../lib/Ohmbrewer_Menu.h
     ../lib/Ohmbrewer_Menu.cpp
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Home.h
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Home.cpp
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.h    
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.cpp
     ../lib/Ohmbrewer_Onewire.cpp
@@ -29,6 +31,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_RIMS.cpp
     ../lib/Ohmbrewer_Screen.h
     ../lib/Ohmbrewer_Screen.cpp
+    ../lib/Ohmbrewer_Runtime_Settings.h
+    ../lib/Ohmbrewer_Runtime_Settings.cpp
     ../lib/Ohmbrewer_Sprouts.h
     ../lib/Ohmbrewer_Sprouts.cpp
     ../lib/Ohmbrewer_Temperature.h
