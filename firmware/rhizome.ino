@@ -18,6 +18,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 #include "Ohmbrewer_Sprouts.h"
+#include "Ohmbrewer_Runtime_Settings.h"
 //external libraries
 #include "onewire.h"
 
@@ -29,15 +30,18 @@
 #include <list>
 
 /* ========================================================================= */
-/*  Global Vars                                                              */
+/*	Global Vars																 */
 /* ========================================================================= */
 
 // Each Sprout is a logical collection of physical pins/relays that are connected
 // to a single piece of Equipment.
 std::deque< Ohmbrewer::Equipment* > sprouts;
 
+// Various settings used during the run
+Ohmbrewer::RuntimeSettings settings = Ohmbrewer::RuntimeSettings();
+
 // The touchscreen object. Handles the display for the Rhizome.
-Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
+Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts, &settings);
 
 // A timer for doing things every 15 seconds. Used by the sproutList below.
 Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
@@ -48,37 +52,55 @@ Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen, &periodicU
 unsigned long lastUpdate = millis();
 
 /* ========================================================================= */
-/*  Main Functions   (setup, loop)                                           */
+/*	Main Functions	 (setup, loop)											 */
 /* ========================================================================= */
 /**
  * Does any preliminary setup and initializations before the Rhizome starts the operation loop.
  */
+// Setting the photon to semi automatic mode, which means it 
+// does not connect to WiFi until Particle.connect() is called.
+SYSTEM_MODE(SEMI_AUTOMATIC);
 void setup() {
-    //initialize the Dallas Onewire bus pin - Digital 0
-    ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
+	//initialize the Dallas Onewire bus pin - Digital 0
+	ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
 
-    // Turn on the display
-    screen.initScreen();
+	// Turn on the display
+	screen.initScreen();
+	
+	//Turn on for debugging
+	Serial.begin(9600);
+	
+//	delay(1000);
 }
 
 /**
  * The bulk of the program. Runs repeatedly until the Rhizome is powered off.
  */
 void loop() {
-    //call work on all installed equipment in the sprouts list
-    sproutList.work();
 
-    //refresh the display
-    screen.refreshDisplay();
+	//call work on all installed equipment in the sprouts list
+	sproutList.work();
+	//check for button press and refresh the screen
+	screen.captureButtonPress();
+	screen.refreshDisplay();
 }
 
 /* ========================================================================= */
-/*  Other Global Functions                                                   */
+/*	Other Global Functions													 */
 /* ========================================================================= */
 
 /**
  * Delegation function that allows us to call the managed method for publishing periodic updates.
  */
 void doPeriodicUpdates() {
-    sproutList.publishPeriodicUpdates();
+	//Do not attempt to publish updates if disconnected from the cloud
+    if(!Particle.connected()){
+        // TODO: Define WiFi Address location properly
+        if(EEPROM.read(1) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_OFF){
+            //WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
+	} else {
+        sproutList.publishPeriodicUpdates();
+    }
 }

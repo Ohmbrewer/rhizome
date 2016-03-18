@@ -6,6 +6,10 @@
 #include "Ohmbrewer_Relay.h"
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_RIMS.h"
+#include "Ohmbrewer_Runtime_Settings.h"
+#include "Ohmbrewer_Menu_WiFi.h"
+#include "Ohmbrewer_Menu_Home.h"
+
 
 /**
  * Constructor
@@ -13,8 +17,24 @@
 Ohmbrewer::Screen::Screen(uint8_t CS,
                           uint8_t RS,
                           uint8_t RST,
-                          std::deque< Ohmbrewer::Equipment* >* sprouts) : Adafruit_ILI9341(CS, RS, RST) {
+                          std::deque< Ohmbrewer::Equipment* >* sprouts,
+                          Ohmbrewer::RuntimeSettings *settings) : Adafruit_ILI9341(CS, RS, RST) {
     _sprouts = sprouts;
+    _settings= settings;
+
+    /*
+     *  For better pressure precision, we need to know the resistance
+     *  between X+ and X- Use any multimeter to read it
+     *  Using value of 285 ohms across the X plate
+     */
+    _ts = new TouchScreen(XP, YP, XM, YM, 285);
+
+    // Build the menu tree
+    _homeMenu = new MenuHome(this, settings);
+    _homeMenu->addChild(new MenuWiFi(this, settings));
+
+    // Set the current menu to be the home menu
+    _currentMenu = _homeMenu;
 }
 
 /**
@@ -108,37 +128,44 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    displayRIMS();
-    displayThermostats();
-
-    // We want to show a different border for the Manual Relays section if there were any Thermostats or RIMS
-    int thermostats = 0;
-    int rims = 0;
-    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
-            thermostats++;
-        }
-        if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
-            rims++;
-        }
-    }
-
-    if((thermostats + rims) > 2) {
-        // Don't print the header line
-    } else if((thermostats + rims) > 0) {
-        // We've got 1-2 Thermostats or RIMS, so print a thin line
-        print("--------------------");
+    if(!_currentMenu->isHome()) {
+        _currentMenu->displayMenu();
     } else {
-        // There aren't any Thermostats or RIMS, so print a fat line
-        print("====================");
-    }
+        // TODO: Shift this stuff into MenuHome#displayMenu()
 
-    displayManualRelays();
-//    // These are the old, single type displays, for easy debugging.
-//    displayTemps();
-//    displayRelays();
-//    displayHeatingElements();
-//    displayPumps();
+        displayRIMS();
+        displayThermostats();
+
+        // We want to show a different border for the Manual Relays section if there were any Thermostats or RIMS
+        int thermostats = 0;
+        int rims = 0;
+        for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+            if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
+                thermostats++;
+            }
+            if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
+                rims++;
+            }
+        }
+
+        if((thermostats + rims) > 2) {
+            // Don't print the header line
+        } else if((thermostats + rims) > 0) {
+            // We've got 1-2 Thermostats or RIMS, so print a thin line
+            print("--------------------");
+        } else {
+            // There aren't any Thermostats or RIMS, so print a fat line
+            print("====================");
+        }
+
+        displayManualRelays();
+    //    // These are the old, single type displays, for easy debugging.
+    //    displayTemps();
+    //    displayRelays();
+    //    displayHeatingElements();
+    //    displayPumps();
+
+    }
 
     // 500 seems like a good refresh delay
     delay(500);
@@ -359,4 +386,97 @@ unsigned long Ohmbrewer::Screen::displayStatusUpdate(char *statusUpdate) {
     println(statusUpdate);
 
     return micros() - start;
+}
+
+/**
+ * Checks for a touch event and triggers actions 
+ *  if the the touch was on a screen "button".
+ * @returns Time it took to run the function
+ */
+unsigned long Ohmbrewer::Screen::captureButtonPress() {
+    unsigned long start = micros();
+    char printx [10];
+    char printy [10];
+    char status [40];
+    
+    // a point object holds x y and z coordinates
+    TSPoint p =_ts->getPoint();
+    //According to Particle forums, the read below is necessary to get touch to work on Photon
+    _ts->readTouchY();
+
+  
+    // we have some minimum pressure we consider 'valid'
+    // pressure of 0 means no pressing!
+    if (p.z > MINPRESSURE || p.z < MAXPRESSURE) {
+        displayStatusUpdate("                                        ");
+        return micros() - start;
+    }
+
+    // Scale from ~0->1000 to tft.width using the calibration #'s
+    p.x = map(p.x, TS_MINX, TS_MAXX, 0, width()); // This -35 is a dirty hack. We need to fix the scaling to get this working without it.
+    p.y = map(p.y, TS_MINY, TS_MAXY, 0, height());
+    
+    // Each of these should pad out with spaces on the right
+    sprintf(printx, "x is %-5d", p.x);
+    sprintf(printy, "y is %-5d", p.y);
+    
+    String statusUpdate = String(printx);
+    statusUpdate.concat(printy);
+    
+    if (p.y >= BUTTONTOP) {
+
+        if (p.x > 0 && p.x <= BUTTONSIZE) {
+            // +                 12345678901234567890
+            _currentMenu->plusPressed();
+            statusUpdate.concat("Pressing +!         ");
+//            Serial.println("Pressing +!    ");
+        } else if (p.x > BUTTONSIZE && p.x <= BUTTONSIZE*2) {
+            // -
+            _currentMenu->minusPressed();
+            statusUpdate.concat("Pressing -!         ");
+//            Serial.println("Pressing -!    ");
+        } else if (p.x > BUTTONSIZE*2 && p.x <= BUTTONSIZE*3) {
+            // Menu
+            _currentMenu->menuPressed();
+            statusUpdate.concat("Pressing Menu!      ");
+//            Serial.println("Pressing Menu!    ");
+        } else if (p.x > BUTTONSIZE*3 && p.x <= BUTTONSIZE*4) {
+            // Select
+            _currentMenu->selectPressed();
+            statusUpdate.concat("Pressing Select!    ");
+//            Serial.println("Pressing Select!    ");
+        } else {
+            // Nothing. Weird.
+            statusUpdate.concat("                    ");
+//            Serial.println("Pressing Nothing!    ");
+        }
+        
+        // Barf it onto the display...
+        statusUpdate.toCharArray(status, 40);
+        displayStatusUpdate(status);
+    }
+    
+//    Serial.print("X = "); Serial.print(p.x);
+//    Serial.print("\tY = "); Serial.print(p.y);
+//    Serial.print("\tPressure = "); Serial.println(p.z);
+
+    // Delay 1 second to allow for some debounce
+    delay(1000);
+    return micros() - start;
+}
+
+/**
+ * Moves the Current Menu pointer
+ * @param nextMenu The menu to move to
+ */
+void Ohmbrewer::Screen::setCurrentMenu(Ohmbrewer::Menu* nextMenu) {
+    _currentMenu = nextMenu;
+}
+
+/**
+ * Returns the Current Menu pointer
+ * @returns The current menu
+ */
+Ohmbrewer::Menu* Ohmbrewer::Screen::getCurrentMenu() const {
+    return _currentMenu;
 }

@@ -127,7 +127,7 @@ void Ohmbrewer::Equipment::getUpdateFunctionName(String* buffer) const {
 int Ohmbrewer::Equipment::registerUpdateFunction() {
     String updateFunction;
     getUpdateFunctionName(&updateFunction);
-    return Spark.function(updateFunction.c_str(), [this](const String& args) -> int { return this->update(args); } );
+    return Particle.function(updateFunction.c_str(), [this](const String& args) -> int { return this->update(args); } );
 }
 
 /**
