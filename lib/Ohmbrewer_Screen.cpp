@@ -407,13 +407,13 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
   
     // we have some minimum pressure we consider 'valid'
     // pressure of 0 means no pressing!
-    if (p.z > MINPRESSURE || p.z < MAXPRESSURE) {
+    if (p.z < MINPRESSURE || p.z > MAXPRESSURE) {
         displayStatusUpdate("                                        ");
         return micros() - start;
     }
 
     // Scale from ~0->1000 to tft.width using the calibration #'s
-    p.x = map(p.x, TS_MINX, TS_MAXX, 0, width()); // This -35 is a dirty hack. We need to fix the scaling to get this working without it.
+    p.x = map(p.x, TS_MINX, TS_MAXX, 0, width()-35); // This -35 is a dirty hack. We need to fix the scaling to get this working without it.
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, height());
     
     // Each of these should pad out with spaces on the right
@@ -456,9 +456,9 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
         displayStatusUpdate(status);
     }
     
-//    Serial.print("X = "); Serial.print(p.x);
-//    Serial.print("\tY = "); Serial.print(p.y);
-//    Serial.print("\tPressure = "); Serial.println(p.z);
+    Serial.print("X = "); Serial.print(p.x);
+    Serial.print("\tY = "); Serial.print(p.y);
+    Serial.print("\tPressure = "); Serial.println(p.z);
 
     // Delay 1 second to allow for some debounce
     delay(1000);
