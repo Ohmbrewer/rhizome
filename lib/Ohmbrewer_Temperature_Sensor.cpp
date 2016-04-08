@@ -6,26 +6,23 @@
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, Probe* probe) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(Probe* probe) {
     _probe = probe;                 //For now all probes are all onewire
     _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
-
 //    registerUpdateFunction();
 }
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param busPin The Digital Pin that the temp probes are attached to. NOTE: for ds18b20 should always be D0
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::TemperatureSensor::TemperatureSensor(int id,  Probe* probe, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+Ohmbrewer::TemperatureSensor::TemperatureSensor(Probe* probe, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
     _probe = probe;
     _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
@@ -49,6 +46,14 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(const TemperatureSensor& clonee)
 Ohmbrewer::TemperatureSensor::~TemperatureSensor() {
     delete _lastReading;
     delete _probe;
+}
+
+/**
+ * The Equipment ID
+ * @returns The Sprout ID to use for this piece of Equipment
+ */
+int Ohmbrewer::TemperatureSensor::getID() const {
+    return _probe->getID();
 }
 
 /**
@@ -166,7 +171,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     char relay_id[2];
     char tempStr [10];
 
-    sprintf(relay_id,"%d", _id);
+    sprintf(relay_id,"%d", getId());
     if(screen->getSettings()->isTempUnitCelsius()){
         getTemp()->toStrC(tempStr);
     } else {

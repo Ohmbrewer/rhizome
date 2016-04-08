@@ -39,7 +39,7 @@ namespace Ohmbrewer {
              * The Equipment ID
              * @returns The Sprout ID to use for this piece of Equipment
              */
-            int getID() const;
+            virtual int getID() const;
             
             /**
              * The Equipment Type
@@ -120,18 +120,11 @@ namespace Ohmbrewer {
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
-             */
-            Equipment(int id);
-
-            /**
-             * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
              * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
              */
-            Equipment(int id, int stopTime, bool state, String currentTask);
+            Equipment(int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -213,11 +206,6 @@ namespace Ohmbrewer {
             virtual void whichPins(std::list<int>* pins) = 0;
 
         protected:
-            /**
-             * Equipment ID
-             */
-            int            _id;
-
             /**
              * Designated Stop Time
              */

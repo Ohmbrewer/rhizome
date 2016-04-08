@@ -42,16 +42,14 @@ namespace Ohmbrewer {
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this piece of Equipment
              * @param elementPins - controlPin always first in <list>
              *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
              *  powerPin - The power pin - on/off line. Digital pin number X.
              */
-            HeatingElement(int id, std::list<int>* elementPins);
+            HeatingElement(std::list<int>* elementPins);
 
             /**
             * Constructor
-            * @param id The Sprout ID to use for this piece of Equipment
             * @param elementPins - controlPin always first in <list>
             *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
             *  powerPin - The power pin - on/off line. Digital pin number X.
@@ -59,7 +57,7 @@ namespace Ohmbrewer {
             * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
             * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
             */
-            HeatingElement(int id, std::list<int>* elementPins, int stopTime, bool state, String currentTask);
+            HeatingElement(std::list<int>* elementPins, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor

@@ -5,7 +5,6 @@
  * Constructor
  */
 Ohmbrewer::Equipment::Equipment() {
-    _id = 0;
     _stopTime = 0;
     _state = false;
 
@@ -13,23 +12,11 @@ Ohmbrewer::Equipment::Equipment() {
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
- */
-Ohmbrewer::Equipment::Equipment(int id) {
-    _id = id;
-    _stopTime = 0;
-    _state = false;
-}
-
-/**
- * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Equipment::Equipment(int id, int stopTime, bool state, String currentTask) {
-    _id = id;
+Ohmbrewer::Equipment::Equipment(int stopTime, bool state, String currentTask) {
     _stopTime = stopTime;
     _state = state;
 }
@@ -39,7 +26,6 @@ Ohmbrewer::Equipment::Equipment(int id, int stopTime, bool state, String current
  * @param clonee The Equipment object to copy
  */
 Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
-    _id = clonee.getID();
     _stopTime = clonee.getStopTime();
     _state = clonee.getState();
     _currentTask = clonee.getCurrentTask();
@@ -50,7 +36,7 @@ Ohmbrewer::Equipment::Equipment(const Equipment& clonee) {
  * @returns The Sprout ID to use for this piece of Equipment
  */
 int Ohmbrewer::Equipment::getID() const {
-    return _id;
+    return -1;
 }
 
 /**

@@ -5,11 +5,10 @@
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param controlPin - Single speed pump will only have ControlPin - on/off line. Digital pin number X.
 
  */
-Ohmbrewer::Relay::Relay(int id, int controlPin) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::Relay::Relay(int controlPin) {
     _controlPin = controlPin;
     pinMode(controlPin, OUTPUT);
     _powerPin = -1;
@@ -17,14 +16,13 @@ Ohmbrewer::Relay::Relay(int id, int controlPin) : Ohmbrewer::Equipment(id) {
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param controlPin - Single speed pump will only have ControlPin - on/off line. Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Relay::Relay(int id, int controlPin, int stopTime,
-                        bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+Ohmbrewer::Relay::Relay(int controlPin, int stopTime,
+                        bool state, String currentTask) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
     _controlPin = controlPin;
     pinMode(controlPin, OUTPUT);
     _powerPin = -1;
@@ -32,18 +30,16 @@ Ohmbrewer::Relay::Relay(int id, int controlPin, int stopTime,
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param relayPins - controlPin always first in <list>
  *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
  *  powerPin - The power pin - on/off line. Digital pin number X.
  */
-Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins) : Ohmbrewer::Equipment(id) {
+Ohmbrewer::Relay::Relay(std::list<int>* relayPins) {
     initRelay(relayPins);
 }
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param relayPins - controlPin always first in <list>
  *  controlPin - The Control pin - Data/speed/power level Digital pin number X.
  *  powerPin - The power pin - on/off line. Digital pin number X.
@@ -51,8 +47,8 @@ Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins) : Ohmbrewer::Equipmen
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Relay::Relay(int id, std::list<int>* relayPins, int stopTime,
-                        bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
+Ohmbrewer::Relay::Relay(std::list<int>* relayPins, int stopTime,
+                        bool state, String currentTask) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
     initRelay(relayPins);
     _state = state;
 }
@@ -106,6 +102,14 @@ void Ohmbrewer::Relay::initRelay(std::list<int>* relayPins) {
         _controlPin = controlPin;
         pinMode(controlPin, OUTPUT);
     }
+}
+
+/**
+ * The Equipment ID
+ * @returns The Sprout ID to use for this piece of Equipment
+ */
+int Ohmbrewer::Relay::getID() const {
+    return _controlPin;
 }
 
 /**
@@ -245,7 +249,7 @@ int Ohmbrewer::Relay::doDisplay(Ohmbrewer::Screen *screen) {
     screen->print("[");
     screen->setTextColor(screen->WHITE, screen->DEFAULT_BG_COLOR);
 
-    sprintf(relay_id,"%d", _id);
+    sprintf(relay_id,"%d", getID());
     screen->print(relay_id);
 
     screen->resetTextColor();

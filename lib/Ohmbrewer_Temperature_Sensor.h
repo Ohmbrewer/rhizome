@@ -36,20 +36,18 @@ namespace Ohmbrewer {
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
              */
-            TemperatureSensor(int id, Probe* probe);
+            TemperatureSensor(Probe* probe);
 
             /**
              * Constructor
-             * @param id The Sprout ID to use for this TemperatureSensor
              * @param pins The list of physical pins this TemperatureSensor is attached to
              * @param stopTime The time at which the TemperatureSensor should shut off, assuming it isn't otherwise interrupted
              * @param state Whether the TemperatureSensor is ON (or OFF). True => ON, False => OFF
              * @param currentTask The unique identifier of the task that the TemperatureSensor believes it should be processing
              */
-            TemperatureSensor(int id, Probe* probe, int stopTime, bool state, String currentTask);
+            TemperatureSensor(Probe* probe, int stopTime, bool state, String currentTask);
 
             /**
              * Copy Constructor
@@ -61,6 +59,12 @@ namespace Ohmbrewer {
              * Destructor
              */
             virtual ~TemperatureSensor();
+
+            /**
+             * The Equipment ID
+             * @returns The Sprout ID to use for this piece of Equipment
+             */
+            virtual int getID() const;
 
             /**
              * The Bus pin - Data input line

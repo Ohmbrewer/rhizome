@@ -27,6 +27,12 @@ namespace Ohmbrewer {
         virtual ~Probe();
 
         /**
+         * The Equipment ID
+         * @returns The Sprout ID to use for this piece of Equipment
+         */
+        virtual int getID() const;
+
+        /**
          * @returns the Pin in use for this probe
          */
         virtual int getPin() = 0;
