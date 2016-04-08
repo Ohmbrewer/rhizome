@@ -1,10 +1,10 @@
 /**
- * This library provides the WiFi Menu class of the Rhizome PID/equipment controller.
+ * This library provides the Temperature Unit Menu class of the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
-#ifndef OHMBREWER_MENU_WIFI_H
-#define OHMBREWER_MENU_WIFI_H
+#ifndef OHMBREWER_MENU_TEMPUNIT_H
+#define OHMBREWER_MENU_TEMPUNIT_H
 
 // Kludge to allow us to use std::vector - for now we have to undefine these macros.
 #undef swap
@@ -17,37 +17,40 @@
 
 namespace Ohmbrewer {
 
-    class MenuWiFi : public Menu {
-    
-        public:
+    class MenuTempUnit : public Menu {
+
+    public:
+
+        static const bool UNIT_CELSIUS = true;
+        static const bool UNIT_FAHRENHEIT = false;
 
         /**
          * Constructors
          * @param screen A pointer to the Screen object.
          */
-        MenuWiFi(Screen *screen, RuntimeSettings *settings);
+        MenuTempUnit(Screen *screen, RuntimeSettings *settings);
 
         /**
          * Destructor
          */
-        virtual ~MenuWiFi() {};
-        
+        virtual ~MenuTempUnit() {};
+
         /**
         * Draws the menu to the Rhizome's display.
-        */      
+        */
         void displayMenu();
 
-        
+
         /**
          * Takes action when the select button is pressed in the Menu Screen
          * The precise action will be determined by the individual menu screens
          */
         void selectPressed();
-            
-    
+
+
     };
 
 
 }
 
-#endif
+#endif //OHMBREWER_MENU_TEMPUNIT_H

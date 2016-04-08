@@ -68,6 +68,12 @@ namespace Ohmbrewer {
         virtual void selectPressed();
 
         /**
+        * Lists the options for the menu with a ">" at the currently selected option
+        *
+        */
+        void printOptions();
+
+        /**
          * Transitions to the next level up (parent) in the menu tree
          */
         void goUp();

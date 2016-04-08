@@ -13,6 +13,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(int id, Probe* probe) : Ohmbrewe
     _probe = probe;                 //For now all probes are all onewire
     _lastReading = new Temperature(-69);
     _lastReadTime = Time.now();
+
 //    registerUpdateFunction();
 }
 
@@ -166,7 +167,12 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     char tempStr [10];
 
     sprintf(relay_id,"%d", _id);
-    getTemp()->toStrC(tempStr);
+    if(screen->getSettings()->isTempUnitCelsius()){
+        getTemp()->toStrC(tempStr);
+    } else {
+        getTemp()->toStrF(tempStr);
+    }
+
 
     screen->resetTextColor();
     // Print a fancy identifier
@@ -220,4 +226,3 @@ void Ohmbrewer::TemperatureSensor::publishSensorReading() {
                               String(getTemp()->c()));
     pub.publish();
 }
-

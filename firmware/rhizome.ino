@@ -64,6 +64,12 @@ void setup() {
 	//initialize the Dallas Onewire bus pin - Digital 0
 	ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
 
+    if(!Particle.connected()){
+        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
+            //WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
+    }
 	// Turn on the display
 	screen.initScreen();
 	
@@ -95,8 +101,7 @@ void loop() {
 void doPeriodicUpdates() {
 	//Do not attempt to publish updates if disconnected from the cloud
     if(!Particle.connected()){
-        // TODO: Define WiFi Address location properly
-        if(EEPROM.read(1) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_OFF){
+        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
             //WiFi is not connected and should be - attempt to connect
             Particle.connect();
         }

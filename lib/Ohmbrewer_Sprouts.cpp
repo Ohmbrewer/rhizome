@@ -63,7 +63,8 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
     String type = String(strtok(params, ","));
     String idStr   = String(strtok(NULL, ","));
     int id = idStr.toInt();
-
+    Serial.println(type);
+    Serial.println(idStr);
     // If toInt() fails due to a bad parse, it gives 0.
     if(isFakeZero(idStr)) {
         delete params;
@@ -337,6 +338,7 @@ int Ohmbrewer::Sprouts::parseOnewireSensorPins(char *params, int &index) {
   */
 int Ohmbrewer::Sprouts::addTemperatureSensor(int id, char* params) {
     int index;
+    Serial.println("Parsing");
     int errorCode = parseOnewireSensorPins(params, index);
 
     if(errorCode == 0) {

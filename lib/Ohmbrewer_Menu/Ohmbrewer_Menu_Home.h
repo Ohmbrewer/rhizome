@@ -1,5 +1,5 @@
 /**
- * This library provides the WiFi Menu class of the Rhizome PID/equipment controller.
+ * This library provides the Home Screen class of the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
@@ -22,7 +22,7 @@ namespace Ohmbrewer {
         public:
 
         /* Constants */
-        static const int WIFI_MENU = 0;
+        static const int MAIN_MENU = 0;
 
         /* Methods */
 
