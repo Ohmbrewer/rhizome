@@ -12,7 +12,7 @@
     //Set up list of options in vector
     options.push_back("WiFi On");
     options.push_back("WiFi Off");
-    _selectedOption = _settings->isWifiOn();
+    _selectedOption = 0;
  }
 
 /**
@@ -36,23 +36,8 @@ void Ohmbrewer::MenuWiFi::displayMenu() {
     } else {
         _screen->println("OFF");
     }
-    _screen->printMargin(2);
-    
-    std::vector<String>::const_iterator i;
-    unsigned int j = 0;
-    //Print options with ">" at currently selected option
-    for(i=options.begin(); i != options.end(); ++i){
 
-        if(_selectedOption == j){
-            _screen->print(" > ");
-        } else {
-            _screen->print("   ");
-        }
-
-        _screen->println(*i);
-        _screen->printMargin(2);
-        j++;
-    }
+    printOptions();
 
 }
  
@@ -101,11 +86,4 @@ void Ohmbrewer::MenuWiFi::selectPressed() {
     }
 }
 
-/**
- * Takes action when the menu button is pressed in the Menu Screen
- * The precise action will be determined by the individual menu screens
- */
-void Ohmbrewer::MenuWiFi::menuPressed() {
-    _screen->setCurrentMenu(_parent);
-    _screen->reinitScreen();
-}
+

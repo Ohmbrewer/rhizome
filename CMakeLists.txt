@@ -14,6 +14,10 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Menu.cpp
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Home.h
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Home.cpp
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Main.h
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Main.cpp
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_TempUnit.h
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_TempUnit.cpp
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.h    
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.cpp
     ../lib/Ohmbrewer_Onewire.cpp

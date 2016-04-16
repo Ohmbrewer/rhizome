@@ -187,6 +187,12 @@ namespace Ohmbrewer {
              */
             Menu* getCurrentMenu() const;
 
+            /**
+             * Moves the Current settings pointer
+             * @returns RuntimeSettings object
+             */
+            RuntimeSettings* getSettings() const;
+
         private:
             /**
              * Pointer to the global Sprouts list

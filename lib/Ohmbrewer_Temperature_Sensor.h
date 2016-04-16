@@ -162,6 +162,7 @@ namespace Ohmbrewer {
              */
             void publishSensorReading();
 
+
         protected:
             /**
              * Last temperature read by the sensor
@@ -177,6 +178,7 @@ namespace Ohmbrewer {
              * temperature Probe
              */
             Probe* _probe;
+
 
     };
 };

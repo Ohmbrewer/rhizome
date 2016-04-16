@@ -8,6 +8,8 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Runtime_Settings.h"
 #include "Ohmbrewer_Menu_WiFi.h"
+#include "Ohmbrewer_Menu_Main.h"
+#include "Ohmbrewer_Menu_TempUnit.h"
 #include "Ohmbrewer_Menu_Home.h"
 
 
@@ -31,7 +33,12 @@ Ohmbrewer::Screen::Screen(uint8_t CS,
 
     // Build the menu tree
     _homeMenu = new MenuHome(this, settings);
-    _homeMenu->addChild(new MenuWiFi(this, settings));
+    Menu* mainMenu;
+    mainMenu = new MenuMain(this, settings);
+    _homeMenu->addChild(mainMenu);
+    mainMenu->addChild(new MenuWiFi(this, settings));
+    mainMenu->addChild(new MenuTempUnit(this, settings));
+
 
     // Set the current menu to be the home menu
     _currentMenu = _homeMenu;
@@ -71,6 +78,10 @@ unsigned long Ohmbrewer::Screen::displayHeader() {
     setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
     setTextSize(3);
     println("  OHMBREWER");
+    resetTextSizeAndColor();
+    drawLine(0,25,300,25,GREEN);
+    printMargin(2);
+    //print("--------------------");
 
     return micros() - start;
 }
@@ -128,44 +139,9 @@ unsigned long Ohmbrewer::Screen::refreshDisplay() {
 
     displayHeader();
 
-    if(!_currentMenu->isHome()) {
-        _currentMenu->displayMenu();
-    } else {
-        // TODO: Shift this stuff into MenuHome#displayMenu()
 
-        displayRIMS();
-        displayThermostats();
+    _currentMenu->displayMenu();
 
-        // We want to show a different border for the Manual Relays section if there were any Thermostats or RIMS
-        int thermostats = 0;
-        int rims = 0;
-        for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-            if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
-                thermostats++;
-            }
-            if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
-                rims++;
-            }
-        }
-
-        if((thermostats + rims) > 2) {
-            // Don't print the header line
-        } else if((thermostats + rims) > 0) {
-            // We've got 1-2 Thermostats or RIMS, so print a thin line
-            print("--------------------");
-        } else {
-            // There aren't any Thermostats or RIMS, so print a fat line
-            print("====================");
-        }
-
-        displayManualRelays();
-    //    // These are the old, single type displays, for easy debugging.
-    //    displayTemps();
-    //    displayRelays();
-    //    displayHeatingElements();
-    //    displayPumps();
-
-    }
 
     // 500 seems like a good refresh delay
     delay(500);
@@ -317,7 +293,12 @@ unsigned long Ohmbrewer::Screen::displayTemps() {
                 // Print the header
                 print("= Temperature (");
                 writeDegree(); // Degree symbol
-                print("C) =");
+                if (_settings->isTempUnitCelsius()) {
+                    print("C) =");
+                } else {
+                    print("F) =");
+                }
+
                 printMargin(2);
                 foundFirst = true;
             }
@@ -398,13 +379,12 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
     char printx [10];
     char printy [10];
     char status [40];
-    
+
     // a point object holds x y and z coordinates
     TSPoint p =_ts->getPoint();
     //According to Particle forums, the read below is necessary to get touch to work on Photon
     _ts->readTouchY();
 
-  
     // we have some minimum pressure we consider 'valid'
     // pressure of 0 means no pressing!
     if (p.z < MINPRESSURE || p.z > MAXPRESSURE) {
@@ -461,7 +441,7 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
     Serial.print("\tPressure = "); Serial.println(p.z);
 
     // Delay 1 second to allow for some debounce
-    delay(1000);
+    delay(300);
     return micros() - start;
 }
 
@@ -479,4 +459,12 @@ void Ohmbrewer::Screen::setCurrentMenu(Ohmbrewer::Menu* nextMenu) {
  */
 Ohmbrewer::Menu* Ohmbrewer::Screen::getCurrentMenu() const {
     return _currentMenu;
+}
+
+/**
+ * Moves the Current settings pointer
+ * @returns RuntimeSettings object
+ */
+Ohmbrewer::RuntimeSettings* Ohmbrewer::Screen::getSettings() const {
+    return _settings;
 }
