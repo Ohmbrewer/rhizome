@@ -6,29 +6,28 @@
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param powerPin - Single speed pump will only have PowerPin - on/off line. Digital pin number X.
+ * @param controlPin - Single speed pump will only have ControlPin - on/off line. Digital pin number X.
 
  */
-Ohmbrewer::Relay::Relay(int id, int powerPin) : Ohmbrewer::Equipment(id) {
-
-    _powerPin = powerPin;
-    pinMode(powerPin, OUTPUT);
-    _controlPin = -1;
+Ohmbrewer::Relay::Relay(int id, int controlPin) : Ohmbrewer::Equipment(id) {
+    _controlPin = controlPin;
+    pinMode(controlPin, OUTPUT);
+    _powerPin = -1;
 }
 
 /**
  * Constructor
  * @param id The Sprout ID to use for this piece of Equipment
- * @param powerPin - Single speed pump will only have PowerPin - on/off line. Digital pin number X.
+ * @param controlPin - Single speed pump will only have ControlPin - on/off line. Digital pin number X.
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Relay::Relay(int id, int powerPin, int stopTime,
+Ohmbrewer::Relay::Relay(int id, int controlPin, int stopTime,
                         bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    _powerPin = powerPin;
-    pinMode(powerPin, OUTPUT);
-    _controlPin = -1;
+    _controlPin = controlPin;
+    pinMode(controlPin, OUTPUT);
+    _powerPin = -1;
 }
 
 /**
