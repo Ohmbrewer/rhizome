@@ -21,6 +21,12 @@ namespace Ohmbrewer {
         Onewire(int probeIndex);
 
         /**
+         * The Equipment ID
+         * @returns The Sprout ID to use for this piece of Equipment
+         */
+        virtual int getID() const;
+
+        /**
          * @returns the Celsius reading from the specified connected DS18b20 probe
          *      returns -69 for no value
          */

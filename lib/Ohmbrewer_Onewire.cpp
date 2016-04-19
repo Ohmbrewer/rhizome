@@ -20,6 +20,14 @@ Ohmbrewer::Onewire::Onewire(int probeIndex) : Ohmbrewer::Probe(){
 }
 
 /**
+ * The Equipment ID
+ * @returns The Sprout ID to use for this piece of Equipment
+ */
+int Ohmbrewer::Onewire::getID() const {
+    return _probeIndex;
+}
+
+/**
  * @returns the Celsius reading from the specified connected DS18b20 probe
  *      returns -69 for no value
  */

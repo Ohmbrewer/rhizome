@@ -61,37 +61,18 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
 
     // Parse the parameters
     String type = String(strtok(params, ","));
-    String idStr   = String(strtok(NULL, ","));
-    int id = idStr.toInt();
-    Serial.println(type);
-    Serial.println(idStr);
-    // If toInt() fails due to a bad parse, it gives 0.
-    if(isFakeZero(idStr)) {
-        delete params;
-        return -1;
-    }
-
-    // Make sure ID isn't in use
-    std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
-
-    for (itr; itr != _sprouts->end(); itr++) {
-        if (((*itr)->getID() == id) && (type.equalsIgnoreCase((*itr)->getType()))) {
-            delete params;
-            return -2;
-        }
-    }
 
     // Now, depending on the type we need to parse differently. Then we add the Equipment.
     if(type.equalsIgnoreCase(Ohmbrewer::TemperatureSensor::TYPE_NAME)) {
-        errorCode = addTemperatureSensor(id, params);
+        errorCode = addTemperatureSensor(params);
     } else if(type.equalsIgnoreCase(Ohmbrewer::Pump::TYPE_NAME)) {
-        errorCode = addPump(id, params);
+        errorCode = addPump(params);
     } else if(type.equalsIgnoreCase(Ohmbrewer::HeatingElement::TYPE_NAME)) {
-        errorCode = addHeatingElement(id, params);
+        errorCode = addHeatingElement(params);
     } else if(type.equalsIgnoreCase(Ohmbrewer::Thermostat::TYPE_NAME)) {
-        errorCode = addThermostat(id, params);
+        errorCode = addThermostat(params);
     } else if(type.equalsIgnoreCase(Ohmbrewer::RIMS::TYPE_NAME)) {
-        errorCode = addRIMS(id, params);
+        errorCode = addRIMS(params);
     } else {
         // Trying to add an unrecognized Equipment Type.
         errorCode = -5;
@@ -112,7 +93,7 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
 
     // Otherwise, refresh the screen and return success.
     _screen->initScreen();
-    return id; // Success!
+    return _sprouts->back()->getID(); // Success!
 }
 
 /**
@@ -214,12 +195,6 @@ int Ohmbrewer::Sprouts::removeSprout(String argsStr) {
             _sprouts->erase(itr);
             delete params;
             _screen->initScreen(); // Gotta do this to clear artifacts from the screen
-
-            if(_sprouts->size() == 0) {
-                // No use in running the update timer if we have no Sprouts
-                _periodicUpdateTimer->stop();
-            }
-
             return id; // Success!
         }
     }
@@ -332,17 +307,15 @@ int Ohmbrewer::Sprouts::parseOnewireSensorPins(char *params, int &index) {
 
 /**
   * Adds a Temperature Sensor
-  * @param id The ID for the equipment
   * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
   * @return Error or success code, according to the requirements specified by addSprout
   */
-int Ohmbrewer::Sprouts::addTemperatureSensor(int id, char* params) {
+int Ohmbrewer::Sprouts::addTemperatureSensor(char* params) {
     int index;
-    Serial.println("Parsing");
     int errorCode = parseOnewireSensorPins(params, index);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::TemperatureSensor( id, new Ohmbrewer::Onewire(index) ));
+        _sprouts->push_back(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire(index) ));
     }
 
     return errorCode;

@@ -160,11 +160,10 @@ namespace Ohmbrewer {
 
         /**
          * Adds a Temperature Sensor based on the next chunk of parsed data.
-         * @param id The ID for the equipment
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int addTemperatureSensor(int id, char* params);
+        int addTemperatureSensor(char* params);
 
         /**
          * Parses a given string of characters into the pins for a Pump
@@ -176,11 +175,10 @@ namespace Ohmbrewer {
 
         /**
          * Adds a Pump based on the next chunk of parsed data.
-         * @param id The ID for the equipment
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int addPump(int id, char* params);
+        int addPump(char* params);
 
         /**
          * Parses a given string of characters into the pins for a Heating Element
@@ -192,11 +190,10 @@ namespace Ohmbrewer {
 
         /**
          * Adds a Heating Element based on the next chunk of parsed data.
-         * @param id The ID for the equipment
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int addHeatingElement(int id, char* params);
+        int addHeatingElement(char* params);
 
         /**
          * Parses a given string of characters into the pins for a Thermostat
@@ -208,11 +205,10 @@ namespace Ohmbrewer {
 
         /**
          * Adds a Thermostat based on the next chunk of parsed data.
-         * @param id The ID for the equipment
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int addThermostat(int id, char* params);
+        int addThermostat(char* params);
 
         /**
          * Parses a given string of characters into the pins for a RIMS
@@ -226,11 +222,10 @@ namespace Ohmbrewer {
 
         /**
          * Adds a RIMS based on the next chunk of parsed data.
-         * @param id The ID for the equipment
          * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
          * @return Error or success code, according to the requirements specified by addSprout
          */
-        int addRIMS(int id, char* params);
+        int addRIMS(char* params);
     };
 };
 

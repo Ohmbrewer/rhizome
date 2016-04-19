@@ -6,25 +6,23 @@
 
 /**
  * Constructor - creating a Thermostat will use up 3 equipment IDs
- * @param id The Sprout ID to use for this piece of Thermostat
  * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins) : Ohmbrewer::Equipment(id) {
-    initThermostat(id, thermPins);
+Ohmbrewer::Thermostat::Thermostat(std::list<int>* thermPins) {
+    initThermostat(thermPins);
 //    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Thermostat
  * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const double targetTemp) : Ohmbrewer::Equipment(id) {
-    initThermostat(id, thermPins);
+Ohmbrewer::Thermostat::Thermostat(std::list<int>* thermPins, const double targetTemp) {
+    initThermostat(thermPins);
     _targetTemp->fromC(targetTemp);
 //    _timer = pidTime;
 //    registerUpdateFunction();
@@ -32,23 +30,21 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, const doubl
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Thermostat
  * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Thermostat is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
-                                  bool state, String currentTask) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    initThermostat(id, thermPins);
+Ohmbrewer::Thermostat::Thermostat(std::list<int>* thermPins, int stopTime,
+                                  bool state, String currentTask) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
+    initThermostat(thermPins);
 //    _timer = pidTime;
 //    registerUpdateFunction();
 }
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Thermostat
  * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  * @param stopTime The time at which the Thermostat should shut off, assuming it isn't otherwise interrupted
@@ -56,10 +52,10 @@ Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTim
  * @param currentTask The unique identifier of the task that the Thermostat believes it should be processing
  * @param targetTemp The new target temperature in Celsius
  */
-Ohmbrewer::Thermostat::Thermostat(int id, std::list<int>* thermPins, int stopTime,
+Ohmbrewer::Thermostat::Thermostat(std::list<int>* thermPins, int stopTime,
                                   bool state, String currentTask,
-                                  const double targetTemp) : Ohmbrewer::Equipment(id, stopTime, state, currentTask) {
-    initThermostat(id, thermPins);
+                                  const double targetTemp) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
+    initThermostat(thermPins);
     _targetTemp->fromC(targetTemp);
 //    _timer = pidTime;
 //    registerUpdateFunction();
@@ -88,21 +84,20 @@ Ohmbrewer::Thermostat::~Thermostat() {
 
 /**
  * logic for initializing equipment and PID in the constructors
- * @param id The Sprout ID to use for this piece of Thermostat
  * @param thermPins list with formatting of: [ temp busPin ; onewire index ; heating controlPin ; heating powerPin ]
  * NOTE: if a Pin value is not enabled pass -1 as the value for that pin.
  */
-void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
+void Ohmbrewer::Thermostat::initThermostat(std::list<int>* thermPins){
 
     // Initialize equipment components
     int size = thermPins->size();
-    if ( (size == 4) ) {
+    if (size == 4) {
 
         thermPins->pop_front();//remove busPIN - unused for now.
         int index = thermPins->front();
-        _tempSensor = new TemperatureSensor(id + 1, new Onewire(index));
+        _tempSensor = new TemperatureSensor(new Onewire(index));
         thermPins->pop_front();
-        _heatingElm = new HeatingElement(id+3, thermPins);
+        _heatingElm = new HeatingElement(thermPins);
     } else {//not correct number on PINS
         // Publish error
         Ohmbrewer::Publisher::publish_map_t pMap;
@@ -135,6 +130,14 @@ void Ohmbrewer::Thermostat::initThermostat(int id, std::list<int>* thermPins){
     //Timer timer(5000, doPID);
     //_timer = &timer;
 
+}
+
+/**
+ * The Equipment ID
+ * @returns The Sprout ID to use for this piece of Equipment
+ */
+int Ohmbrewer::Thermostat::getID() const {
+    return _heatingElm->getID();
 }
 
 /**

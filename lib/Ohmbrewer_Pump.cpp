@@ -2,24 +2,22 @@
 
 /**
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param pumpPin - Single speed pump will only have PowerPin
  */
-Ohmbrewer::Pump::Pump(int id, int pumpPin) : Ohmbrewer::Relay(id, pumpPin) {
+Ohmbrewer::Pump::Pump(int pumpPin) : Ohmbrewer::Relay(pumpPin) {
 
 //    registerUpdateFunction();
 }
 
 /**FIXME
  * Constructor
- * @param id The Sprout ID to use for this piece of Equipment
  * @param pumpPin - Single speed pump will only have PowerPin
  * @param stopTime The time at which the Equipment should shut off, assuming it isn't otherwise interrupted
  * @param state Whether the Equipment is ON (or OFF). True => ON, False => OFF
  * @param currentTask The unique identifier of the task that the Equipment believes it should be processing
  */
-Ohmbrewer::Pump::Pump(int id, int pumpPin, int stopTime,
-                      bool state, String currentTask) : Ohmbrewer::Relay(id, pumpPin, stopTime, state, currentTask) {
+Ohmbrewer::Pump::Pump(int pumpPin, int stopTime,
+                      bool state, String currentTask) : Ohmbrewer::Relay(pumpPin, stopTime, state, currentTask) {
 
 //    registerUpdateFunction();
 }
