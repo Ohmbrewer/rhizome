@@ -348,16 +348,15 @@ int Ohmbrewer::Sprouts::parsePumpPins(char* params, int &pin) {
 
 /**
  * Adds a Pump
- * @param id The ID for the equipment
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addPump(int id, char* params) {
+int Ohmbrewer::Sprouts::addPump(char* params) {
     int pumpPin;
     int errorCode = parsePumpPins(params, pumpPin);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::Pump( id, pumpPin ));
+        _sprouts->push_back(new Ohmbrewer::Pump(pumpPin ));
     }
 
     return errorCode;
@@ -395,16 +394,15 @@ int Ohmbrewer::Sprouts::parseHeatingElementPins(char* params, std::list<int> &el
 
 /**
  * Adds a Heating Element
- * @param id The ID for the equipment
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addHeatingElement(int id, char* params) {
+int Ohmbrewer::Sprouts::addHeatingElement(char* params) {
     std::list<int> elementPins;
     int errorCode = parseHeatingElementPins(params, elementPins);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::HeatingElement( id, &elementPins ));
+        _sprouts->push_back(new Ohmbrewer::HeatingElement(&elementPins ));
     }
 
     return errorCode;
@@ -437,16 +435,15 @@ int Ohmbrewer::Sprouts::parseThermostatPins(char* params, std::list<int> &thermP
 
 /**
  * Adds a Thermostat
- * @param id The ID for the equipment
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addThermostat(int id, char* params) {
+int Ohmbrewer::Sprouts::addThermostat(char* params) {
     std::list<int> thermPins;
     int errorCode = parseThermostatPins(params, thermPins);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::Thermostat(id, &thermPins));
+        _sprouts->push_back(new Ohmbrewer::Thermostat(&thermPins));
     }
 
     return errorCode;
@@ -483,18 +480,17 @@ int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, i
 
 /**
  * Adds a RIMS
- * @param id The ID for the equipment
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addRIMS(int id, char* params) {
+int Ohmbrewer::Sprouts::addRIMS(char* params) {
     int pumpPin;
     int safetyIndex;
     std::list<int> thermPins;
     int errorCode = parseRIMSPins(params, thermPins, pumpPin, safetyIndex);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::RIMS( id, &thermPins, pumpPin, safetyIndex ));
+        _sprouts->push_back(new Ohmbrewer::RIMS(&thermPins, pumpPin, safetyIndex ));
     }
 
     return errorCode;

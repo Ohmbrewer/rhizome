@@ -171,7 +171,7 @@ int Ohmbrewer::TemperatureSensor::doDisplay(Ohmbrewer::Screen *screen) {
     char relay_id[2];
     char tempStr [10];
 
-    sprintf(relay_id,"%d", getId());
+    sprintf(relay_id,"%d", getID());
     if(screen->getSettings()->isTempUnitCelsius()){
         getTemp()->toStrC(tempStr);
     } else {
