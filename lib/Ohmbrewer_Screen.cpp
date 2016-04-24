@@ -11,6 +11,7 @@
 #include "Ohmbrewer_Menu_Main.h"
 #include "Ohmbrewer_Menu_TempUnit.h"
 #include "Ohmbrewer_Menu_Home.h"
+#include <deque>
 
 
 /**
@@ -467,4 +468,12 @@ Ohmbrewer::Menu* Ohmbrewer::Screen::getCurrentMenu() const {
  */
 Ohmbrewer::RuntimeSettings* Ohmbrewer::Screen::getSettings() const {
     return _settings;
+}
+
+/**
+ * Gets the sprouts attached to the Rhizome
+ * @returns Rhizome object
+ */
+std::deque< Ohmbrewer::Equipment* >* Ohmbrewer::Screen::getSprouts() const {
+    return _sprouts;
 }

@@ -1,4 +1,4 @@
-#include "Ohmbrewer_Sprouts.h"
+#include "Ohmbrewer_Rhizome.h"
 #include "Ohmbrewer_Equipment.h"
 #include "Ohmbrewer_Pump.h"
 #include "Ohmbrewer_Temperature_Sensor.h"
@@ -8,27 +8,31 @@
 #include "Ohmbrewer_Thermostat.h"
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
+#include "Ohmbrewer_Screen.h"
 
 
 /**
  * Constructor
- * @param sprouts A pointer to a pre-constructed deque object. Sprouts takes over responsibility of memory management for it.
- * @param screen A pointer to the Screen object. Sprouts does not handle its memory management.
  */
-Ohmbrewer::Sprouts::Sprouts( std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen, Timer *put) {
-    _sprouts = sprouts;
-    _screen = screen;
+Ohmbrewer::Rhizome::Rhizome(Timer *put) {
+    _sprouts = new std::deque< Equipment* >;
+    _settings = new RuntimeSettings();
+    _screen = new Screen(D6, D7, A6, _sprouts, _settings);
+
     _periodicUpdateTimer = put;
-    Particle.function("add", &Sprouts::addSprout, this);
-    Particle.function("update", &Sprouts::updateSprout, this);
-    Particle.function("remove", &Sprouts::removeSprout, this);
+
+    Particle.function("add", &Rhizome::addSprout, this);
+    Particle.function("update", &Rhizome::updateSprout, this);
+    Particle.function("remove", &Rhizome::removeSprout, this);
 }
 
 /**
  * Destructor. Kills the internal deque.
  */
-Ohmbrewer::Sprouts::~Sprouts() {
+Ohmbrewer::Rhizome::~Rhizome() {
     delete _sprouts;
+    delete _screen;
+    delete _settings;
     delete _periodicUpdateTimer;
 }
 
@@ -54,7 +58,7 @@ Ohmbrewer::Sprouts::~Sprouts() {
  *          -4 : Incorrect number of pins provided for given Equipment Type
  *          -5 : Not Implemented
  */
-int Ohmbrewer::Sprouts::addSprout(String argsStr) {
+int Ohmbrewer::Rhizome::addSprout(String argsStr) {
     int errorCode = 0;
     char* params = new char[argsStr.length() + 1];
     strcpy(params, argsStr.c_str());
@@ -117,7 +121,7 @@ int Ohmbrewer::Sprouts::addSprout(String argsStr) {
  *          -3 : Specified Equipment was not found in the list
  *          -4 : Update failed
  */
-int Ohmbrewer::Sprouts::updateSprout(String argsStr) {
+int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
     char* params = new char[argsStr.length() + 1];
     strcpy(params, argsStr.c_str());
 
@@ -174,7 +178,7 @@ int Ohmbrewer::Sprouts::updateSprout(String argsStr) {
  *          -1 : Invalid ID
  *          -2 : No match found
  */
-int Ohmbrewer::Sprouts::removeSprout(String argsStr) {
+int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
     char* params = new char[argsStr.length() + 1];
     strcpy(params, argsStr.c_str());
 
@@ -208,7 +212,7 @@ int Ohmbrewer::Sprouts::removeSprout(String argsStr) {
  * Publishes any periodic updates that need to be published.
  * @see _periodicUpdateTimer
  */
-void Ohmbrewer::Sprouts::publishPeriodicUpdates() {
+void Ohmbrewer::Rhizome::publishPeriodicUpdates() {
 
     // Publish all the Temperature Sensor updates
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
@@ -231,10 +235,34 @@ void Ohmbrewer::Sprouts::publishPeriodicUpdates() {
 }
 
 /**
+ * Gets the deque of Sprouts
+ * @returns The settings
+ */
+std::deque< Ohmbrewer::Equipment* >* Ohmbrewer::Rhizome::getSprouts() {
+    return _sprouts;
+}
+
+/**
+ * Gets the current runtime settings
+ * @returns The settings
+ */
+Ohmbrewer::RuntimeSettings* Ohmbrewer::Rhizome::getRuntimeSettings() {
+    return _settings;
+}
+
+/**
+ * Gets the screen
+ * @returns The screen
+ */
+Ohmbrewer::Screen* Ohmbrewer::Rhizome::getScreen() {
+    return _screen;
+}
+
+/**
  * Called in loop, iterates through the the spouts equipment list
  * and calls work() on each equipment stored in the sprouts list
  */
-void Ohmbrewer::Sprouts::work() {
+void Ohmbrewer::Rhizome::work() {
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
         (*itr)->work();
     }
@@ -245,7 +273,7 @@ void Ohmbrewer::Sprouts::work() {
  * @param raw String to examine
  * @returns Whether the string failed the conversion
  */
-bool Ohmbrewer::Sprouts::isFakeZero(String raw) {
+bool Ohmbrewer::Rhizome::isFakeZero(String raw) {
     return raw == NULL || raw.length() == 0 || (raw.toInt() == 0 && isNotActualZero(raw));
 }
 
@@ -254,7 +282,7 @@ bool Ohmbrewer::Sprouts::isFakeZero(String raw) {
  * @param raw String to examine
  * @returns Whether the string starts with 0
  */
-bool Ohmbrewer::Sprouts::isNotActualZero(String raw) {
+bool Ohmbrewer::Rhizome::isNotActualZero(String raw) {
     return ((raw.charAt(0) - '0') != 0);
 }
 
@@ -263,7 +291,7 @@ bool Ohmbrewer::Sprouts::isNotActualZero(String raw) {
  * @param newPins The pins to check for
  * @returns Whether any of the supplied pins are already in use
  */
-bool Ohmbrewer::Sprouts::arePinsInUse(std::list<int>* newPins) {
+bool Ohmbrewer::Rhizome::arePinsInUse(std::list<int>* newPins) {
     // Make sure ID isn't in use
     std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
 
@@ -294,7 +322,7 @@ bool Ohmbrewer::Sprouts::arePinsInUse(std::list<int>* newPins) {
  * @param index The onewire sensor index (-1 if unused / non onewire)
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseOnewireSensorPins(char *params, int &index) {
+int Ohmbrewer::Rhizome::parseOnewireSensorPins(char *params, int &index) {
     String ind = String(strtok(NULL, ","));
 
     if(ind == NULL) {
@@ -310,7 +338,7 @@ int Ohmbrewer::Sprouts::parseOnewireSensorPins(char *params, int &index) {
   * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
   * @return Error or success code, according to the requirements specified by addSprout
   */
-int Ohmbrewer::Sprouts::addTemperatureSensor(char* params) {
+int Ohmbrewer::Rhizome::addTemperatureSensor(char* params) {
     int index;
     int errorCode = parseOnewireSensorPins(params, index);
 
@@ -327,7 +355,7 @@ int Ohmbrewer::Sprouts::addTemperatureSensor(char* params) {
  * @param pin The power pin
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parsePumpPins(char* params, int &pin) {
+int Ohmbrewer::Rhizome::parsePumpPins(char* params, int &pin) {
     String powerPin = String(strtok(NULL, ","));
 
     // Verify that D0 values are intentional
@@ -351,7 +379,7 @@ int Ohmbrewer::Sprouts::parsePumpPins(char* params, int &pin) {
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addPump(char* params) {
+int Ohmbrewer::Rhizome::addPump(char* params) {
     int pumpPin;
     int errorCode = parsePumpPins(params, pumpPin);
 
@@ -368,7 +396,7 @@ int Ohmbrewer::Sprouts::addPump(char* params) {
  * @param elementPins The heating element pins
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseHeatingElementPins(char* params, std::list<int> &elementPins) {
+int Ohmbrewer::Rhizome::parseHeatingElementPins(char* params, std::list<int> &elementPins) {
     String controlPin = String(strtok(NULL, ","));
     String powerPin   = String(strtok(NULL, ","));
 
@@ -397,7 +425,7 @@ int Ohmbrewer::Sprouts::parseHeatingElementPins(char* params, std::list<int> &el
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addHeatingElement(char* params) {
+int Ohmbrewer::Rhizome::addHeatingElement(char* params) {
     std::list<int> elementPins;
     int errorCode = parseHeatingElementPins(params, elementPins);
 
@@ -414,7 +442,7 @@ int Ohmbrewer::Sprouts::addHeatingElement(char* params) {
  * @param thermPins The thermostat pins [tempbus, OW probe index, controlpin, powerpin]
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseThermostatPins(char* params, std::list<int> &thermPins) {
+int Ohmbrewer::Rhizome::parseThermostatPins(char* params, std::list<int> &thermPins) {
     int index = -1;
     int errorCode = 0;
 
@@ -438,7 +466,7 @@ int Ohmbrewer::Sprouts::parseThermostatPins(char* params, std::list<int> &thermP
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addThermostat(char* params) {
+int Ohmbrewer::Rhizome::addThermostat(char* params) {
     std::list<int> thermPins;
     int errorCode = parseThermostatPins(params, thermPins);
 
@@ -457,7 +485,7 @@ int Ohmbrewer::Sprouts::addThermostat(char* params) {
  * @param safetyIndex The onewire index for the safety sensor
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, int &pumpPin, int &safetyIndex) {
+int Ohmbrewer::Rhizome::parseRIMSPins(char* params, std::list<int> &thermPins, int &pumpPin, int &safetyIndex) {
     int errorCode = 0;
 
     errorCode = parseThermostatPins(params, thermPins);
@@ -483,7 +511,7 @@ int Ohmbrewer::Sprouts::parseRIMSPins(char* params, std::list<int> &thermPins, i
  * @param params The buffer to use for strtok'ing. This method will not delete the buffer!
  * @return Error or success code, according to the requirements specified by addSprout
  */
-int Ohmbrewer::Sprouts::addRIMS(char* params) {
+int Ohmbrewer::Rhizome::addRIMS(char* params) {
     int pumpPin;
     int safetyIndex;
     std::list<int> thermPins;

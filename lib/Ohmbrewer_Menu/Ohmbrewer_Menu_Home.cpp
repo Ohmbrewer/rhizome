@@ -2,6 +2,8 @@
 #include "Ohmbrewer_Runtime_Settings.h"
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Menu.h"
+#include "Ohmbrewer_Thermostat.h"
+#include "Ohmbrewer_RIMS.h"
 
 /**
  * Constructors
@@ -13,12 +15,12 @@ Ohmbrewer::MenuHome::MenuHome(Ohmbrewer::Screen *screen, Ohmbrewer::RuntimeSetti
     options.push_back("RIMS");
     options.push_back("Thermostats");
     options.push_back("Pumps");
-    _selectedOption = 0;
+    options.push_back("Everything");
+    _selectedOption = 4;
 }
 
 /**
  * Draws the menu to the Rhizome's display.
- * @todo Refactor the display drawing stuff that's currently in Screen into this
  */
 void Ohmbrewer::MenuHome::displayMenu() {
 
@@ -30,16 +32,31 @@ void Ohmbrewer::MenuHome::displayMenu() {
         _screen->displayThermostats();
     } else if (_selectedOption == 3) {
         _screen->displayPumps();
+    } else {
+        _screen->displayRIMS();
+        _screen->displayThermostats();
+
+        // We want to show a different border for the Manual Relays section if there were any Thermostats or RIMS
+        int thermostats = 0;
+        int rims = 0;
+        for (std::deque<Ohmbrewer::Equipment *>::iterator itr = _screen->getSprouts()->begin();
+             itr != _screen->getSprouts()->end(); itr++) {
+            if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
+                thermostats++;
+            }
+            if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
+                rims++;
+            }
+        }
+
+        if ((thermostats + rims) > 2) {
+            // Don't print the header line
+        } else if ((thermostats + rims) > 0) {
+            // We've got 1-2 Thermostats or RIMS, so print a thin line
+            _screen->print("--------------------");
+        }
+        _screen->displayManualRelays();
     }
-
-
-
-
-    //    // These are the old, single type displays, for easy debugging.
-    //_screen->displayManualRelays();
-    //    displayRelays();
-    //    displayHeatingElements();
-    //    displayPumps();
 }
 
 /**

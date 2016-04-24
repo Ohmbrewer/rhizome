@@ -40,7 +40,6 @@ namespace Ohmbrewer {
         
         /**
          * Draws the menu to the Rhizome's display.
-         * @todo Refactor the display drawing stuff that's currently in Screen into this
          */
         void displayMenu();
         

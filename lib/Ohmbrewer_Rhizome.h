@@ -1,10 +1,10 @@
 /**
- * This library provides the Temperature class for the Rhizome PID/equipment controller.
+ * This library provides the Rhizome class for the Rhizome PID/equipment controller.
  * Rhizome is part of the Ohmbrewer project (see http://ohmbrewer.org for details).
  */
 
-#ifndef OHMBREWER_SPROUTS_H
-#define OHMBREWER_SPROUTS_H
+#ifndef OHMBREWER_RHIZOME_H
+#define OHMBREWER_RHIZOME_H
 
 #undef min
 #undef max
@@ -19,21 +19,19 @@ namespace Ohmbrewer {
 
     class Equipment;
 
-    class Sprouts {
+    class Rhizome {
       
         public:
 
         /**
          * Constructor
-         * @param sprouts A pointer to a pre-constructed deque object. Sprouts takes over responsibility of memory management for it.
-         * @param screen A pointer to the Screen object. Sprouts does not handle its memory management.
          */
-        Sprouts(std::deque< Ohmbrewer::Equipment* > *sprouts, Ohmbrewer::Screen *screen, Timer *put);
+        Rhizome(Timer *put);
 
         /**
          * Destructor. Kills the internal deque.
          */
-        ~Sprouts();
+        ~Rhizome();
 
         /**
          * Dynamically adds Equipment to the Rhizome.
@@ -103,6 +101,24 @@ namespace Ohmbrewer {
         void publishPeriodicUpdates();
 
         /**
+         * Gets the deque of Sprouts
+         * @returns The Sprouts
+         */
+        std::deque< Equipment* >* getSprouts();
+
+        /**
+         * Gets the current runtime settings
+         * @returns The settings
+         */
+        RuntimeSettings* getRuntimeSettings();
+
+        /**
+         * Gets the screen
+         * @returns The screen
+         */
+        Screen* getScreen();
+
+        /**
          * Called in loop, iterates through the the spouts equipment list
          * and calls work() on each equipment stored in the sprouts list
          */
@@ -119,7 +135,12 @@ namespace Ohmbrewer {
         /**
          * The touchscreen object. Handles the display for the Rhizome.
          */
-        Screen *_screen;
+        Screen* _screen;
+
+        /**
+         * Various settings used during the run
+         */
+        RuntimeSettings* _settings;
 
         /**
          * The system-wide Timer for periodic updates. Kicks off every 15 seconds.

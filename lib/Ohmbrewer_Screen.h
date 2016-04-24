@@ -193,14 +193,20 @@ namespace Ohmbrewer {
              */
             RuntimeSettings* getSettings() const;
 
+            /**
+             * Gets the sprouts attached to the Rhizome
+             * @returns Rhizome object
+             */
+            std::deque< Equipment* >* getSprouts() const;
+
         private:
             /**
-             * Pointer to the global Sprouts list
+             * Pointer to the Rhizome's sprouts list
              */
             std::deque< Equipment* >* _sprouts;
 
             /**
-             * Pointer to the global Sprouts list
+             * Pointer to the Rhizome's runtime settings
              */
             RuntimeSettings* _settings;
             

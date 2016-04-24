@@ -79,6 +79,7 @@ Ohmbrewer::Thermostat::~Thermostat() {
     delete _heatingElm;
     delete _tempSensor;
     delete _targetTemp;
+    delete _thermPID;
     //delete _timer;
 }
 
