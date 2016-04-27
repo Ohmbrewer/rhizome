@@ -15,7 +15,7 @@
 #include "Ohmbrewer_RIMS.h"
 #include "Ohmbrewer_Onewire.h"
 #include "onewire.h"
-#include "Ohmbrewer_Sprouts.h"
+#include "Ohmbrewer_Rhizome.h"
 
 // Kludge to allow us to use std::list - for now we have to undefine these macros.
 #undef min
@@ -25,34 +25,18 @@
 #include <list>
 
 /* ========================================================================= */
-/*  Global Vars                                                              */
+/* Global Vars                                                               */
 /* ========================================================================= */
 
 /**
- * Each Sprout is a logical collection of physical pins/relays that are connected
- * to a single piece of Equipment.
- */
-std::deque< Ohmbrewer::Equipment* > sprouts;
-
-//initializer Pin list
-//std::list<int> thermPins (1, 0);
-//std::list<int> thermPins2 (1, 0);
-
-/**
- * The touchscreen object. Handles the display for the Rhizome.
- */
-Ohmbrewer::Screen screen = Ohmbrewer::Screen(D6, D7, A6, &sprouts);
-
-/**
- * A timer for doing things every 15 seconds. Used by the sproutList below.
+ * A timer for doing things every 15 seconds. Used by the rhizome below.
  */
 Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
 
 /**
- * The managed list of sprouts
- * @todo Refactor how we handle Sprouts/SproutList so that the deque is encapsulated and Screen takes the list object
+ * The object representing all of the Rhizome's functionality.
  */
-Ohmbrewer::Sprouts sproutList = Ohmbrewer::Sprouts(&sprouts, &screen, &periodicUpdateTimer);
+Ohmbrewer::Rhizome rhizome = Ohmbrewer::Rhizome(&periodicUpdateTimer);
 
 unsigned long lastUpdate = millis();
 
@@ -61,14 +45,27 @@ unsigned long lastUpdate = millis();
 //Ohmbrewer::Publisher::publish_map_t pMap;
 //Ohmbrewer::Publisher* navi = new Ohmbrewer::Publisher(new String("fairies"), &pMap);
 
+// Setting the photon to semi automatic mode, which means it
+// does not connect to WiFi until Particle.connect() is called.
+SYSTEM_MODE(SEMI_AUTOMATIC);
+
 /* ========================================================================= */
-/*  Main Functions                                                           */
+/* Main Functions (setup, loop)                                              */
 /* ========================================================================= */
 /**
  * Does any preliminary setup work before the Rhizome starts the operation loop.
  */
 void setup() {
-//    Serial.begin(9600); // Enable serial for debugging messages
+    //initialize the Dallas Onewire bus pin - Digital 0
+    ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
+
+    if(!Particle.connected()){
+        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
+            //WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
+    }
+
     String fakeTask = "fake";
 //    thermPins.push_back(0); //onewire index
 //    thermPins.push_back(2); //control pin (relay pin)
@@ -76,41 +73,42 @@ void setup() {
 //    thermPins2.push_back(4); //control pin (relay pin)
 //    thermPins2.push_back(5); //power pin (switch pin)
 
-    ow_setPin(D0); //This should later be accomplished by equipment setup OR constructor
-
     // Add our initial Equipment. We wouldn't necessarily do this, but it's useful for now.
     // We'll also set some temperatures and relay values explicitly when we probably wouldn't.
 // EX 1: Temperature Sensors
-//    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 8, new Ohmbrewer::Onewire() ));
-//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(42);
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire() ));
+//    ((Ohmbrewer::TemperatureSensor*)rhizome.getSprouts()->back())->getTemp()->set(42);
 //
-//    sprouts.push_back(new Ohmbrewer::TemperatureSensor( 9, new Ohmbrewer::Onewire() ));
-//    ((Ohmbrewer::TemperatureSensor*)sprouts.back())->getTemp()->set(-20);
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire() ));
+//    ((Ohmbrewer::TemperatureSensor*)rhizome.getSprouts()->back())->getTemp()->set(-20);
 
 // EX 2: A Thermostat
-//    sprouts.push_front(new Ohmbrewer::Thermostat( 1, &thermPins, 25 ));
-//    sprouts.push_front(new Ohmbrewer::Thermostat( 4, &thermPins2, 45 ));
-    //((Ohmbrewer::Thermostat*)sprouts.front())->getElement()->setState(true);
+//    rhizome.getSprouts()->push_front(new Ohmbrewer::Thermostat( &thermPins, 25 ));
+//    rhizome.getSprouts()->push_front(new Ohmbrewer::Thermostat( &thermPins2, 45 ));
+    //((Ohmbrewer::Thermostat*)rhizome.getSprouts()->front())->getElement()->setState(true);
 
 // EX 3: Pumps & Heating Elements
-//    sprouts.push_back(new Ohmbrewer::Pump( 1, 1, 0, true, fakeTask ));
-//    sprouts.push_back(new Ohmbrewer::Pump( 7, 1 ));
-//    sprouts.push_back(new Ohmbrewer::HeatingElement( 3, &thermPins ));
-//    sprouts.push_back(new Ohmbrewer::HeatingElement( 4, new std::list<int>(1,5), 0, true, fakeTask ));
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::Pump( 1, 0, true, fakeTask ));
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::Pump( 1 ));
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::HeatingElement( &thermPins ));
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::HeatingElement( new std::list<int>(1,5), 0, true, fakeTask ));
 
 // EX 4: A RIMS w/ a Pump to the Kettle
 //
 //    int pumpPin = 4;
 //    int pumpPin2 = 5;
-//    sprouts.push_back(new Ohmbrewer::RIMS( 1, &thermPins, pumpPin ));
-//    sprouts.push_back(new Ohmbrewer::Pump( 8 , pumpPin2 )); //transfer pump
-//    ((Ohmbrewer::RIMS*)sprouts.front())->setState(true); // Turn everything on.
-//    ((Ohmbrewer::Thermostat*)sprouts.front())->setState(true); // Turn everything on.
-//    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->setTargetTemp(62.7);
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::RIMS( &thermPins, pumpPin ));
+//    rhizome.getSprouts()->push_back(new Ohmbrewer::Pump( pumpPin2 )); //transfer pump
+//    ((Ohmbrewer::RIMS*)rhizome.getSprouts()->front())->setState(true); // Turn everything on.
+//    ((Ohmbrewer::Thermostat*)rhizome.getSprouts()->front())->setState(true); // Turn everything on.
+//    ((Ohmbrewer::RIMS*)rhizome.getSprouts()->front())->getTube()->setTargetTemp(62.7);
 
     // Turn on screen
-    screen.initScreen();
+    rhizome.getScreen()->initScreen();
 //    pMap[String("hey")] = String("listen!"); // (*)
+
+    //Turn on for debugging
+    Serial.begin(9600);
 }
 
 /**
@@ -118,40 +116,49 @@ void setup() {
  */
 void loop() {
 
-    sproutList.work();
+    rhizome.work();
 //    //probe ID finder command (switch this for the other below commands to enable)
-//    ((Ohmbrewer::Onewire*)(((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->getProbe()))
+//    ((Ohmbrewer::Onewire*)(((Ohmbrewer::RIMS*)rhizome.getSprouts()->front())->getTube()->getSensor()->getProbe()))
 //            ->displayProbeIds(&screen);
 
 //Thermostat
-    //((Ohmbrewer::Thermostat*)sprouts.front())->getSensor()->work();
-//    ((Ohmbrewer::Thermostat*)sprouts.front())->setState(true);
-//    ((Ohmbrewer::Thermostat*)sprouts.front())->work();
-//    ((Ohmbrewer::Thermostat*)sprouts.back())->setState(true);
-//    ((Ohmbrewer::Thermostat*)sprouts.back())->work();
+    //((Ohmbrewer::Thermostat*)rhizome.getSprouts()->front())->getSensor()->work();
+//    ((Ohmbrewer::Thermostat*)rhizome.getSprouts()->front())->setState(true);
+//    ((Ohmbrewer::Thermostat*)rhizome.getSprouts()->front())->work();
+//    ((Ohmbrewer::Thermostat*)rhizome.getSprouts()->back())->setState(true);
+//    ((Ohmbrewer::Thermostat*)rhizome.getSprouts()->back())->work();
 
 //    if((millis() - lastUpdate) > 10000) {
 //        // Toggle the last relay every 10 seconds, for illustration.
-//        ((Ohmbrewer::RIMS*)sprouts.front())->getTube()
+//        ((Ohmbrewer::RIMS*)rhizome.getSprouts()->front())->getTube()
 //                                           ->getElement()
 //                                           ->toggleState();
 //
 //        navi->publish(); // (*)
 //        lastUpdate = millis();
 //    }
-//    ((Ohmbrewer::RIMS*)sprouts.front())->getTube()->getSensor()->work(); //Temp patch to make sensor read in Tun temp
+//    ((Ohmbrewer::RIMS*)rhizome.getSprouts()->front())->getTube()->getSensor()->work(); //Temp patch to make sensor read in Tun temp
 
-    //refresh the display
-    screen.refreshDisplay();
+    // Check for button press and refresh the screen
+    rhizome.getScreen()->captureButtonPress();
+    rhizome.getScreen()->refreshDisplay();
 }
 
 /* ========================================================================= */
-/*  Other Global Functions                                                   */
+/* Other Global Functions                                                    */
 /* ========================================================================= */
 
 /**
- * Delegator function that allows us to call the managed method for publishing periodic updates.
+ * Delegation function that allows us to call the managed method for publishing periodic updates.
  */
 void doPeriodicUpdates() {
-    sproutList.publishPeriodicUpdates();
+    // Do not attempt to publish updates if disconnected from the cloud
+    if(!Particle.connected()){
+        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
+            // WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
+    } else {
+        rhizome.publishPeriodicUpdates();
+    }
 }

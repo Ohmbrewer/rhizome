@@ -37,8 +37,8 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Screen.cpp
     ../lib/Ohmbrewer_Runtime_Settings.h
     ../lib/Ohmbrewer_Runtime_Settings.cpp
-    ../lib/Ohmbrewer_Sprouts.h
-    ../lib/Ohmbrewer_Sprouts.cpp
+    ../lib/Ohmbrewer_Rhizome.h
+    ../lib/Ohmbrewer_Rhizome.cpp
     ../lib/Ohmbrewer_Temperature.h
     ../lib/Ohmbrewer_Temperature.cpp
     ../lib/Ohmbrewer_Temperature_Sensor.h
