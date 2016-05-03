@@ -53,12 +53,7 @@ Ohmbrewer::Rhizome::~Rhizome() {
  *
  * @param argsStr The argument string passed via the Particle Cloud.
  * @returns Equipment ID if successful,
- *          (negative) error codes if unsuccessful:
- *          -1 : Invalid ID
- *          -2 : ID already in use for given Equipment Type
- *          -3 : One or more of the provided pins is already in use
- *          -4 : Incorrect number of pins provided for given Equipment Type
- *          -5 : Not Implemented
+ *          (negative) error codes if unsuccessful (see Rhizome::AddSproutError)
  */
 int Ohmbrewer::Rhizome::addSprout(String argsStr) {
     int errorCode = 0;
@@ -81,7 +76,7 @@ int Ohmbrewer::Rhizome::addSprout(String argsStr) {
         errorCode = addRIMS(params);
     } else {
         // Trying to add an unrecognized Equipment Type.
-        errorCode = -5;
+        errorCode = AddSproutError::SPROUT_NOT_IMPLEMENTED;
     }
 
     // Clear out that dynamically allocated buffer
@@ -117,11 +112,7 @@ int Ohmbrewer::Rhizome::addSprout(String argsStr) {
  *
  * @param argsStr The argument string passed via the Particle Cloud.
  * @returns Equipment ID if successful,
- *          (negative) error codes if unsuccessful:
- *          -1 : Invalid Equipment Type
- *          -2 : Invalid ID
- *          -3 : Specified Equipment was not found in the list
- *          -4 : Update failed
+ *          (negative) error codes if unsuccessful (see Rhizome::UpdateSproutError)
  */
 int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
     char* params = new char[argsStr.length() + 1];
@@ -139,7 +130,7 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
        !type.equalsIgnoreCase(Ohmbrewer::Thermostat::TYPE_NAME) &&
        !type.equalsIgnoreCase(Ohmbrewer::RIMS::TYPE_NAME)) {
         delete params;
-        return -1; // Fail! Bad Type.
+        return UpdateSproutError::INVALID_TYPE; // Fail! Bad Type.
     } else {
         // Ok, we like this Type. Let's remove it (and the comma) from the args string
         // so it doesn't get in the way of further processing.
@@ -149,7 +140,7 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
     // If toInt() fails due to a bad parse, it gives 0.
     if(isFakeZero(idStr)) {
         delete params;
-        return -2; // Fail! Bad ID.
+        return UpdateSproutError::INVALID_ID; // Fail! Bad ID.
     }
 
     std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
@@ -165,7 +156,7 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
 
     // Clear out that dynamically allocated buffer
     delete params;
-    return -3; // Fail! Not Found!
+    return UpdateSproutError::SPROUT_NOT_FOUND; // Fail! Not Found!
 }
 
 /**
@@ -176,9 +167,7 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
  *
  * @param argsStr The argument string passed via the Particle Cloud.
  * @returns Equipment ID if successful,
- *          (negative) error codes if unsuccessful:
- *          -1 : Invalid ID
- *          -2 : No match found
+ *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
  */
 int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
     char* params = new char[argsStr.length() + 1];
@@ -192,7 +181,7 @@ int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
     // If toInt() fails due to a bad parse, it gives 0.
     if(isFakeZero(idStr)) {
         delete params;
-        return -1; // Fail!
+        return RemoveSproutError::INVALID_ID; // Fail!
     }
 
     std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
@@ -208,7 +197,7 @@ int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
 
     // Clear out that dynamically allocated buffer
     delete params;
-    return -2; // Fail!
+    return RemoveSproutError::SPROUT_NOT_FOUND; // Fail!
 }
 
 /**
@@ -329,11 +318,11 @@ int Ohmbrewer::Rhizome::parseOnewireSensorPins(char *params, int &index) {
     String ind = String(strtok(NULL, ","));
 
     if(ind == NULL) {
-        return -4;
+        return AddSproutError::INCORRECT_PIN_COUNT;
     }
     index = ind.toInt();
 
-    return 0;
+    return AddSproutError::NONE;
 }
 
 /**
@@ -345,7 +334,7 @@ int Ohmbrewer::Rhizome::addTemperatureSensor(char* params) {
     int index;
     int errorCode = parseOnewireSensorPins(params, index);
 
-    if(errorCode == 0) {
+    if(errorCode == AddSproutError::NONE) {
         saveNewSprout(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire(index) ));
     }
 
@@ -363,18 +352,18 @@ int Ohmbrewer::Rhizome::parsePumpPins(char* params, int &pin) {
 
     // Verify that D0 values are intentional
     if(isFakeZero(powerPin)) {
-        return -1;
+        return AddSproutError::INVALID_ID;
     }
 
     // Verify that the pins are not in use
     std::list<int> pinTest;
     pinTest.push_back(powerPin.toInt());
     if(arePinsInUse(&pinTest)) {
-        return -3;
+        return AddSproutError::PIN_IN_USE;
     }
 
     pin = powerPin.toInt();
-    return 0;
+    return AddSproutError::NONE;
 }
 
 /**
@@ -386,7 +375,7 @@ int Ohmbrewer::Rhizome::addPump(char* params) {
     int pumpPin;
     int errorCode = parsePumpPins(params, pumpPin);
 
-    if(errorCode == 0) {
+    if(errorCode == AddSproutError::NONE) {
         saveNewSprout(new Ohmbrewer::Pump(pumpPin ));
     }
 
@@ -405,10 +394,10 @@ int Ohmbrewer::Rhizome::parseHeatingElementPins(char* params, std::list<int> &el
 
     // Verify that D0 values are intentional
     if(isFakeZero(controlPin)) {
-        return -1;
+        return AddSproutError::INVALID_ID;
     }
     if(powerPin != NULL && isFakeZero(powerPin)) {
-        return -1;
+        return AddSproutError::INVALID_ID;
     }
 
     elementPins.push_back(controlPin.toInt());
@@ -417,10 +406,10 @@ int Ohmbrewer::Rhizome::parseHeatingElementPins(char* params, std::list<int> &el
     }
     // Verify that the pins are not in use
     if(arePinsInUse(&elementPins)) {
-        return -3;
+        return AddSproutError::PIN_IN_USE;
     }
 
-    return 0;
+    return AddSproutError::NONE;
 }
 
 /**
@@ -432,7 +421,7 @@ int Ohmbrewer::Rhizome::addHeatingElement(char* params) {
     std::list<int> elementPins;
     int errorCode = parseHeatingElementPins(params, elementPins);
 
-    if(errorCode == 0) {
+    if(errorCode == AddSproutError::NONE) {
         saveNewSprout(new Ohmbrewer::HeatingElement(&elementPins ));
     }
 
@@ -447,21 +436,21 @@ int Ohmbrewer::Rhizome::addHeatingElement(char* params) {
  */
 int Ohmbrewer::Rhizome::parseThermostatPins(char* params, std::list<int> &thermPins) {
     int index = -1;
-    int errorCode = 0;
+    int errorCode = AddSproutError::NONE;
 
     errorCode = parseOnewireSensorPins(params, index);
-    if(errorCode != 0) {
+    if(errorCode != AddSproutError::NONE) {
         return errorCode;
     }
 
     errorCode = parseHeatingElementPins(params, thermPins);
-    if(errorCode != 0) {
+    if(errorCode != AddSproutError::NONE) {
         return errorCode;
     }
 
     thermPins.push_front(index);
     thermPins.push_front(0);//Bus Pin
-    return 0;
+    return AddSproutError::NONE;
 }
 
 /**
@@ -473,7 +462,7 @@ int Ohmbrewer::Rhizome::addThermostat(char* params) {
     std::list<int> thermPins;
     int errorCode = parseThermostatPins(params, thermPins);
 
-    if(errorCode == 0) {
+    if(errorCode == AddSproutError::NONE) {
         saveNewSprout(new Ohmbrewer::Thermostat(&thermPins));
     }
 
@@ -489,20 +478,20 @@ int Ohmbrewer::Rhizome::addThermostat(char* params) {
  * @return Error or success code, according to the requirements specified by addSprout
  */
 int Ohmbrewer::Rhizome::parseRIMSPins(char* params, std::list<int> &thermPins, int &pumpPin, int &safetyIndex) {
-    int errorCode = 0;
+    int errorCode = AddSproutError::NONE;
 
     errorCode = parseThermostatPins(params, thermPins);
-    if(errorCode != 0) {
+    if(errorCode != AddSproutError::NONE) {
         return errorCode;
     }
 
     errorCode = parsePumpPins(params, pumpPin);
-    if(errorCode != 0) {
+    if(errorCode != AddSproutError::NONE) {
         return errorCode;
     }
 
     errorCode = parseOnewireSensorPins(params, safetyIndex);
-    if(errorCode != 0) {
+    if(errorCode != AddSproutError::NONE) {
         return errorCode;
     }
 
@@ -520,7 +509,7 @@ int Ohmbrewer::Rhizome::addRIMS(char* params) {
     std::list<int> thermPins;
     int errorCode = parseRIMSPins(params, thermPins, pumpPin, safetyIndex);
 
-    if(errorCode == 0) {
+    if(errorCode == AddSproutError::NONE) {
         saveNewSprout(new Ohmbrewer::RIMS(&thermPins, pumpPin, safetyIndex ));
     }
 

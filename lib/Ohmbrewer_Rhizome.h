@@ -24,6 +24,42 @@ namespace Ohmbrewer {
         public:
 
         /**
+         * Provides error codes that may occur while attempting to add a sprout to the Rhizome.
+         */
+        class AddSproutError {
+            public:
+
+            static const int NONE = 0;
+            static const int INVALID_ID = -1;
+            static const int ID_IN_USE = -2;
+            static const int PIN_IN_USE = -3;
+            static const int INCORRECT_PIN_COUNT = -4;
+            static const int SPROUT_NOT_IMPLEMENTED = -5;
+        };
+
+        /**
+         * Provides error codes that may occur while attempting to update sprout on the Rhizome.
+         */
+        class UpdateSproutError {
+            public:
+
+            static const int INVALID_TYPE = -1;
+            static const int INVALID_ID = -2;
+            static const int SPROUT_NOT_FOUND = -3;
+            static const int UPDATE_FAILURE = -4;
+        };
+
+        /**
+         * Provides error codes that may occur while attempting to remove a sprout from the Rhizome.
+         */
+        class RemoveSproutError {
+            public:
+
+            static const int INVALID_ID = -1;
+            static const int SPROUT_NOT_FOUND = -2;
+        };
+
+        /**
          * Constructor
          */
         Rhizome(Timer *put);
@@ -48,12 +84,7 @@ namespace Ohmbrewer {
          *
          * @param argsStr The argument string passed via the Particle Cloud.
          * @returns Equipment ID if successful,
-         *          (negative) error codes if unsuccessful:
-         *          -1 : Invalid ID
-         *          -2 : ID already in use for given Equipment Type
-         *          -3 : One or more of the provided pins is already in use
-         *          -4 : Incorrect number of pins provided for given Equipment Type
-         *          -5 : Not Implemented
+         *          (negative) error codes if unsuccessful (see Rhizome::AddSproutError)
          */
         int addSprout(String argsStr);
 
@@ -72,11 +103,7 @@ namespace Ohmbrewer {
          *
          * @param argsStr The argument string passed via the Particle Cloud.
          * @returns Equipment ID if successful,
-         *          (negative) error codes if unsuccessful:
-         *          -1 : Invalid Equipment Type
-         *          -2 : Invalid ID
-         *          -3 : Specified Equipment was not found in the list
-         *          -4 : Update failed
+         *          (negative) error codes if unsuccessful (see Rhizome::UpdateSproutError)
          */
         int updateSprout(String argsStr);
 
@@ -88,9 +115,7 @@ namespace Ohmbrewer {
          *
          * @param argsStr The argument string passed via the Particle Cloud.
          * @returns Equipment ID if successful,
-         *          (negative) error codes if unsuccessful:
-         *          -1 : Invalid ID
-         *          -2 : No match found
+         *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
          */
         int removeSprout(String argsStr);
 
