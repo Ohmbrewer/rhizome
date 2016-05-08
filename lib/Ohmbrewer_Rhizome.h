@@ -147,6 +147,12 @@ namespace Ohmbrewer {
          */
         Timer* _periodicUpdateTimer;
 
+        /**
+         * Keeps a json format index of all registered equipment for easy access
+         * to any requesting application. Exposed via particle.variable
+         */
+        String _index;
+
 
     private:
 
@@ -247,6 +253,17 @@ namespace Ohmbrewer {
          * @return Error or success code, according to the requirements specified by addSprout
          */
         int addRIMS(char* params);
+
+        /**
+         * Adds a sprout to the list and rebuids the index
+         * @param equipment The sprout being added
+         */
+        void saveNewSprout(Equipment* sprout);
+
+        /**
+         * Rebuilds index based on current list of equipment
+         */
+        void rebuildIndex();
     };
 };
 

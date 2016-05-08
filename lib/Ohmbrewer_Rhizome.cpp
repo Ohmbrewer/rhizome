@@ -24,6 +24,8 @@ Ohmbrewer::Rhizome::Rhizome(Timer *put) {
     Particle.function("add", &Rhizome::addSprout, this);
     Particle.function("update", &Rhizome::updateSprout, this);
     Particle.function("remove", &Rhizome::removeSprout, this);
+    Particle.variable("index",_index);
+
 }
 
 /**
@@ -198,6 +200,7 @@ int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
         if (((*itr)->getID() == id) && (type.equalsIgnoreCase((*itr)->getType()))) {
             _sprouts->erase(itr);
             delete params;
+            rebuildIndex();
             _screen->initScreen(); // Gotta do this to clear artifacts from the screen
             return id; // Success!
         }
@@ -343,7 +346,7 @@ int Ohmbrewer::Rhizome::addTemperatureSensor(char* params) {
     int errorCode = parseOnewireSensorPins(params, index);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire(index) ));
+        saveNewSprout(new Ohmbrewer::TemperatureSensor( new Ohmbrewer::Onewire(index) ));
     }
 
     return errorCode;
@@ -384,7 +387,7 @@ int Ohmbrewer::Rhizome::addPump(char* params) {
     int errorCode = parsePumpPins(params, pumpPin);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::Pump(pumpPin ));
+        saveNewSprout(new Ohmbrewer::Pump(pumpPin ));
     }
 
     return errorCode;
@@ -430,7 +433,7 @@ int Ohmbrewer::Rhizome::addHeatingElement(char* params) {
     int errorCode = parseHeatingElementPins(params, elementPins);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::HeatingElement(&elementPins ));
+        saveNewSprout(new Ohmbrewer::HeatingElement(&elementPins ));
     }
 
     return errorCode;
@@ -471,7 +474,7 @@ int Ohmbrewer::Rhizome::addThermostat(char* params) {
     int errorCode = parseThermostatPins(params, thermPins);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::Thermostat(&thermPins));
+        saveNewSprout(new Ohmbrewer::Thermostat(&thermPins));
     }
 
     return errorCode;
@@ -518,14 +521,54 @@ int Ohmbrewer::Rhizome::addRIMS(char* params) {
     int errorCode = parseRIMSPins(params, thermPins, pumpPin, safetyIndex);
 
     if(errorCode == 0) {
-        _sprouts->push_back(new Ohmbrewer::RIMS(&thermPins, pumpPin, safetyIndex ));
+        saveNewSprout(new Ohmbrewer::RIMS(&thermPins, pumpPin, safetyIndex ));
     }
 
     return errorCode;
 }
 
+/**
+ * Adds a sprout to the list and rebuids the index
+ * @param equipment The sprout being added
+ */
+void Ohmbrewer::Rhizome::saveNewSprout(Equipment* sprout) {
+    _sprouts->push_back(sprout);
+    rebuildIndex();
+}
 
 
+/**
+ * Rebuilds index based on current list of equipment
+ */
+void Ohmbrewer::Rhizome::rebuildIndex() {
+
+    String tempIndex = String("{ ");
+
+    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+        tempIndex.concat("{ ");
+        tempIndex.concat(" \"id\": \"");
+        tempIndex.concat((*itr)->getID());
+        tempIndex.concat("\", ");
+        tempIndex.concat("\"type\": \"");
+        tempIndex.concat((*itr)->getType());
+        tempIndex.concat("\", ");
+        tempIndex.concat("\"state\": \"");
+        tempIndex.concat((*itr)->getState());
+        tempIndex.concat("\"");
+        tempIndex.concat("\", ");
+        tempIndex.concat("\"current task\": \"");
+        tempIndex.concat((*itr)->getCurrentTask());
+        tempIndex.concat("\"");
+        tempIndex.concat(" }");
+        if((*itr) != _sprouts->back()) {
+            tempIndex.concat(",");
+        }
+    }
+    tempIndex.concat(" }");
+
+    _index = tempIndex;
+    Serial.println(_index);
+}
 
 
 
