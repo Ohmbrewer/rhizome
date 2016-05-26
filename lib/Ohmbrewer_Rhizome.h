@@ -55,6 +55,7 @@ namespace Ohmbrewer {
         class RemoveSproutError {
             public:
 
+            static const int NONE = 0;
             static const int INVALID_ID = -1;
             static const int SPROUT_NOT_FOUND = -2;
         };
@@ -108,7 +109,7 @@ namespace Ohmbrewer {
         int updateSprout(String argsStr);
 
         /**
-         * Dynamically removes Equipment to the Rhizome.
+         * Dynamically removes one or more Equipment from the Rhizome.
          *
          * The argument string for this function must match the following format:
          * TYPE,ID
@@ -117,7 +118,34 @@ namespace Ohmbrewer {
          * @returns Equipment ID if successful,
          *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
          */
-        int removeSprout(String argsStr);
+        int removeSprouts(String argsStr);
+
+        /**
+         * Dynamically removes Equipment from the Rhizome.
+         *
+         * @param type The type of Sprout to remove
+         * @param id The ID of the Sprout to remove
+         * @returns Equipment ID if successful,
+         *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+         */
+        int removeSprout(String type, int id);
+
+        /**
+         * Removes all Equipment from the Rhizome.
+         *
+         * @returns 0 if successful
+         *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+         */
+        int removeAllSprouts();
+
+        /**
+         * Removes all Equipment of a given type from the Rhizome.
+         *
+         * @param type The type of Sprout to remove
+         * @returns 0 if successful
+         *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+         */
+        int removeAllSprouts(String type);
 
         /**
          * Publishes any periodic updates that need to be published.
@@ -289,6 +317,12 @@ namespace Ohmbrewer {
          * Rebuilds index based on current list of equipment
          */
         void rebuildIndex();
+
+        /**
+         * Rebuilds the Sprout index and refreshes the Screen
+         */
+        void refreshSprouts();
+
     };
 };
 
