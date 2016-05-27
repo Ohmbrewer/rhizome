@@ -110,7 +110,7 @@ void Ohmbrewer::Thermostat::initThermostat(std::list<int>* thermPins){
         setState(false);
         return;
     }
-    _targetTemp = new Temperature(-69);
+    _targetTemp = new Temperature();
 
     // PID set up
     _thermPID = new PID(&input, &output, &setPoint,

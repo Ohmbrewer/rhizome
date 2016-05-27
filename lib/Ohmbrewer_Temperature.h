@@ -17,6 +17,16 @@ namespace Ohmbrewer {
         public:
 
             /**
+             * Represents a temperature that doesn't make sense. Used for bad readings.
+             */
+            const static constexpr double INVALID_TEMPERATURE = -69.0;
+
+            /**
+             * Constructor.
+             */
+            Temperature();
+
+            /**
              * Constructor.
              * @param temp The temperature in Celsius
              */
