@@ -2,6 +2,7 @@
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Publisher.h"
 #include "Ohmbrewer_Onewire.h"
+#include "Ohmbrewer_Temperature.h"
 
 
 /**
@@ -94,7 +95,7 @@ void Ohmbrewer::RIMS::initRIMS(std::list<int>* thermPins, int pumpPin, int safet
         delete pub;
     }
     _recirc = new Pump(pumpPin);
-    _safetyTemp = new Temperature(-69);
+    _safetyTemp = new Temperature();
 }
 
 /**

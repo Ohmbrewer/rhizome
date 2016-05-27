@@ -1,5 +1,11 @@
 #include "Ohmbrewer_Temperature.h"
 
+/**
+ * Constructor.
+ */
+Ohmbrewer::Temperature::Temperature() {
+    _temp = Temperature::INVALID_TEMPERATURE;
+}
 
 /**
  * Constructor.

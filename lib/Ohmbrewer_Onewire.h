@@ -28,7 +28,7 @@ namespace Ohmbrewer {
 
         /**
          * @returns the Celsius reading from the specified connected DS18b20 probe
-         *      returns -69 for no value
+         *      returns Temperature::INVALID_TEMPERATURE for no value
          */
         double getReading();
 

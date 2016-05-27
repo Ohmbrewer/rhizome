@@ -1,4 +1,4 @@
-
+#include "Ohmbrewer_Temperature.h"
 #include "Ohmbrewer_Onewire.h"
 #include "ds18x20.h"
 #include "onewire.h"
@@ -29,7 +29,7 @@ int Ohmbrewer::Onewire::getID() const {
 
 /**
  * @returns the Celsius reading from the specified connected DS18b20 probe
- *      returns -69 for no value
+ *      returns Temperature::INVALID_TEMPERATURE for no value
  */
 double Ohmbrewer::Onewire::getReading(){
     //char uid[8];                   //need the unique ID of the probe to search for.
@@ -38,7 +38,7 @@ double Ohmbrewer::Onewire::getReading(){
 
     uint8_t subzero, cel, celFracBits;        //local vars
 //    char msg[100];
-    double tempC = -69;
+    double tempC = Temperature::INVALID_TEMPERATURE;
     //log("Starting measurement");
     //Asks all DS18x20 devices to start temperature measurement, takes up to 750ms at max resolution
     DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL );
@@ -104,7 +104,7 @@ double Ohmbrewer::Onewire::getReading(){
 //                        if (i == numSensors - 1) {
 //                            //sprintf(msg, "Sensor %s not connected", _probeId); //TODO inject probe ID?
 //                            //log(msg);
-//                            tempC = -69.69;//double error :)
+//                            tempC = Temperature::INVALID_TEMPERATURE;
 //                        }
 //                    }
 //                }
@@ -201,10 +201,9 @@ void Ohmbrewer::Onewire::displayProbeIds(Ohmbrewer::Screen *screen){
             else {//not sure this block is actually needed
                 if (i == numSensors - 1) {
                     //error
-                    tempC = -69;
                     screen->print(probeId);
                     screen->print(" : ");
-                    screen->println(tempC);
+                    screen->println(Temperature::INVALID_TEMPERATURE);
                 }
             }
         }

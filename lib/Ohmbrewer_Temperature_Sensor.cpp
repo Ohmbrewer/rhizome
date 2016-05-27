@@ -2,6 +2,7 @@
 #include "Ohmbrewer_Screen.h"
 #include "Ohmbrewer_Onewire.h"
 #include "Ohmbrewer_Publisher.h"
+#include "Ohmbrewer_Temperature.h"
 
 
 /**
@@ -10,7 +11,7 @@
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(Probe* probe) {
     _probe = probe;                 //For now all probes are all onewire
-    _lastReading = new Temperature(-69);
+    _lastReading = new Temperature();
     _lastReadTime = Time.now();
 //    registerUpdateFunction();
 }
@@ -24,7 +25,7 @@ Ohmbrewer::TemperatureSensor::TemperatureSensor(Probe* probe) {
  */
 Ohmbrewer::TemperatureSensor::TemperatureSensor(Probe* probe, int stopTime, bool state, String currentTask) : Ohmbrewer::Equipment(stopTime, state, currentTask) {
     _probe = probe;
-    _lastReading = new Temperature(-69);
+    _lastReading = new Temperature();
     _lastReadTime = Time.now();
 //    registerUpdateFunction();
 }
