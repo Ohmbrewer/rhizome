@@ -46,6 +46,14 @@ Ohmbrewer::Screen::Screen(uint8_t CS,
 }
 
 /**
+ * Destructor
+ */
+Ohmbrewer::Screen::~Screen() {
+    delete _ts;
+    delete _homeMenu;
+}
+
+/**
  * Initializes the display screen
  */
 void Ohmbrewer::Screen::initScreen() {
