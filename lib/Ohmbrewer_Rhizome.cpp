@@ -23,8 +23,8 @@ Ohmbrewer::Rhizome::Rhizome(Timer *put) {
 
     Particle.function("add", &Rhizome::addSprout, this);
     Particle.function("update", &Rhizome::updateSprout, this);
-    Particle.function("remove", &Rhizome::removeSprout, this);
-    Particle.variable("index",_index);
+    Particle.function("remove", &Rhizome::removeSprouts, this);
+    Particle.variable("index", _index);
 
 }
 
@@ -160,7 +160,7 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
 }
 
 /**
- * Dynamically removes Equipment to the Rhizome.
+ * Dynamically removes one or more Equipment from the Rhizome.
  *
  * The argument string for this function must match the following format:
  * TYPE,ID
@@ -169,35 +169,93 @@ int Ohmbrewer::Rhizome::updateSprout(String argsStr) {
  * @returns Equipment ID if successful,
  *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
  */
-int Ohmbrewer::Rhizome::removeSprout(String argsStr) {
+int Ohmbrewer::Rhizome::removeSprouts(String argsStr) {
     char* params = new char[argsStr.length() + 1];
     strcpy(params, argsStr.c_str());
 
     // Parse the parameters
     String type = String(strtok(params, ","));
-    String idStr   = String(strtok(NULL, ","));
-    int id = idStr.toInt();
+    String idStr = String(strtok(NULL, ","));
+    delete params;
 
-    // If toInt() fails due to a bad parse, it gives 0.
-    if(isFakeZero(idStr)) {
-        delete params;
-        return RemoveSproutError::INVALID_ID; // Fail!
+    if(idStr.equalsIgnoreCase("all")) {
+        if(type.equalsIgnoreCase("all")) {
+            return removeAllSprouts();
+        } else {
+            return removeAllSprouts(type);
+        }
+    } else {
+        // If toInt() fails due to a bad parse, it gives 0.
+        if(isFakeZero(idStr)) {
+            return RemoveSproutError::INVALID_ID; // Fail!
+        }
+
+        return removeSprout(type, idStr.toInt());
     }
+}
 
+/**
+ * Dynamically removes Equipment from the Rhizome.
+ *
+ * @param type The type of Sprout to remove
+ * @param id The ID of the Sprout to remove
+ * @returns Equipment ID if successful,
+ *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+ */
+int Ohmbrewer::Rhizome::removeSprout(String type, int id) {
     std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin();
     for (itr; itr != _sprouts->end(); itr++) {
         if (((*itr)->getID() == id) && (type.equalsIgnoreCase((*itr)->getType()))) {
             _sprouts->erase(itr);
-            delete params;
-            rebuildIndex();
-            _screen->initScreen(); // Gotta do this to clear artifacts from the screen
+            refreshSprouts();
             return id; // Success!
         }
     }
 
-    // Clear out that dynamically allocated buffer
-    delete params;
     return RemoveSproutError::SPROUT_NOT_FOUND; // Fail!
+}
+
+/**
+ * Removes all Equipment from the Rhizome.
+ *
+ * @returns 0 if successful
+ *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+ */
+int Ohmbrewer::Rhizome::removeAllSprouts() {
+    _sprouts->clear();
+    refreshSprouts();
+    return RemoveSproutError::NONE; // Success!
+}
+
+/**
+ * Removes all Equipment of a given type from the Rhizome.
+ *
+ * @param type The type of Sprout to remove
+ * @returns 0 if successful
+ *          (negative) error codes if unsuccessful (see Rhizome::RemoveSproutError)
+ */
+int Ohmbrewer::Rhizome::removeAllSprouts(String type) {
+    bool foundNone = true;
+    int currentIndex = 0;
+    std::deque<Ohmbrewer::Equipment *>::iterator itr;
+
+    while((_sprouts->begin() + currentIndex) != _sprouts->end()) {
+        itr = _sprouts->begin() + currentIndex;
+        if (type.equalsIgnoreCase((*itr)->getType())) {
+            foundNone = false;
+            _sprouts->erase(itr);
+            continue;
+        }
+
+        currentIndex++;
+    }
+
+    if(foundNone) {
+        return RemoveSproutError::SPROUT_NOT_FOUND;
+    }
+
+    refreshSprouts();
+    return RemoveSproutError::NONE; // Success!
 }
 
 /**
@@ -525,7 +583,6 @@ void Ohmbrewer::Rhizome::saveNewSprout(Equipment* sprout) {
     rebuildIndex();
 }
 
-
 /**
  * Rebuilds index based on current list of equipment
  */
@@ -543,14 +600,13 @@ void Ohmbrewer::Rhizome::rebuildIndex() {
         tempIndex.concat("\", ");
         tempIndex.concat("\"state\": \"");
         tempIndex.concat((*itr)->getState());
-        tempIndex.concat("\"");
         tempIndex.concat("\", ");
         tempIndex.concat("\"current task\": \"");
         tempIndex.concat((*itr)->getCurrentTask());
         tempIndex.concat("\"");
         tempIndex.concat(" }");
         if((*itr) != _sprouts->back()) {
-            tempIndex.concat(",");
+            tempIndex.concat(", ");
         }
     }
     tempIndex.concat(" }");
@@ -559,5 +615,10 @@ void Ohmbrewer::Rhizome::rebuildIndex() {
     Serial.println(_index);
 }
 
-
-
+/**
+ * Rebuilds the Sprout index and refreshes the Screen
+ */
+void Ohmbrewer::Rhizome::refreshSprouts() {
+    rebuildIndex();
+    _screen->initScreen();
+}

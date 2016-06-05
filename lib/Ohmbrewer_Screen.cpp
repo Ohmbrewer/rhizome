@@ -166,7 +166,7 @@ unsigned long Ohmbrewer::Screen::displayManualRelays() {
             print("Temp ");
             writeDegree();
             print("C ");
-            ((Ohmbrewer::Relay*)(*itr))->display(this);
+            ((Ohmbrewer::TemperatureSensor*)(*itr))->display(this);
         }
     }
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
@@ -174,7 +174,7 @@ unsigned long Ohmbrewer::Screen::displayManualRelays() {
         if (strcmp((*itr)->getType(), Pump::TYPE_NAME) == 0) {
             setTextColor(CYAN, DEFAULT_BG_COLOR);
             print("Pump    ");
-            ((Ohmbrewer::Relay*)(*itr))->display(this);
+            ((Ohmbrewer::Pump*)(*itr))->display(this);
         }
     }
     for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
