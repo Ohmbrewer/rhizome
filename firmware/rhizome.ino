@@ -34,14 +34,9 @@
 /* ========================================================================= */
 
 /**
- * A timer for doing things every 15 seconds. Used by the rhizome below.
- */
-Timer periodicUpdateTimer = Timer(15000, doPeriodicUpdates);
-
-/**
  * The object representing all of the Rhizome's functionality.
  */
-Ohmbrewer::Rhizome rhizome = Ohmbrewer::Rhizome(&periodicUpdateTimer);
+Ohmbrewer::Rhizome rhizome = Ohmbrewer::Rhizome();
 
 unsigned long lastUpdate = millis();
 
@@ -83,23 +78,4 @@ void loop() {
 	// Check for button press and refresh the screen
     rhizome.getScreen()->captureButtonPress();
     rhizome.getScreen()->refreshDisplay();
-}
-
-/* ========================================================================= */
-/* Other Global Functions                                                    */
-/* ========================================================================= */
-
-/**
- * Delegation function that allows us to call the managed method for publishing periodic updates.
- */
-void doPeriodicUpdates() {
-	// Do not attempt to publish updates if disconnected from the cloud
-    if(!Particle.connected()){
-        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
-            // WiFi is not connected and should be - attempt to connect
-            Particle.connect();
-        }
-	} else {
-        rhizome.publishPeriodicUpdates();
-    }
 }
