@@ -63,7 +63,7 @@ namespace Ohmbrewer {
         /**
          * Constructor
          */
-        Rhizome(Timer *put);
+        Rhizome();
 
         /**
          * Destructor. Kills the internal deque.

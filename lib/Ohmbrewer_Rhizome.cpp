@@ -14,12 +14,12 @@
 /**
  * Constructor
  */
-Ohmbrewer::Rhizome::Rhizome(Timer *put) {
+Ohmbrewer::Rhizome::Rhizome() {
     _sprouts = new std::deque< Equipment* >;
     _settings = new RuntimeSettings();
     _screen = new Screen(D6, D7, A6, _sprouts, _settings);
 
-    _periodicUpdateTimer = put;
+    _periodicUpdateTimer = new Timer(15000, &Rhizome::publishPeriodicUpdates, *this);
 
     Particle.function("add", &Rhizome::addSprout, this);
     Particle.function("update", &Rhizome::updateSprout, this);
@@ -263,24 +263,32 @@ int Ohmbrewer::Rhizome::removeAllSprouts(String type) {
  * @see _periodicUpdateTimer
  */
 void Ohmbrewer::Rhizome::publishPeriodicUpdates() {
+    // Do not attempt to publish updates if disconnected from the cloud
+    if(!Particle.connected()){
+        if(EEPROM.read(Ohmbrewer::RuntimeSettings::WIFI_STATUS_ADDR) == Ohmbrewer::RuntimeSettings::EEPROM_WIFI_STATUS_ON){
+            // WiFi is not connected and should be - attempt to connect
+            Particle.connect();
+        }
+    } else {
+        // Publish all the Temperature Sensor updates
+        for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
+            if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) == 0) {
+                ((TemperatureSensor*)(*itr))->publishSensorReading();
+                continue;
+            }
+            if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
+                ((Thermostat*)(*itr))->getSensor()->publishSensorReading();
+                continue;
+            }
+            if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
+                ((RIMS*)(*itr))->getTunSensor()->publishSensorReading();
+                ((RIMS*)(*itr))->getSafetySensor()->publishSensorReading();
+            }
+        }
 
-    // Publish all the Temperature Sensor updates
-    for (std::deque<Ohmbrewer::Equipment*>::iterator itr = _sprouts->begin(); itr != _sprouts->end(); itr++) {
-        if (strcmp((*itr)->getType(), TemperatureSensor::TYPE_NAME) == 0) {
-            ((TemperatureSensor*)(*itr))->publishSensorReading();
-            continue;
-        }
-        if (strcmp((*itr)->getType(), Thermostat::TYPE_NAME) == 0) {
-            ((Thermostat*)(*itr))->getSensor()->publishSensorReading();
-            continue;
-        }
-        if (strcmp((*itr)->getType(), RIMS::TYPE_NAME) == 0) {
-            ((RIMS*)(*itr))->getTunSensor()->publishSensorReading();
-            ((RIMS*)(*itr))->getSafetySensor()->publishSensorReading();
-        }
+        _periodicUpdateTimer->reset();
     }
 
-    _periodicUpdateTimer->reset();
     return;
 }
 
