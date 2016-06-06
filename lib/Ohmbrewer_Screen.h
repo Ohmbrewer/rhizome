@@ -62,6 +62,11 @@ namespace Ohmbrewer {
             Screen(uint8_t CS, uint8_t RS, uint8_t RST, std::deque< Ohmbrewer::Equipment* >* sprouts, Ohmbrewer::RuntimeSettings *settings);
 
             /**
+             * DESTRUCTOR
+             */
+            ~Screen();
+
+            /**
              * Resets the foreground and background text colors to the defaults above.
              */
             void resetTextColor() { setTextColor(DEFAULT_TEXT_COLOR, DEFAULT_BG_COLOR); }
