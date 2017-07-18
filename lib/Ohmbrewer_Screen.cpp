@@ -21,7 +21,7 @@ Ohmbrewer::Screen::Screen(uint8_t CS,
                           uint8_t RS,
                           uint8_t RST,
                           std::deque< Ohmbrewer::Equipment* >* sprouts,
-                          Ohmbrewer::RuntimeSettings *settings) : Adafruit_ILI9341(CS, RS, RST) {
+                          Ohmbrewer::RuntimeSettings *settings) : Adafruit_ST7735(CS, RS, RST) {
     _sprouts = sprouts;
     _settings= settings;
 
@@ -69,7 +69,7 @@ void Ohmbrewer::Screen::reinitScreen() {
     fillScreen(DEFAULT_BG_COLOR);
 
     // Draw the buttons that are always there
-    drawButtons();
+    // drawButtons();
 
     // Reset the cursor
     setCursor(LEFT, TOP);
@@ -84,7 +84,7 @@ unsigned long Ohmbrewer::Screen::displayHeader() {
 
     // Add the title
     setCursor(0, 0);
-    setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
+    setTextColor(ST7735_WHITE, DEFAULT_BG_COLOR);
     setTextSize(3);
     println("  OHMBREWER");
     resetTextSizeAndColor();
@@ -110,7 +110,7 @@ void Ohmbrewer::Screen::printMargin(const uint8_t current) {
  */
 void Ohmbrewer::Screen::drawButtons() {
 
-    setTextColor(ILI9341_WHITE, DEFAULT_BG_COLOR);
+    setTextColor(ST7735_WHITE, DEFAULT_BG_COLOR);
 
     // make the buttons
     fillRect(LEFT, BUTTONTOP, BUTTONSIZE, BUTTONSIZE, DEFAULT_BG_COLOR);
@@ -370,7 +370,7 @@ unsigned long Ohmbrewer::Screen::displayRIMS() {
 unsigned long Ohmbrewer::Screen::displayStatusUpdate(char *statusUpdate) {
     unsigned long start = micros();
 
-    setTextColor(ILI9341_RED, DEFAULT_BG_COLOR);
+    setTextColor(ST7735_RED, DEFAULT_BG_COLOR);
     setCursor(LEFT, BUTTONTOP - 40);
     resetTextSize();
     println(statusUpdate);
@@ -379,7 +379,7 @@ unsigned long Ohmbrewer::Screen::displayStatusUpdate(char *statusUpdate) {
 }
 
 /**
- * Checks for a touch event and triggers actions 
+ * Checks for a touch event and triggers actions
  *  if the the touch was on a screen "button".
  * @returns Time it took to run the function
  */
@@ -404,14 +404,14 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
     // Scale from ~0->1000 to tft.width using the calibration #'s
     p.x = map(p.x, TS_MINX, TS_MAXX, 0, width()-35); // This -35 is a dirty hack. We need to fix the scaling to get this working without it.
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, height());
-    
+
     // Each of these should pad out with spaces on the right
     sprintf(printx, "x is %-5d", p.x);
     sprintf(printy, "y is %-5d", p.y);
-    
+
     String statusUpdate = String(printx);
     statusUpdate.concat(printy);
-    
+
     if (p.y >= BUTTONTOP) {
 
         if (p.x > 0 && p.x <= BUTTONSIZE) {
@@ -439,12 +439,12 @@ unsigned long Ohmbrewer::Screen::captureButtonPress() {
             statusUpdate.concat("                    ");
 //            Serial.println("Pressing Nothing!    ");
         }
-        
+
         // Barf it onto the display...
         statusUpdate.toCharArray(status, 40);
         displayStatusUpdate(status);
     }
-    
+
     Serial.print("X = "); Serial.print(p.x);
     Serial.print("\tY = "); Serial.print(p.y);
     Serial.print("\tPressure = "); Serial.println(p.z);

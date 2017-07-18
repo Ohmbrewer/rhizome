@@ -18,7 +18,7 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_Main.cpp
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_TempUnit.h
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_TempUnit.cpp
-    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.h    
+    ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.h
     ../lib/Ohmbrewer_Menu/Ohmbrewer_Menu_WiFi.cpp
     ../lib/Ohmbrewer_Onewire.cpp
     ../lib/Ohmbrewer_Onewire.h
@@ -46,12 +46,15 @@ set(SOURCE_FILES
     ../lib/Ohmbrewer_Thermostat.h
     ../lib/Ohmbrewer_Thermostat.cpp
 #external libraries
+
     ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.h
     ../../Adafruit_ILI9341/firmware/Adafruit_ILI9341.cpp
     ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.h
     ../../Adafruit_mfGFX_IDE/firmware/Adafruit_mfGFX.cpp
     ../../Adafruit_mfGFX_IDE/firmware/fonts.h
     ../../Adafruit_mfGFX_IDE/firmware/fonts.cpp
+
+
     ../../particle-ds18x20/firmware/ds18x20.cpp
     ../../particle-ds18x20/firmware/ds18x20.h
     ../../particle-ds18x20/firmware/crc8.cpp
@@ -62,6 +65,12 @@ set(SOURCE_FILES
     ../../Spark-PID/firmware/pid.h
     ../../Touch_4Wire/firmware/Touch_4Wire.cpp
     ../../Touch_4Wire/firmware/Touch_4Wire.h
+    ../../Adafruit_ST7735/Adafruit_ST7735.h
+    ../../Adafruit_ST7735/Adafruit_ST7735.cpp
+    ../../Adafruit_GFX/Adafruit_GFX.h
+    ../../Adafruit_GFX/Adafruit_GFX.cpp
+    ../../Adafruit_GFX/gfxfont.h
+    ../../Adafruit_GFX/glcdfont.c
 )
 
 if(DEVICE_TYPE)
