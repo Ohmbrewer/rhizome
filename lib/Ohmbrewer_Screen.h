@@ -13,7 +13,8 @@
 #define YM A2
 
 #include <deque>
-#include "Adafruit_ILI9341.h"
+// #include "Adafruit_ILI9341.h"
+#include "Adafruit_ST7735.h"
 #include "application.h"
 #include "Touch_4Wire.h"
 #include "Ohmbrewer_Runtime_Settings.h"
@@ -26,7 +27,8 @@ namespace Ohmbrewer {
 
     // TODO: Add a member object to Ohmbrewer::Screen that represents the capacitive touch capabilities
     // (e.g. an instance of Adafruit Touch 4Wire TouchScreen)
-    class Screen : public Adafruit_ILI9341 {
+    // class Screen : public Adafruit_ILI9341 {
+    class Screen : public Adafruit_ST7735 {
 
         public:
 
@@ -37,15 +39,24 @@ namespace Ohmbrewer {
             static const int      BOTTOM = 320;
             static const int      BUTTONTOP = 260;
             static const uint8_t  DEFAULT_TEXT_SIZE = 2;
-            static const uint16_t DEFAULT_TEXT_COLOR = ILI9341_GREEN;
-            static const uint16_t DEFAULT_BG_COLOR = ILI9341_BLACK;
-            static const uint16_t RED = ILI9341_RED;
-            static const uint16_t BLACK = ILI9341_BLACK;
-            static const uint16_t BLUE = ILI9341_BLUE;
-            static const uint16_t GREEN = ILI9341_GREEN;
-            static const uint16_t WHITE = ILI9341_WHITE;
-            static const uint16_t YELLOW = ILI9341_YELLOW;
-            static const uint16_t CYAN = ILI9341_CYAN;
+            // static const uint16_t DEFAULT_TEXT_COLOR = ILI9341_GREEN;
+            // static const uint16_t DEFAULT_BG_COLOR = ILI9341_BLACK;
+            // static const uint16_t RED = ILI9341_RED;
+            // static const uint16_t BLACK = ILI9341_BLACK;
+            // static const uint16_t BLUE = ILI9341_BLUE;
+            // static const uint16_t GREEN = ILI9341_GREEN;
+            // static const uint16_t WHITE = ILI9341_WHITE;
+            // static const uint16_t YELLOW = ILI9341_YELLOW;
+            // static const uint16_t CYAN = ILI9341_CYAN;
+            static const uint16_t DEFAULT_TEXT_COLOR = ST7735_GREEN;
+            static const uint16_t DEFAULT_BG_COLOR = ST7735_BLACK;
+            static const uint16_t RED = ST7735_RED;
+            static const uint16_t BLACK = ST7735_BLACK;
+            static const uint16_t BLUE = ST7735_BLUE;
+            static const uint16_t GREEN = ST7735_GREEN;
+            static const uint16_t WHITE = ST7735_WHITE;
+            static const uint16_t YELLOW = ST7735_YELLOW;
+            static const uint16_t CYAN = ST7735_CYAN;
 
 
             // This is calibration data for the raw touch data to the screen coordinates
@@ -172,9 +183,9 @@ namespace Ohmbrewer {
              * @returns Time it took to run the function
              */
             unsigned long displayStatusUpdate(char *statusUpdate);
-            
+
             /**
-             * Checks for a touch event and triggers actions 
+             * Checks for a touch event and triggers actions
              *  if the the touch was on a screen "button".
              * @returns Time it took to run the function
              */
@@ -214,15 +225,15 @@ namespace Ohmbrewer {
              * Pointer to the Rhizome's runtime settings
              */
             RuntimeSettings* _settings;
-            
-            /** 
+
+            /**
              *  The touchscreen object used to check for taps on the screen
              */
             TouchScreen* _ts;
-            
+
             /**
              * Pointer to the current menu
-             */            
+             */
             Menu* _currentMenu;
 
             /**
